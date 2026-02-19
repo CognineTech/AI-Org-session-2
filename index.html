@@ -240,8 +240,11 @@
     const isPresentMode = params.get('mode') === 'present';
     const autoStart = params.get('autostart') === '1';
     const CONTROLS_IDLE_MS = 2000;
+    const FIT_MARGIN = 0.985;
 
     let controlsHideTimer = null;
+    let slideBaseWidth = 1280;
+    let slideBaseHeight = 720;
 
     if (isPresentMode) {
       document.body.classList.add('present-mode');
@@ -256,9 +259,44 @@
 
     let current = parseInitialIndex();
 
+    function updateSlideBaseSize() {
+      try {
+        const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+        if (!frameDoc) return;
+
+        const slideContainer = frameDoc.querySelector('.slide-container');
+        const body = frameDoc.body;
+        const root = frameDoc.documentElement;
+
+        const measuredWidth = Math.max(
+          slideContainer?.offsetWidth || 0,
+          body?.scrollWidth || 0,
+          root?.scrollWidth || 0,
+          1280
+        );
+
+        const measuredHeight = Math.max(
+          slideContainer?.offsetHeight || 0,
+          body?.scrollHeight || 0,
+          root?.scrollHeight || 0,
+          720
+        );
+
+        slideBaseWidth = measuredWidth;
+        slideBaseHeight = measuredHeight;
+
+        stageScaler.style.width = `${slideBaseWidth}px`;
+        stageScaler.style.height = `${slideBaseHeight}px`;
+        frame.style.width = `${slideBaseWidth}px`;
+        frame.style.height = `${slideBaseHeight}px`;
+      } catch (_) {
+        // Keep defaults if measurement fails.
+      }
+    }
+
     function fitStage() {
-      const slideWidth = 1280;
-      const slideHeight = 720;
+      const slideWidth = slideBaseWidth;
+      const slideHeight = slideBaseHeight;
 
       const stageStyle = getComputedStyle(stage);
       const padX = parseFloat(stageStyle.paddingLeft) + parseFloat(stageStyle.paddingRight);
@@ -267,7 +305,7 @@
       const availableWidth = Math.max(window.innerWidth - padX, 320);
       const availableHeight = Math.max(window.innerHeight - padY, 180);
 
-      const scale = Math.min(availableWidth / slideWidth, availableHeight / slideHeight);
+      const scale = Math.min(availableWidth / slideWidth, availableHeight / slideHeight) * FIT_MARGIN;
       stageScaler.style.transform = `scale(${scale})`;
     }
 
@@ -346,6 +384,8 @@
         const frameDoc = frame.contentDocument || frame.contentWindow?.document;
         if (!frameDoc) return;
         frameDoc.addEventListener('keydown', handleNavigationKeydown, true);
+        updateSlideBaseSize();
+        fitStage();
       } catch (_) {
         // Ignore if frame is not accessible for any reason.
       }
