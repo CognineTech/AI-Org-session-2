@@ -29,15 +29,35 @@
     #app {
       position: fixed;
       inset: 0;
+      display: block;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 12px 86px;
+      overflow: hidden;
+    }
+
+    #stageScaler {
+      width: 1280px;
+      height: 720px;
+      transform-origin: center center;
+      will-change: transform;
     }
 
     #slideFrame {
-      flex: 1;
-      width: 100%;
+      width: 1280px;
+      height: 720px;
       border: 0;
       background: #0f172a;
+    }
+
+    body.present-mode #stage {
+      padding-bottom: 18px;
     }
 
     #controls {
@@ -158,7 +178,11 @@
 </head>
 <body>
   <div id="app">
-    <iframe id="slideFrame" title="Slide"></iframe>
+    <div id="stage">
+      <div id="stageScaler">
+        <iframe id="slideFrame" title="Slide"></iframe>
+      </div>
+    </div>
   </div>
 
   <div id="controls" class="hidden-in-fullscreen">
@@ -197,6 +221,8 @@
     ];
 
     const frame = document.getElementById('slideFrame');
+    const stage = document.getElementById('stage');
+    const stageScaler = document.getElementById('stageScaler');
     const counter = document.getElementById('counter');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -221,6 +247,21 @@
     }
 
     let current = parseInitialIndex();
+
+    function fitStage() {
+      const slideWidth = 1280;
+      const slideHeight = 720;
+
+      const stageStyle = getComputedStyle(stage);
+      const padX = parseFloat(stageStyle.paddingLeft) + parseFloat(stageStyle.paddingRight);
+      const padY = parseFloat(stageStyle.paddingTop) + parseFloat(stageStyle.paddingBottom);
+
+      const availableWidth = Math.max(window.innerWidth - padX, 320);
+      const availableHeight = Math.max(window.innerHeight - padY, 180);
+
+      const scale = Math.min(availableWidth / slideWidth, availableHeight / slideHeight);
+      stageScaler.style.transform = `scale(${scale})`;
+    }
 
     function render() {
       frame.src = slides[current];
@@ -286,6 +327,9 @@
       }
     });
 
+    window.addEventListener('resize', fitStage);
+    document.addEventListener('fullscreenchange', fitStage);
+
     startBtn.addEventListener('click', async () => {
       try {
         if (!document.fullscreenElement) {
@@ -297,6 +341,7 @@
     });
 
     render();
+    fitStage();
 
     if (isPresentMode && autoStart) {
       startOverlay.classList.add('show');
