@@ -470,13 +470,13 @@
         // Build labeled 6×6 grid (corner + 5 col-labels | 5 row-labels + 5×5 cells)
         const hmGrid = document.createElement('div');
         hmGrid.id = 'hm-grid';
-        hmGrid.style.cssText = 'display:grid;grid-template-columns:22px repeat(5,1fr);gap:1px;margin-top:2px;';
+        hmGrid.style.cssText = 'display:grid;grid-template-columns:24px repeat(5,1fr);gap:2px;margin-top:4px;';
 
         // Header row: empty corner + 5 column labels
         hmGrid.appendChild(document.createElement('div')); // corner
         hmTokens.forEach(lbl => {
             const d = document.createElement('div');
-            d.style.cssText = "font-size:0.42rem;color:#94a3b8;text-align:center;font-family:'JetBrains Mono',monospace;overflow:hidden;white-space:nowrap;padding-bottom:2px;";
+            d.style.cssText = "font-size:0.46rem;color:#94a3b8;text-align:center;font-family:'JetBrains Mono',monospace;overflow:hidden;white-space:nowrap;padding-bottom:3px;letter-spacing:0.02em;";
             d.textContent = lbl;
             hmGrid.appendChild(d);
         });
@@ -489,7 +489,7 @@
             const rl = document.createElement('div');
             rl.className = 'hm-row-label';
             rl.dataset.row = ri;
-            rl.style.cssText = `font-size:0.42rem;color:${isActive ? '#10b981' : '#94a3b8'};display:flex;align-items:center;font-family:'JetBrains Mono',monospace;overflow:hidden;white-space:nowrap;font-weight:${isActive ? '700' : '400'};transition:color 0.3s;`;
+            rl.style.cssText = `font-size:0.46rem;color:${isActive ? '#10b981' : '#94a3b8'};display:flex;align-items:center;font-family:'JetBrains Mono',monospace;overflow:hidden;white-space:nowrap;font-weight:${isActive ? '700' : '400'};transition:color 0.3s;`;
             rl.textContent = hmTokens[ri];
             hmGrid.appendChild(rl);
 
@@ -497,7 +497,7 @@
             row.forEach(val => {
                 const cell = document.createElement('div');
                 cell.className = `hm-cell hm-row-${ri}`;
-                cell.style.cssText = `height:13px;border-radius:2px;background-color:${hmColor(val)};transition:outline 0.3s;${isActive ? 'outline:1px solid rgba(16,185,129,0.7);outline-offset:-1px;' : ''}`;
+                cell.style.cssText = `height:18px;border-radius:3px;background-color:${hmColor(val)};transition:outline 0.3s;${isActive ? 'outline:1.5px solid rgba(16,185,129,0.8);outline-offset:-1px;' : ''}`;
                 hmGrid.appendChild(cell);
             });
         });
