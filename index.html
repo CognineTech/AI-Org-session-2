@@ -240,6 +240,7 @@
     const isPresentMode = params.get('mode') === 'present';
     const autoStart = params.get('autostart') === '1';
     const CONTROLS_IDLE_MS = 2000;
+    const FIT_MARGIN = 0.985;
 
     let controlsHideTimer = null;
 
@@ -267,7 +268,7 @@
       const availableWidth = Math.max(window.innerWidth - padX, 320);
       const availableHeight = Math.max(window.innerHeight - padY, 180);
 
-      const scale = Math.min(availableWidth / slideWidth, availableHeight / slideHeight);
+      const scale = Math.min(availableWidth / slideWidth, availableHeight / slideHeight) * FIT_MARGIN;
       stageScaler.style.transform = `scale(${scale})`;
     }
 
