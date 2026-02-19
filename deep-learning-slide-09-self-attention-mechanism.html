@@ -67,11 +67,12 @@
 
     /* Main Layout */
     .main-content {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: 1fr 240px;
         flex: 1;
         z-index: 10;
         gap: 12px;
+        min-height: 0;
     }
 
     /* Sentence Container */
@@ -84,6 +85,8 @@
         display: flex;
         justify-content: center;
         margin-top: 4px;
+        min-height: 0;
+        overflow: hidden;
     }
 
     .tokens-container {
@@ -160,7 +163,8 @@
     .qkv-section {
         display: flex;
         gap: 14px;
-        height: 240px;
+        height: 100%;
+        min-height: 0;
     }
 
     .qkv-card {
