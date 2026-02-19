@@ -247,9 +247,6 @@
     }
 
     .heatmap-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 4px;
         margin-top: 10px;
     }
 
@@ -439,14 +436,90 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // Mini Heatmap Generation
+        // ── Mini Heatmap Generation — Fixed with labeled attention matrix ──
         const heatmap = document.getElementById('mini-heatmap');
-        for(let i=0; i<25; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'heatmap-cell';
-            cell.style.opacity = Math.random() * 0.5 + 0.1;
-            if(i === 12) cell.style.backgroundColor = '#10b981'; // center highlight
-            heatmap.appendChild(cell);
+
+        // 5 representative tokens (sentence indices: 0=The, 1=animal, 5=street, 7=it, 10=tired)
+        const hmTokens      = ['The', 'Anml', 'Str', 'it', 'Trd'];
+        const hmTokenIndices = [0, 1, 5, 7, 10];
+
+        // Predefined 5×5 attention matrix (row = query, col = key)
+        // "it" row (row 3) is derived from actual attentionWeights:
+        //   animal=0.87 → 0.60, tired=0.45 → 0.28, street=0.13 → 0.09 (normalised to 5 tokens)
+        const hmMatrix = [
+            [0.80, 0.10, 0.05, 0.03, 0.02], // The
+            [0.10, 0.70, 0.05, 0.10, 0.05], // Anml
+            [0.05, 0.05, 0.75, 0.10, 0.05], // Str
+            [0.01, 0.60, 0.09, 0.02, 0.28], // it  ← from actual attentionWeights
+            [0.05, 0.20, 0.10, 0.30, 0.35], // Trd
+        ];
+
+        // Color interpolation: dark slate #1e293b (0) → emerald green #10b981 (1)
+        function hmColor(v) {
+            const r = Math.round(30  + (16  - 30)  * v);
+            const g = Math.round(41  + (185 - 41)  * v);
+            const b = Math.round(59  + (129 - 59)  * v);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        // Build labeled 6×6 grid (corner + 5 col-labels | 5 row-labels + 5×5 cells)
+        const hmGrid = document.createElement('div');
+        hmGrid.id = 'hm-grid';
+        hmGrid.style.cssText = 'display:grid;grid-template-columns:26px repeat(5,1fr);gap:3px;margin-top:6px;';
+
+        // Header row: empty corner + 5 column labels
+        hmGrid.appendChild(document.createElement('div')); // corner
+        hmTokens.forEach(lbl => {
+            const d = document.createElement('div');
+            d.style.cssText = "font-size:0.48rem;color:#64748b;text-align:center;font-family:'JetBrains Mono',monospace;overflow:hidden;white-space:nowrap;";
+            d.textContent = lbl;
+            hmGrid.appendChild(d);
+        });
+
+        // Data rows: row label + 5 cells
+        hmMatrix.forEach((row, ri) => {
+            const isActive = ri === 3; // "it" row highlighted by default
+
+            // Row label
+            const rl = document.createElement('div');
+            rl.className = 'hm-row-label';
+            rl.dataset.row = ri;
+            rl.style.cssText = `font-size:0.48rem;color:${isActive ? '#10b981' : '#64748b'};display:flex;align-items:center;font-family:'JetBrains Mono',monospace;overflow:hidden;white-space:nowrap;font-weight:${isActive ? '700' : '400'};transition:color 0.3s;`;
+            rl.textContent = hmTokens[ri];
+            hmGrid.appendChild(rl);
+
+            // Cells
+            row.forEach(val => {
+                const cell = document.createElement('div');
+                cell.className = `hm-cell hm-row-${ri}`;
+                cell.style.cssText = `aspect-ratio:1;border-radius:2px;background-color:${hmColor(val)};transition:outline 0.3s;${isActive ? 'outline:1px solid rgba(16,185,129,0.6);' : ''}`;
+                hmGrid.appendChild(cell);
+            });
+        });
+
+        heatmap.appendChild(hmGrid);
+
+        // Map sentence token index → heatmap row index (−1 if not a representative token)
+        function getHmRow(tokenIdx) {
+            return hmTokenIndices.indexOf(tokenIdx);
+        }
+
+        // Highlight a specific heatmap row; falls back to "it" row (3) if token not in matrix
+        function updateHeatmapHighlight(tokenIdx) {
+            const hmRow = getHmRow(tokenIdx) !== -1 ? getHmRow(tokenIdx) : 3;
+            document.querySelectorAll('.hm-row-label').forEach(el => {
+                const ri = parseInt(el.dataset.row);
+                const active = ri === hmRow;
+                el.style.color      = active ? '#10b981' : '#64748b';
+                el.style.fontWeight = active ? '700'     : '400';
+            });
+            for (let ri = 0; ri < 5; ri++) {
+                document.querySelectorAll(`.hm-row-${ri}`).forEach(cell => {
+                    cell.style.outline = ri === hmRow
+                        ? '1px solid rgba(16,185,129,0.6)'
+                        : 'none';
+                });
+            }
         }
 
         // Interaction Logic
@@ -493,6 +566,9 @@
             } else {
                 updateSidePanel(false);
             }
+
+            // Sync heatmap row highlight with hovered token
+            updateHeatmapHighlight(idx);
         }
 
         function clearVisualization() {
@@ -503,6 +579,7 @@
                 el.style.borderColor = '';
                 el.style.color = '';
             });
+            updateHeatmapHighlight(focusIndex); // reset highlight to "it" row
         }
 
         function drawConnection(sourceEl, targetEl, weight) {
