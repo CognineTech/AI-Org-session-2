@@ -150,12 +150,17 @@
 
     body.present-mode #controls,
     body.present-mode #help {
+      transition: opacity 0.2s ease;
+    }
+
+    body.present-mode.controls-hidden #controls,
+    body.present-mode.controls-hidden #help {
       opacity: 0;
       pointer-events: none;
     }
 
-    body.present-mode:hover #controls,
-    body.present-mode:hover #help {
+    body.present-mode:not(.controls-hidden) #controls,
+    body.present-mode:not(.controls-hidden) #help {
       opacity: 1;
       pointer-events: auto;
     }
@@ -234,6 +239,9 @@
     const params = new URLSearchParams(window.location.search);
     const isPresentMode = params.get('mode') === 'present';
     const autoStart = params.get('autostart') === '1';
+    const CONTROLS_IDLE_MS = 2000;
+
+    let controlsHideTimer = null;
 
     if (isPresentMode) {
       document.body.classList.add('present-mode');
@@ -261,6 +269,20 @@
 
       const scale = Math.min(availableWidth / slideWidth, availableHeight / slideHeight);
       stageScaler.style.transform = `scale(${scale})`;
+    }
+
+    function showPresentationUiTemporarily() {
+      if (!isPresentMode) return;
+
+      document.body.classList.remove('controls-hidden');
+
+      if (controlsHideTimer) {
+        clearTimeout(controlsHideTimer);
+      }
+
+      controlsHideTimer = setTimeout(() => {
+        document.body.classList.add('controls-hidden');
+      }, CONTROLS_IDLE_MS);
     }
 
     function render() {
@@ -350,11 +372,21 @@
         }
       } finally {
         startOverlay.classList.remove('show');
+        showPresentationUiTemporarily();
       }
     });
 
     render();
     fitStage();
+
+    if (isPresentMode) {
+      const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel'];
+      activityEvents.forEach((eventName) => {
+        document.addEventListener(eventName, showPresentationUiTemporarily, { passive: true });
+      });
+
+      showPresentationUiTemporarily();
+    }
 
     if (isPresentMode && autoStart) {
       startOverlay.classList.add('show');
