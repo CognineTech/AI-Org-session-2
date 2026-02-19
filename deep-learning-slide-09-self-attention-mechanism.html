@@ -76,7 +76,7 @@
     /* Sentence Container */
     .sentence-wrapper {
         position: relative;
-        padding: 75px 20px 60px 20px;
+        padding: 46px 20px 34px 20px;
         background-color: rgba(30, 41, 59, 0.5);
         border-radius: 16px;
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -160,7 +160,7 @@
     .qkv-section {
         display: flex;
         gap: 20px;
-        height: 310px;
+        height: 360px;
     }
 
     .qkv-card {
@@ -238,17 +238,20 @@
 
     /* Score Panel (Right Side) */
     .score-panel {
-        width: 280px;
+        width: 295px;
         background-color: #1e293b;
         border-radius: 12px;
-        padding: 20px;
+        padding: 15px 16px;
         border: 1px solid rgba(255, 255, 255, 0.05);
         display: flex;
         flex-direction: column;
+        overflow: hidden;
     }
 
     .heatmap-grid {
-        margin-top: 10px;
+        margin-top: 4px;
+        flex: 1;
+        min-height: 0;
     }
 
     .heatmap-cell {
@@ -258,11 +261,11 @@
     }
 
     .score-bar-container {
-        margin-top: 20px;
+        margin-top: 8px;
     }
 
     .score-item {
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
 
     .score-label {
