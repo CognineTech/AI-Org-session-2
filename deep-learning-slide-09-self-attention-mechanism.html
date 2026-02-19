@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Self-Attention Mechanism</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 <style>
     body {
@@ -25,7 +25,7 @@
         background-color: #0f172a;
         display: flex;
         flex-direction: column;
-        padding: 34px 56px;
+        padding: 40px 60px;
         box-sizing: border-box;
     }
 
@@ -43,50 +43,46 @@
 
     header {
         z-index: 10;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding-bottom: 12px;
+        padding-bottom: 15px;
     }
 
     h1 {
         font-family: 'Montserrat', sans-serif;
-        font-size: 2.35rem;
+        font-size: 2.5rem;
         font-weight: 800;
-        margin: 0 0 6px 0;
+        margin: 0 0 5px 0;
         color: white;
         letter-spacing: -1px;
     }
 
     .subtitle {
         font-family: 'Inter', sans-serif;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         color: #94a3b8;
         font-weight: 400;
-        margin: 0;
     }
 
     /* Main Layout */
     .main-content {
-        display: grid;
-        grid-template-rows: minmax(0, 1fr) 290px;
+        display: flex;
+        flex-direction: column;
         flex: 1;
         z-index: 10;
-        gap: 14px;
-        min-height: 0;
+        gap: 20px;
     }
 
     /* Sentence Container */
     .sentence-wrapper {
         position: relative;
-        padding: 24px 16px 40px 16px;
+        padding: 40px 20px 60px 20px;
         background-color: rgba(30, 41, 59, 0.5);
         border-radius: 16px;
         border: 1px solid rgba(255, 255, 255, 0.05);
         display: flex;
         justify-content: center;
-        margin-top: 2px;
-        min-height: 0;
-        overflow: hidden;
+        margin-top: 10px;
     }
 
     .tokens-container {
@@ -162,16 +158,15 @@
     /* QKV Concepts Section */
     .qkv-section {
         display: flex;
-        gap: 18px;
-        height: 100%;
-        min-height: 0;
+        gap: 20px;
+        height: 280px;
     }
 
     .qkv-card {
         flex: 1;
         background-color: #1e293b;
         border-radius: 12px;
-        padding: 18px;
+        padding: 20px;
         border: 1px solid rgba(255, 255, 255, 0.05);
         display: flex;
         flex-direction: column;
@@ -182,8 +177,8 @@
     .card-header {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
-        padding-bottom: 9px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
         border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
@@ -208,9 +203,9 @@
 
     .card-body {
         flex: 1;
-        font-size: 0.88rem;
+        font-size: 0.9rem;
         color: #cbd5e1;
-        line-height: 1.45;
+        line-height: 1.5;
     }
 
     .vector-display {
@@ -245,52 +240,43 @@
         width: 280px;
         background-color: #1e293b;
         border-radius: 12px;
-        padding: 14px;
+        padding: 20px;
         border: 1px solid rgba(255, 255, 255, 0.05);
         display: flex;
         flex-direction: column;
-        overflow: hidden;
     }
 
     .heatmap-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(5, 1fr);
-        gap: 2px;
-        margin-top: 2px;
-        padding: 3px;
-        height: 70px;
-        background-color: rgba(15, 23, 42, 0.55);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 8px;
+        gap: 4px;
+        margin-top: 10px;
     }
 
     .heatmap-cell {
-        height: auto;
+        aspect-ratio: 1;
         background-color: #334155;
-        border-radius: 3px;
-        border: 1px solid rgba(255,255,255,0.08);
-        min-height: 0;
+        border-radius: 2px;
     }
 
     .score-bar-container {
-        margin-top: 6px;
+        margin-top: 20px;
     }
 
     .score-item {
-        margin-bottom: 5px;
+        margin-bottom: 12px;
     }
 
     .score-label {
         display: flex;
         justify-content: space-between;
-        font-size: 0.7rem;
-        margin-bottom: 2px;
+        font-size: 0.8rem;
+        margin-bottom: 4px;
         font-family: 'JetBrains Mono', monospace;
     }
 
     .progress-bg {
-        height: 5px;
+        height: 6px;
         background-color: #334155;
         border-radius: 3px;
         overflow: hidden;
@@ -374,7 +360,7 @@
 </div>
 <!-- Score Panel -->
 <div class="score-panel">
-<h3 class="card-title" style="font-size: 1rem; margin-bottom: 4px;">Attention Scores</h3>
+<h3 class="card-title" style="font-size: 1rem; margin-bottom: 10px;">Attention Scores</h3>
 <div class="score-bar-container" id="score-bars">
 <!-- Dynamic Score Bars -->
 <div class="score-item">
@@ -390,8 +376,8 @@
 <div class="progress-bg"><div class="progress-fill" style="width: 45%; background-color: #f59e0b;"></div></div>
 </div>
 </div>
-<div style="margin-top: 4px;">
-<p style="font-size: 0.7rem; color: #cbd5e1; margin-bottom: 2px; font-weight: 600;">Head Matrix (Simplified)</p>
+<div style="margin-top: auto;">
+<p style="font-size: 0.75rem; color: #64748b; margin-bottom: 5px;">Head Matrix (Simplified)</p>
 <div class="heatmap-grid" id="mini-heatmap">
 <!-- Generated by JS -->
 </div>
@@ -455,33 +441,11 @@
 
         // Mini Heatmap Generation
         const heatmap = document.getElementById('mini-heatmap');
-        const miniWeights = [
-            0.01, 0.03, 0.05, 0.04, 0.02,
-            0.03, 0.07, 0.12, 0.09, 0.04,
-            0.04, 0.10, 0.95, 0.15, 0.05,
-            0.02, 0.06, 0.11, 0.08, 0.03,
-            0.01, 0.03, 0.05, 0.04, 0.02
-        ];
-
-        function mixColor(low, high, t) {
-            const r = Math.round(low[0] + (high[0] - low[0]) * t);
-            const g = Math.round(low[1] + (high[1] - low[1]) * t);
-            const b = Math.round(low[2] + (high[2] - low[2]) * t);
-            return `rgb(${r}, ${g}, ${b})`;
-        }
-
         for(let i=0; i<25; i++) {
             const cell = document.createElement('div');
             cell.className = 'heatmap-cell';
-            const intensity = miniWeights[i];
-            const perceptual = Math.pow(intensity, 1.8);
-            cell.style.backgroundColor = mixColor([30, 41, 59], [16, 185, 129], perceptual);
-            cell.style.backgroundColor = mixColor([51, 65, 85], [16, 185, 129], intensity);
-            if(i === 12) {
-                cell.style.backgroundColor = '#10b981';
-                cell.style.boxShadow = '0 0 8px rgba(16, 185, 129, 0.65)';
-                cell.style.borderColor = 'rgba(255,255,255,0.25)';
-            }
+            cell.style.opacity = Math.random() * 0.5 + 0.1;
+            if(i === 12) cell.style.backgroundColor = '#10b981'; // center highlight
             heatmap.appendChild(cell);
         }
 
