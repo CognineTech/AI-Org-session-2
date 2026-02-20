@@ -101,6 +101,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding-bottom: 65px;
+            overflow: visible;
         }
 
         #flow-canvas {
@@ -412,11 +414,11 @@
 
         const w = canvas.width;
         const h = canvas.height;
-        const cx = w * 0.45;
-        const cy = h * 0.5;
+        const cx = w * 0.44;
+        const cy = h * 0.46;
 
         // Position Outputs in an arc
-        const radius = 320;
+        const radius = 265;
         const totalAngle = Math.PI * 0.7;
         const startAngle = -totalAngle / 2;
         const angleStep = totalAngle / (outputNodes.length - 1);
