@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Session 1 Recap</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        /* 32px top, 56px sides, 80px bottom — reserves space for absolute footer */
+        padding: 32px 56px 80px;
+        box-sizing: border-box;
+        background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+    }
+
+    /* Ambient Background Glows */
+    .glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: 0;
+        opacity: 0.15;
+    }
+    .glow-1 { top: -100px; left: -100px; width: 400px; height: 400px; background-color: #3b82f6; }
+    .glow-2 { bottom: -100px; right: -100px; width: 400px; height: 400px; background-color: #a855f7; }
+
+    /* Header */
+    header {
+        z-index: 10;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 10px;
+        flex-shrink: 0;
+    }
+
+    .header-left h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0;
+        color: #60a5fa;
+        letter-spacing: -1px;
+        line-height: 1;
+    }
+
+    .header-left .subtitle {
+        font-size: 0.9rem;
+        color: #e2e8f0;
+        margin-top: 4px;
+        margin-bottom: 0;
+        font-weight: 300;
+    }
+
+    .session-badge {
+        background-color: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: #2dd4bf;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+
+    /* Grid Layout — fills remaining vertical space */
+    .recap-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 14px;
+        z-index: 5;
+        flex: 1;
+        min-height: 0; /* prevents flex child from overflowing */
+    }
+
+    /* Card Styles */
+    .recap-card {
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 14px 16px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        animation: fadeInUp 0.5s ease-out forwards;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .recap-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.2);
+        background-color: #334155;
+    }
+
+    .card-icon {
+        font-size: 1.3rem;
+        margin-bottom: 6px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        transition: transform 0.3s;
+        flex-shrink: 0;
+    }
+
+    .recap-card:hover .card-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: white;
+        margin-bottom: 6px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+    }
+
+    .card-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .card-list li {
+        font-size: 0.78rem;
+        color: #cbd5e1;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: flex-start;
+        line-height: 1.4;
+    }
+
+    .card-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    .card-list li::before {
+        content: "•";
+        color: rgba(255, 255, 255, 0.4);
+        margin-right: 6px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        flex-shrink: 0;
+    }
+
+    /* Card Colour Variations */
+    /* 1. AI Foundations — Blue */
+    .card-1 { animation-delay: 0.1s; border-top: 3px solid #3b82f6; }
+    .card-1 .card-icon { color: #60a5fa; background-color: rgba(59, 130, 246, 0.1); }
+
+    /* 2. Machine Learning — Purple */
+    .card-2 { animation-delay: 0.2s; border-top: 3px solid #a855f7; }
+    .card-2 .card-icon { color: #c084fc; background-color: rgba(168, 85, 247, 0.1); }
+
+    /* 3. AI vs ML — Teal */
+    .card-3 { animation-delay: 0.3s; border-top: 3px solid #14b8a6; }
+    .card-3 .card-icon { color: #2dd4bf; background-color: rgba(20, 184, 166, 0.1); }
+
+    /* 4. Skills & Tools — Amber */
+    .card-4 { animation-delay: 0.4s; border-top: 3px solid #f59e0b; }
+    .card-4 .card-icon { color: #fbbf24; background-color: rgba(245, 158, 11, 0.1); }
+
+    /* 5. Applications — Rose */
+    .card-5 { animation-delay: 0.5s; border-top: 3px solid #f43f5e; }
+    .card-5 .card-icon { color: #fb7185; background-color: rgba(244, 63, 94, 0.1); }
+
+    /* 6. Benefits & Challenges — Emerald */
+    .card-6 { animation-delay: 0.6s; border-top: 3px solid #10b981; }
+    .card-6 .card-icon { color: #34d399; background-color: rgba(16, 185, 129, 0.1); }
+
+    /* Footer — matches deck style exactly */
+    .footer {
+        position: absolute;
+        bottom: 30px;
+        left: 56px;
+        right: 56px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 20;
+    }
+
+    .footer-brand {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #64748b;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .footer-meta {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: #64748b;
+        display: flex;
+        gap: 20px;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+<div class="slide-container">
+
+    <!-- Background Glows -->
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <h1>RECAP</h1>
+            <p class="subtitle">Everything we explored in Session 1</p>
+        </div>
+        <div class="session-badge">Session 1 Overview</div>
+    </header>
+
+    <!-- 3×2 Card Grid -->
+    <div class="recap-grid">
+
+        <!-- Card 1: AI Foundations -->
+        <div class="recap-card card-1">
+            <div class="card-icon"><i class="fas fa-brain"></i></div>
+            <h3 class="card-title">AI Foundations</h3>
+            <ul class="card-list">
+                <li>What is AI?</li>
+                <li>Evolution of AI</li>
+                <li>What Comes Under AI</li>
+                <li>Types of AI</li>
+                <li>How AI Works</li>
+            </ul>
+        </div>
+
+        <!-- Card 2: Machine Learning -->
+        <div class="recap-card card-2">
+            <div class="card-icon"><i class="fas fa-cogs"></i></div>
+            <h3 class="card-title">Machine Learning</h3>
+            <ul class="card-list">
+                <li>What is ML?</li>
+                <li>Stages of ML</li>
+                <li>Supervised &amp; Unsupervised</li>
+                <li>Reinforcement Learning</li>
+                <li>Semi &amp; Self-Supervised</li>
+            </ul>
+        </div>
+
+        <!-- Card 3: AI vs ML -->
+        <div class="recap-card card-3">
+            <div class="card-icon"><i class="fas fa-random"></i></div>
+            <h3 class="card-title">AI vs ML</h3>
+            <ul class="card-list">
+                <li>Understanding the distinction</li>
+                <li>ML as a subset of AI</li>
+                <li>Relationship between DL, ML &amp; AI</li>
+            </ul>
+        </div>
+
+        <!-- Card 4: Skills & Tools -->
+        <div class="recap-card card-4">
+            <div class="card-icon"><i class="fas fa-tools"></i></div>
+            <h3 class="card-title">Skills &amp; Tools</h3>
+            <ul class="card-list">
+                <li>Python Programming</li>
+                <li>TensorFlow &amp; PyTorch</li>
+                <li>SQL for Data</li>
+                <li>AWS Cloud Services</li>
+                <li>Power BI Visualization</li>
+            </ul>
+        </div>
+
+        <!-- Card 5: Applications -->
+        <div class="recap-card card-5">
+            <div class="card-icon"><i class="fas fa-rocket"></i></div>
+            <h3 class="card-title">Applications</h3>
+            <ul class="card-list">
+                <li>Healthcare &amp; Finance</li>
+                <li>NLP &amp; Retail</li>
+                <li>Autonomous Vehicles</li>
+                <li>Generative AI</li>
+            </ul>
+        </div>
+
+        <!-- Card 6: Benefits & Challenges -->
+        <div class="recap-card card-6">
+            <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+            <h3 class="card-title">Benefits &amp; Challenges</h3>
+            <ul class="card-list">
+                <li><strong>Benefits:</strong> Automation, Accuracy</li>
+                <li><strong>Challenges:</strong> Bias, Privacy, Ethics</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Footer — deck style: border-top + brand + date | slide number -->
+    <div class="footer">
+        <div class="footer-brand">Presentation by Cognine AI Practice</div>
+        <div class="footer-meta">
+            <span>24-Feb-2026</span>
+            <span>|</span>
+            <span>01</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
