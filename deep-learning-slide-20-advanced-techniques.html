@@ -25,7 +25,7 @@
         background-color: #0f172a;
         display: flex;
         flex-direction: column;
-        padding: 40px 60px;
+        padding: 40px 60px 80px;
         box-sizing: border-box;
     }
 
@@ -73,7 +73,6 @@
         gap: 20px;
         z-index: 5;
         flex: 1;
-        margin-bottom: 20px;
     }
 
     /* Technique Card */
@@ -194,7 +193,7 @@
         border-radius: 0 8px 8px 0;
         display: flex;
         align-items: center;
-        margin-bottom: 20px;
+        margin-top: 16px;
     }
     .reminder-icon {
         color: #60a5fa;
@@ -210,13 +209,18 @@
 
     /* Footer */
     .footer {
+        position: absolute;
+        bottom: 30px;
+        left: 60px;
+        right: 60px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 0.8rem;
         color: #64748b;
-        border-top: 1px solid rgba(255,255,255,0.05);
-        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 15px;
+        z-index: 20;
     }
     .footer-left {
         font-weight: 600;
