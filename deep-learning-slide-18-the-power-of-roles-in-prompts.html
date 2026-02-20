@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Power of Roles in Prompts</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Montserrat:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a; /* Slate 900 */
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 60px;
+        box-sizing: border-box;
+    }
+
+    /* Background Pattern */
+    .bg-dots {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    header {
+        z-index: 10;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 3rem;
+        font-weight: 800;
+        margin: 0 0 10px 0;
+        letter-spacing: -1px;
+        color: #60a5fa; /* Blue 400 */
+        text-shadow: 0 4px 20px rgba(96, 165, 250, 0.2);
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: #cbd5e1;
+        font-weight: 300;
+        max-width: 900px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    /* Grid Layout */
+    .tasks-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 20px;
+        z-index: 5;
+        flex: 1;
+        /* Ensure space for pro-tip */
+        margin-bottom: 20px;
+    }
+
+    /* Task Card */
+    .task-card {
+        background-color: #1e293b; /* Slate 800 */
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .task-card:hover {
+        transform: translateY(-5px);
+        background-color: #25334d;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Card Header */
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.25rem;
+        margin-right: 12px;
+        flex-shrink: 0;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #f8fafc;
+        line-height: 1.2;
+    }
+
+    /* Content Section */
+    .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: auto;
+    }
+
+    .tag {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        border-radius: 16px;
+        background-color: rgba(15, 23, 42, 0.6);
+        color: #94a3b8;
+        font-weight: 500;
+        border: 1px solid rgba(255,255,255,0.05);
+        white-space: nowrap;
+    }
+
+    /* Role Specific Styling */
+    /* Teacher - Green */
+    .role-teacher:hover { border-color: #10b981; }
+    .role-teacher .icon-box { color: #34d399; background-color: rgba(16, 185, 129, 0.1); }
+    .role-teacher:hover .icon-box { background-color: #10b981; color: white; }
+    .role-teacher:hover .tag { color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
+
+    /* Expert - Blue */
+    .role-expert:hover { border-color: #3b82f6; }
+    .role-expert .icon-box { color: #60a5fa; background-color: rgba(59, 130, 246, 0.1); }
+    .role-expert:hover .icon-box { background-color: #3b82f6; color: white; }
+    .role-expert:hover .tag { color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+
+    /* Writer - Purple */
+    .role-writer:hover { border-color: #a855f7; }
+    .role-writer .icon-box { color: #c084fc; background-color: rgba(168, 85, 247, 0.1); }
+    .role-writer:hover .icon-box { background-color: #a855f7; color: white; }
+    .role-writer:hover .tag { color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); }
+
+    /* Code Reviewer - Cyan */
+    .role-coder:hover { border-color: #06b6d4; }
+    .role-coder .icon-box { color: #22d3ee; background-color: rgba(6, 182, 212, 0.1); }
+    .role-coder:hover .icon-box { background-color: #06b6d4; color: white; }
+    .role-coder:hover .tag { color: #67e8f9; border-color: rgba(6, 182, 212, 0.3); }
+
+    /* Analyst - Indigo */
+    .role-analyst:hover { border-color: #6366f1; }
+    .role-analyst .icon-box { color: #818cf8; background-color: rgba(99, 102, 241, 0.1); }
+    .role-analyst:hover .icon-box { background-color: #6366f1; color: white; }
+    .role-analyst:hover .tag { color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3); }
+
+    /* Devil's Advocate - Rose */
+    .role-devil:hover { border-color: #f43f5e; }
+    .role-devil .icon-box { color: #fb7185; background-color: rgba(244, 63, 94, 0.1); }
+    .role-devil:hover .icon-box { background-color: #f43f5e; color: white; }
+    .role-devil:hover .tag { color: #fda4af; border-color: rgba(244, 63, 94, 0.3); }
+
+    /* Pro Tip Box */
+    .pro-tip {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px dashed rgba(96, 165, 250, 0.4);
+        border-radius: 12px;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .pro-tip-icon {
+        color: #fbbf24;
+        font-size: 1.2rem;
+    }
+
+    .pro-tip-content p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #cbd5e1;
+    }
+
+    .pro-tip-content strong {
+        color: #60a5fa;
+    }
+
+    .example-code {
+        font-family: 'JetBrains Mono', monospace;
+        background: rgba(0,0,0,0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #e2e8f0;
+        font-size: 0.85rem;
+    }
+
+    /* Footer */
+    footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 15px;
+    }
+
+    footer span {
+        letter-spacing: 0.5px;
+    }
+
+</style>
+</head>
+<body>
+<div class="slide-container">
+<div class="bg-dots"></div>
+<header>
+<h1>The Power of Roles in Prompts</h1>
+<p class="subtitle">Assigning a role to the AI fundamentally changes how it responds. Roles provide context, expertise level, and perspective that shape the entire interaction.</p>
+</header>
+<div class="tasks-grid">
+<!-- 1. Teacher -->
+<div class="task-card role-teacher">
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-chalkboard-user"></i></div>
+<h3 class="card-title">Teacher</h3>
+</div>
+<div class="card-content">
+<div class="tags-container">
+<span class="tag">Patient</span>
+<span class="tag">Clear Explanations</span>
+<span class="tag">Examples</span>
+<span class="tag">Analogies</span>
+</div>
+</div>
+</div>
+<!-- 2. Expert Consultant -->
+<div class="task-card role-expert">
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-briefcase"></i></div>
+<h3 class="card-title">Expert Consultant</h3>
+</div>
+<div class="card-content">
+<div class="tags-container">
+<span class="tag">Technical Depth</span>
+<span class="tag">Industry Insights</span>
+<span class="tag">Best Practices</span>
+</div>
+</div>
+</div>
+<!-- 3. Creative Writer -->
+<div class="task-card role-writer">
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-pen-nib"></i></div>
+<h3 class="card-title">Creative Writer</h3>
+</div>
+<div class="card-content">
+<div class="tags-container">
+<span class="tag">Imaginative</span>
+<span class="tag">Engaging</span>
+<span class="tag">Story-driven</span>
+<span class="tag">Narrative</span>
+</div>
+</div>
+</div>
+<!-- 4. Code Reviewer -->
+<div class="task-card role-coder">
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-code"></i></div>
+<h3 class="card-title">Code Reviewer</h3>
+</div>
+<div class="card-content">
+<div class="tags-container">
+<span class="tag">Bug Detection</span>
+<span class="tag">Optimization</span>
+<span class="tag">Best Practices</span>
+<span class="tag">Security</span>
+</div>
+</div>
+</div>
+<!-- 5. Business Analyst -->
+<div class="task-card role-analyst">
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-chart-line"></i></div>
+<h3 class="card-title">Business Analyst</h3>
+</div>
+<div class="card-content">
+<div class="tags-container">
+<span class="tag">Data-driven</span>
+<span class="tag">Strategic Thinking</span>
+<span class="tag">ROI Focus</span>
+<span class="tag">Metrics</span>
+</div>
+</div>
+</div>
+<!-- 6. Devil's Advocate -->
+<div class="task-card role-devil">
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-gavel"></i></div>
+<h3 class="card-title">Devil's Advocate</h3>
+</div>
+<div class="card-content">
+<div class="tags-container">
+<span class="tag">Challenge Assumptions</span>
+<span class="tag">Find Weaknesses</span>
+<span class="tag">Critical View</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pro Tip Section -->
+<div class="pro-tip">
+<div class="pro-tip-icon">
+<i class="fas fa-lightbulb"></i>
+</div>
+<div class="pro-tip-content">
+<p><strong>Pro Tip:</strong> Combine roles for nuanced responses. Try <span class="example-code">"Act as a senior software engineer who teaches junior developers"</span> for technical explanations that are both accurate and accessible.</p>
+</div>
+</div>
+<!-- Footer -->
+<footer>
+<span>Presentation By Cognine AI Practice</span>
+<span>24-Feb-2026 | 18</span>
+</footer>
+</div>
+</body>
+</html>
