@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>What is Prompt Engineering?</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Montserrat:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            /* Removed gradient as per instructions, used solid color background */
+        }
+
+        /* Header */
+        header {
+            z-index: 10;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            color: #60a5fa; /* Blue color as requested */
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 300;
+            margin-top: 0;
+        }
+
+        /* Main Content Split */
+        .content-split {
+            display: flex;
+            flex: 1;
+            gap: 50px;
+            position: relative;
+            z-index: 5;
+            align-items: stretch;
+        }
+
+        /* Left Column: Text */
+        .text-column {
+            flex: 0 0 45%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .definition-box {
+            background-color: rgba(30, 41, 59, 0.6);
+            border-left: 4px solid #60a5fa;
+            padding: 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        .definition-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        .benefits-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            color: #f1f5f9;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .benefit-item:hover {
+            transform: translateX(5px);
+            background-color: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .benefit-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-text {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Right Column: Visualization */
+        .visual-column {
+            flex: 1;
+            height: 100%; /* Fill available height */
+            min-height: 400px;
+            position: relative;
+            background-color: rgba(15, 23, 42, 0.4);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #flow-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Floating Labels */
+        .canvas-label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            color: #e2e8f0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            background-color: rgba(15, 23, 42, 0.9);
+            padding: 6px 14px;
+            border-radius: 6px;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<header>
+<h1>What is Prompt Engineering?</h1>
+<p class="subtitle">Designing inputs to guide AI toward optimal outputs</p>
+</header>
+<div class="content-split">
+<!-- Left: Text Content -->
+<div class="text-column">
+<div class="definition-box">
+<p class="definition-text">
+<strong>Prompt engineering</strong> is the practice of designing and refining inputs to get the best possible outputs from AI language models. It's about communicating clearly, providing context, and structuring requests to guide the AI toward desired responses.
+                </p>
+</div>
+<div class="benefits-title">
+<i class="fas fa-star text-yellow-400"></i> Key Benefits
+            </div>
+<div class="benefits-list">
+<div class="benefit-item">
+<div class="benefit-icon"><i class="fas fa-bullseye"></i></div>
+<p class="benefit-text">Increased accuracy and relevance of AI responses</p>
+</div>
+<div class="benefit-item">
+<div class="benefit-icon"><i class="fas fa-sliders-h"></i></div>
+<p class="benefit-text">Better control over output format and style</p>
+</div>
+<div class="benefit-item">
+<div class="benefit-icon"><i class="fas fa-sync-alt"></i></div>
+<p class="benefit-text">More consistent results across multiple interactions</p>
+</div>
+<div class="benefit-item">
+<div class="benefit-icon"><i class="fas fa-comments"></i></div>
+<p class="benefit-text">Reduced need for follow-up clarifications</p>
+</div>
+</div>
+</div>
+<!-- Right: Interactive Visualization -->
+<div class="visual-column" id="visual-container">
+<canvas id="flow-canvas"></canvas>
+<div id="labels-container"></div>
+</div>
+</div>
+<!-- Footer -->
+<div class="footer">
+<p>PRESENTATION BY COGNINE AI PRACTICE</p>
+<div style="display: flex; gap: 20px;">
+<p>24-FEB-2026</p>
+<p>17</p>
+</div>
+</div>
+</div>
+<script>
+        const canvas = document.getElementById('flow-canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('visual-container');
+        const labelsContainer = document.getElementById('labels-container');
+
+        // Set canvas size
+        function resize() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // Initial resize
+        resize();
+
+        // Node Configuration
+        // Linear Flow: Input (Prompt) -> Model -> Output
+        const nodes = [
+            { id: 'input', x: 0.15, y: 0.5, type: 'icon', icon: '\uf11c', label: 'Prompt / Input', color: '#60a5fa' }, // Keyboard
+            { id: 'model', x: 0.5, y: 0.5, type: 'brain', label: 'AI Model', color: '#a855f7' }, // Brain
+            { id: 'output', x: 0.85, y: 0.5, type: 'icon', icon: '\uf00c', label: 'Refined Output', color: '#2dd4bf' } // Check
+        ];
+
+        // Connections
+        const connections = [
+            { from: 'input', to: 'model' },
+            { from: 'model', to: 'output' }
+        ];
+
+        function createLabels() {
+            labelsContainer.innerHTML = '';
+            nodes.forEach(node => {
+                const div = document.createElement('div');
+                div.className = 'canvas-label';
+                div.textContent = node.label;
+                div.style.left = (node.x * canvas.width) + 'px';
+                // Position label below the node
+                div.style.top = (node.y * canvas.height + 55) + 'px'; 
+                labelsContainer.appendChild(div);
+            });
+        }
+
+        function drawNode(node) {
+            const x = node.x * canvas.width;
+            const y = node.y * canvas.height;
+            const size = 35; // Slightly larger nodes
+
+            // Glow effect
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = node.color;
+            ctx.fillStyle = '#1e293b';
+            
+            // Draw Background Circle
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = node.color;
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+
+            // Draw Icon/Content
+            ctx.fillStyle = node.color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '900 28px "Font Awesome 6 Free"';
+            
+            if (node.type === 'brain') {
+                 ctx.fillText('\uf5dc', x, y);
+            } else {
+                ctx.fillText(node.icon, x, y);
+            }
+        }
+
+        function drawConnection(conn) {
+            const startNode = nodes.find(n => n.id === conn.from);
+            const endNode = nodes.find(n => n.id === conn.to);
+            
+            const sx = startNode.x * canvas.width;
+            const sy = startNode.y * canvas.height;
+            const ex = endNode.x * canvas.width;
+            const ey = endNode.y * canvas.height;
+
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            
+            // Determine control points for bezier curve based on distance
+            // Since it's horizontal, we curve slightly
+            const cp1x = sx + (ex - sx) / 2;
+            const cp1y = sy;
+            const cp2x = ex - (ex - sx) / 2;
+            const cp2y = ey;
+
+            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, ex, ey);
+            
+            // Gradient Stroke
+            const grad = ctx.createLinearGradient(sx, sy, ex, ey);
+            grad.addColorStop(0, startNode.color);
+            grad.addColorStop(1, endNode.color);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        // Particle System for Data Flow
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                // Randomly select one of the two connections
+                const connIndex = Math.floor(Math.random() * connections.length);
+                const conn = connections[connIndex];
+                
+                this.startNode = nodes.find(n => n.id === conn.from);
+                this.endNode = nodes.find(n => n.id === conn.to);
+                this.progress = 0;
+                this.speed = 0.008 + Math.random() * 0.01; // Vary speed
+                this.size = 3 + Math.random() * 2;
+                this.color = this.startNode.color;
+            }
+
+            update() {
+                this.progress += this.speed;
+                if (this.progress >= 1) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const sx = this.startNode.x * canvas.width;
+                const sy = this.startNode.y * canvas.height;
+                const ex = this.endNode.x * canvas.width;
+                const ey = this.endNode.y * canvas.height;
+
+                // Bezier calculation matching the line drawing
+                const cp1x = sx + (ex - sx) / 2;
+                const cp1y = sy;
+                const cp2x = ex - (ex - sx) / 2;
+                const cp2y = ey;
+
+                const t = this.progress;
+                // Cubic Bezier interpolation
+                const cx = Math.pow(1-t, 3)*sx + 3*Math.pow(1-t, 2)*t*cp1x + 3*(1-t)*Math.pow(t, 2)*cp2x + Math.pow(t, 3)*ex;
+                const cy = Math.pow(1-t, 3)*sy + 3*Math.pow(1-t, 2)*t*cp1y + 3*(1-t)*Math.pow(t, 2)*cp2y + Math.pow(t, 3)*ey;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+
+                // Glow
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        const particles = [];
+        for (let i = 0; i < 15; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw connections underneath
+            connections.forEach(conn => drawConnection(conn));
+
+            // Draw particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Draw nodes on top
+            nodes.forEach(node => drawNode(node));
+
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize
+        createLabels();
+        animate();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            resize();
+            createLabels();
+        });
+    </script>
+</body>
+</html>
