@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Generative AI - Foundational Model</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            box-sizing: border-box;
+        }
+
+        /* Background Pattern (SVG instead of gradient) */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="rgba(255,255,255,0.05)"/></svg>');
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Ambient glow blobs */
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: blobPulse 6s ease-in-out infinite alternate;
+        }
+        .glow-blob-blue {
+            width: 400px;
+            height: 400px;
+            background: rgba(59, 130, 246, 0.07);
+            top: -80px;
+            left: -80px;
+            animation-delay: 0s;
+        }
+        .glow-blob-teal {
+            width: 350px;
+            height: 350px;
+            background: rgba(45, 212, 191, 0.06);
+            bottom: -60px;
+            right: -60px;
+            animation-delay: 3s;
+        }
+
+        /* Header */
+        header {
+            z-index: 10;
+            margin-bottom: 20px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(-18px);
+            animation: fadeDown 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #60a5fa;
+            margin: 0 0 5px 0;
+            letter-spacing: -1px;
+            text-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* Diagram Container */
+        .diagram-area {
+            flex: 1;
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flow-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Nodes */
+        .node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e293b;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+        }
+
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+
+        /* Prompt Node */
+        .prompt-node {
+            width: 160px;
+            height: 80px;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 12px;
+            border-left: 4px solid #f59e0b;
+            animation: slideInLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+        }
+
+        .prompt-node:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .prompt-node .label {
+            color: #fbbf24;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .prompt-node .icon {
+            color: #f59e0b;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        /* Center Hub Node */
+        .center-node {
+            width: 240px;
+            height: 240px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            border-radius: 50%;
+            background-color: rgba(15, 23, 42, 0.95);
+            border: 2px solid #60a5fa;
+            box-shadow: 0 0 40px rgba(96, 165, 250, 0.15);
+            animation: popInCenter 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+        }
+
+        .center-node:hover {
+            transform: translate(-50%, -50%) scale(1.02);
+        }
+
+        .center-icon {
+            font-size: 4rem;
+            color: #60a5fa;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+            animation: brainPulse 3s ease-in-out infinite;
+        }
+
+        .center-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .center-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            background-color: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Output Nodes */
+        .output-node {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            text-align: center;
+        }
+
+        .out-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .out-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        /* Specific Output Colors */
+        .out-text { border-color: #60a5fa; }
+        .out-text .out-icon { color: #60a5fa; }
+
+        .out-image { border-color: #c084fc; }
+        .out-image .out-icon { color: #c084fc; }
+
+        .out-audio { border-color: #2dd4bf; }
+        .out-audio .out-icon { color: #2dd4bf; }
+
+        .out-video { border-color: #f472b6; }
+        .out-video .out-icon { color: #f472b6; }
+
+        /* Output node staggered entrance */
+        #node-out-1 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards; }
+        #node-out-2 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards; }
+        #node-out-3 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.95s forwards; }
+        #node-out-4 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.05s forwards; }
+        #node-out-5 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.15s forwards; }
+        #node-out-6 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.25s forwards; }
+        #node-out-7 { animation: fadeInScale 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.35s forwards; }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 20;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 1.6s forwards;
+        }
+
+        .footer-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #64748b;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateY(-50%) translateX(-30px); }
+            to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+        }
+
+        @keyframes popInCenter {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+            to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes brainPulse {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5)); }
+            50%       { filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.9)); }
+        }
+
+        @keyframes blobPulse {
+            from { opacity: 0.6; transform: scale(1); }
+            to   { opacity: 1;   transform: scale(1.12); }
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<div class="bg-pattern"></div>
+<div class="glow-blob glow-blob-blue"></div>
+<div class="glow-blob glow-blob-teal"></div>
+<header>
+<h1>Generative AI</h1>
+<p class="subtitle">Foundational Model Architecture &amp; Multimodal Capabilities</p>
+</header>
+<div class="diagram-area" id="diagram-area">
+<canvas id="flow-canvas"></canvas>
+<!-- Input -->
+<div class="node prompt-node" id="node-input">
+<div class="icon"><i class="fas fa-keyboard"></i></div>
+<div class="label">Prompt</div>
+</div>
+<!-- Center Hub -->
+<div class="node center-node" id="node-center">
+<div class="center-icon"><i class="fas fa-brain"></i></div>
+<div class="center-title">Foundational<br/>Model</div>
+<div class="center-subtitle">Billions of<br/>Parameters</div>
+</div>
+<!-- Outputs -->
+<!-- Text -->
+<div class="node output-node out-text" id="node-out-1">
+<div class="out-icon"><i class="fas fa-file-alt"></i></div>
+<div class="out-label">Text</div>
+</div>
+<!-- Images -->
+<div class="node output-node out-image" id="node-out-2">
+<div class="out-icon"><i class="fas fa-image"></i></div>
+<div class="out-label">Image</div>
+</div>
+<div class="node output-node out-image" id="node-out-3">
+<div class="out-icon"><i class="fas fa-paint-brush"></i></div>
+<div class="out-label">Art</div>
+</div>
+<!-- Audio -->
+<div class="node output-node out-audio" id="node-out-4">
+<div class="out-icon"><i class="fas fa-microphone"></i></div>
+<div class="out-label">Voice</div>
+</div>
+<div class="node output-node out-audio" id="node-out-5">
+<div class="out-icon"><i class="fas fa-music"></i></div>
+<div class="out-label">Music</div>
+</div>
+<!-- Video -->
+<div class="node output-node out-video" id="node-out-6">
+<div class="out-icon"><i class="fas fa-video"></i></div>
+<div class="out-label">Video</div>
+</div>
+<div class="node output-node out-video" id="node-out-7">
+<div class="out-icon"><i class="fas fa-film"></i></div>
+<div class="out-label">Anim</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="footer">
+<div class="footer-brand">Presentation by Cognine AI Practice</div>
+<div class="footer-meta">
+<span>24-Feb-2026</span>
+<span>|</span>
+<span>14</span>
+</div>
+</div>
+</div>
+<script>
+    const canvas = document.getElementById('flow-canvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('diagram-area');
+
+    // Nodes
+    const inputNode = document.getElementById('node-input');
+    const centerNode = document.getElementById('node-center');
+    const outputNodes = [
+        document.getElementById('node-out-1'),
+        document.getElementById('node-out-2'),
+        document.getElementById('node-out-3'),
+        document.getElementById('node-out-4'),
+        document.getElementById('node-out-5'),
+        document.getElementById('node-out-6'),
+        document.getElementById('node-out-7')
+    ];
+
+    let particles = [];
+    let connections = [];
+
+    // Resize and positioning
+    function layout() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+
+        const w = canvas.width;
+        const h = canvas.height;
+        const cx = w * 0.45;
+        const cy = h * 0.5;
+
+        // Position Outputs in an arc
+        const radius = 320;
+        const totalAngle = Math.PI * 0.7;
+        const startAngle = -totalAngle / 2;
+        const angleStep = totalAngle / (outputNodes.length - 1);
+
+        outputNodes.forEach((node, index) => {
+            const angle = startAngle + (index * angleStep);
+            const nx = cx + Math.cos(angle) * radius + 150;
+            const ny = cy + Math.sin(angle) * radius;
+
+            node.style.left = nx + 'px';
+            node.style.top = ny + 'px';
+            // Note: transform is handled by CSS animation; after animation ends it settles to translate(-50%,-50%)
+        });
+
+        updateConnections();
+    }
+
+    function getCenter(element) {
+        const rect = element.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        return {
+            x: rect.left + rect.width / 2 - containerRect.left,
+            y: rect.top + rect.height / 2 - containerRect.top
+        };
+    }
+
+    function updateConnections() {
+        connections = [];
+        const center = getCenter(centerNode);
+        const input = getCenter(inputNode);
+
+        // Input -> Center
+        connections.push({ start: input, end: center, color: '#f59e0b', type: 'input' });
+
+        // Center -> Outputs
+        outputNodes.forEach((node, index) => {
+            const out = getCenter(node);
+            let color = '#60a5fa';
+            if (index >= 1 && index <= 2) color = '#c084fc';
+            if (index >= 3 && index <= 4) color = '#2dd4bf';
+            if (index >= 5) color = '#f472b6';
+
+            connections.push({ start: center, end: out, color: color, type: 'output' });
+        });
+    }
+
+    class Particle {
+        constructor(conn) {
+            this.conn = conn;
+            this.progress = 0;
+            this.speed = 0.01 + Math.random() * 0.01;
+            this.size = 2 + Math.random() * 2;
+            this.alpha = 1;
+        }
+
+        update() {
+            this.progress += this.speed;
+            if (this.progress >= 1) {
+                this.progress = 0;
+            }
+        }
+
+        draw(ctx) {
+            const dx = this.conn.end.x - this.conn.start.x;
+            const dy = this.conn.end.y - this.conn.start.y;
+            const x = this.conn.start.x + dx * this.progress;
+            const y = this.conn.start.y + dy * this.progress;
+
+            ctx.beginPath();
+            ctx.arc(x, y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.conn.color;
+            ctx.globalAlpha = 0.8;
+            ctx.fill();
+
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = this.conn.color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1;
+        }
+    }
+
+    function initParticles() {
+        particles = [];
+        const inputConn = connections.find(c => c.type === 'input');
+        for (let i = 0; i < 8; i++) {
+            const p = new Particle(inputConn);
+            p.progress = Math.random();
+            particles.push(p);
+        }
+
+        connections.filter(c => c.type === 'output').forEach(conn => {
+            for (let i = 0; i < 3; i++) {
+                const p = new Particle(conn);
+                p.progress = Math.random();
+                particles.push(p);
+            }
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        connections.forEach(conn => {
+            ctx.beginPath();
+            ctx.moveTo(conn.start.x, conn.start.y);
+            ctx.lineTo(conn.end.x, conn.end.y);
+            ctx.strokeStyle = `rgba(255,255,255,0.1)`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        });
+
+        particles.forEach(p => {
+            p.update();
+            p.draw(ctx);
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    // Delay start slightly to let CSS entrance animations settle
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            layout();
+            initParticles();
+            animate();
+        }, 1500);
+    });
+
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            layout();
+            updateConnections();
+            initParticles();
+        }, 100);
+    });
+</script>
+</body>
+</html>
