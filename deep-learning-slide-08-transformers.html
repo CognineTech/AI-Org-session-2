@@ -319,8 +319,7 @@
         box-shadow: 0 0 8px #a855f7; z-index: 20;
         pointer-events: none; opacity: 0;
     }
-    @keyframes flow-up {
-        0%   { top: 80%; opacity: 0; }
+    @keyframes flow-up-dummy { 0% { opacity: 0; } }
         10%  { opacity: 1; }
         90%  { opacity: 1; }
         100% { top: 8%;  opacity: 0; }
@@ -535,16 +534,34 @@
 </div>
 
 <script>
-    // Particle animation
+    // Particle animation - originates from Input Embeddings block
     const pContainer = document.getElementById('particle-container');
     function createParticle() {
+        const inputBlock = document.querySelector('.block-input');
+        if (!inputBlock) return;
+        const containerRect = pContainer.getBoundingClientRect();
+        const blockRect = inputBlock.getBoundingClientRect();
+        const startTop = blockRect.top - containerRect.top + blockRect.height / 2;
+        const endTop = pContainer.offsetHeight * 0.05;
+        const duration = 1800 + Math.random() * 1200;
+        const cx = blockRect.left - containerRect.left + blockRect.width * 0.5;
         const p = document.createElement('div');
         p.classList.add('data-particle');
-        const cx = pContainer.offsetWidth * 0.38;
-        p.style.left = (cx + (Math.random()-0.5)*60) + 'px';
-        p.style.animation = `flow-up ${1.8+Math.random()*1.2}s linear forwards`;
+        p.style.left = (cx + (Math.random()-0.5)*50) + 'px';
+        p.style.top = startTop + 'px';
+        p.style.opacity = '0';
         pContainer.appendChild(p);
-        setTimeout(() => p.remove(), 3200);
+        const startTime = performance.now();
+        function animate(now) {
+            const t = Math.min((now - startTime) / duration, 1);
+            p.style.top = (startTop + (endTop - startTop) * t) + 'px';
+            if (t < 0.1) p.style.opacity = (t / 0.1).toString();
+            else if (t > 0.9) p.style.opacity = ((1 - t) / 0.1).toString();
+            else p.style.opacity = '1';
+            if (t < 1) requestAnimationFrame(animate);
+            else p.remove();
+        }
+        requestAnimationFrame(animate);
     }
     setInterval(createParticle, 350);
     for(let i=0;i<4;i++) setTimeout(createParticle, i*250);
@@ -560,3 +577,4 @@
 </script>
 </body>
 </html>
+
