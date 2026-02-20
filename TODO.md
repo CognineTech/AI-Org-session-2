@@ -1,7 +1,7 @@
-# NLP Section Slide Task
+# Task: Create New Section Slide for Transformers & LLMs
 
 ## Steps
 
-- [x] Create `deep-learning-slide-nlp-section.html` — NLP section cover slide (modeled after slide 16, teal color scheme, `fa-language` icon, no slide number in footer)
-- [x] Update `index.html` — Insert `deep-learning-slide-nlp-section.html` before `deep-learning-slide-05-natural-language-processing-overview.html` in the slides array
-- [x] Verify the new slide renders correctly in the browser
+- [x] Create `deep-learning-slide-transformers-section.html` — animated section cover slide (purple theme, particle canvas, similar to NLP section slide)
+- [x] Update `index.html` — insert new slide before `deep-learning-slide-08-transformers.html` in the slides array
+- [x] Verify slide renders correctly in browser
