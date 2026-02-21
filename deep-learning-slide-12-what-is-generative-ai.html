@@ -347,16 +347,16 @@
         pointer-events: none;
     }
 
-    /* Left column: popover appears to the right of the card */
+    /* Left column: popover appears to the left of the card */
     .theme-teal .preview-popover {
-        left: calc(100% + 15px);
-        right: auto;
-    }
-
-    /* Right column: popover appears to the left of the card */
-    .theme-magenta .preview-popover {
         right: calc(100% + 15px);
         left: auto;
+    }
+
+    /* Right column: popover appears to the right of the card */
+    .theme-magenta .preview-popover {
+        left: calc(100% + 15px);
+        right: auto;
     }
 
     /* Show popover on card hover (CSS-driven — works for entire card area) */
