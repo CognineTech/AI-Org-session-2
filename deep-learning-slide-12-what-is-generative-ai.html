@@ -331,22 +331,36 @@
 
     /* Preview Popover (Sample Output) */
     .preview-popover {
-        position: fixed;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
         width: 200px;
         background-color: #0f172a;
         border-radius: 12px;
         padding: 12px;
-        border: 1px solid;
+        border: 1px solid transparent;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.3s ease, visibility 0.3s ease;
         box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         z-index: 9999;
         pointer-events: none;
-        transform: translateY(-50%);
     }
 
-    .preview-popover.popover-visible {
+    /* Left column: popover appears to the right of the card */
+    .theme-teal .preview-popover {
+        left: calc(100% + 15px);
+        right: auto;
+    }
+
+    /* Right column: popover appears to the left of the card */
+    .theme-magenta .preview-popover {
+        right: calc(100% + 15px);
+        left: auto;
+    }
+
+    /* Show popover on card hover (CSS-driven — works for entire card area) */
+    .modality-card:hover .preview-popover {
         opacity: 1;
         visibility: visible;
     }
@@ -660,38 +674,15 @@
         particles.push(p);
     }
 
-    // ── Hover tracking + Popover positioning ─────────────────────────────────
+    // ── Hover tracking (for canvas line highlight) ────────────────────────────
     let hoveredIndex = -1;
 
     cards.forEach((card, idx) => {
-        const popover = card.querySelector('.preview-popover');
-        const isLeft  = idx < 3;
-
         card.addEventListener('mouseenter', () => {
             hoveredIndex = idx;
-
-            // Position the fixed popover relative to the viewport
-            const rect = card.getBoundingClientRect();
-            const midY = rect.top + rect.height / 2;
-
-            popover.style.top = midY + 'px';
-
-            if (isLeft) {
-                // Left column: popover appears to the right of the card
-                popover.style.left  = (rect.right + 15) + 'px';
-                popover.style.right = 'auto';
-            } else {
-                // Right column: popover appears to the left of the card
-                popover.style.left  = (rect.left - 215) + 'px';
-                popover.style.right = 'auto';
-            }
-
-            popover.classList.add('popover-visible');
         });
-
         card.addEventListener('mouseleave', () => {
             hoveredIndex = -1;
-            popover.classList.remove('popover-visible');
         });
     });
 
