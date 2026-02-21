@@ -1,13 +1,16 @@
-# Task: Replace LLMs Slide with "How Do LLMs Work?"
+# Training Process Slide - TODO
 
 ## Steps
 
-- [x] Read and understand existing slide structure (`deep-learning-slide-08b-llms.html`)
-- [x] Read `index.html` to understand slide navigation
-- [x] Read `deep-learning-slide-08-transformers.html` for design patterns
-- [x] Plan confirmed by user
-- [x] Replace `deep-learning-slide-08b-llms.html` with new "How Do LLMs Work?" slide
-- [x] Verify in browser (browser tool disabled — open manually)
-- [x] Add packet flow animation (canvas-based, 5 packets traveling Input→Output)
-- [x] Add residual connection visualization (SVG, right side of bracket group)
-- [x] Rewrite complete clean file (no truncation)
+- [x] Create `deep-learning-slide-10-training-process.html` with:
+  - [x] Base slide structure (grid, orbs, logo, header, bullet animations)
+  - [x] Left side: 5 bullet points with staggered slide-in animations
+  - [x] Right side: "Next Word Prediction" animated box
+    - [x] Typewriter effect for "The sky is"
+    - [x] Animated down arrow
+    - [x] Word chips (blue, clear, cloudy) appearing one by one
+    - [x] Percentages counting up from 0% with mini progress bars
+    - [x] Cycling animation every 3s (blue→clear→cloudy as top prediction)
+- [x] Update `index.html` to insert new slide after `deep-learning-slide-09-self-attention-mechanism.html`
+
+## Completed ✅
