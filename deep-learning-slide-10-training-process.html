@@ -367,105 +367,169 @@ span.hl{font-weight:700;color:#67e8f9;font-size:1.15rem}
 })();
 
 /* ════════════════════════════════════════════
-   Typewriter Effect
+   Typewriter — base text only
 ════════════════════════════════════════════ */
-var fullText = "The sky is";
-var typedEl  = document.getElementById('typed-text');
-var cursorEl = document.getElementById('cursor');
-var charIdx  = 0;
+var baseText    = "The sky is";
+var typedEl     = document.getElementById('typed-text');
+var cursorEl    = document.getElementById('cursor');
+var baseCharIdx = 0;
 
-function typeWriter() {
-  if (charIdx < fullText.length) {
-    typedEl.textContent += fullText[charIdx];
-    charIdx++;
-    setTimeout(typeWriter, 90);
+function typeBase(cb) {
+  if (baseCharIdx < baseText.length) {
+    typedEl.textContent += baseText[baseCharIdx];
+    baseCharIdx++;
+    setTimeout(function () { typeBase(cb); }, 90);
   } else {
-    // Keep cursor blinking for a moment then hide it
-    setTimeout(function () {
-      cursorEl.style.animation = 'none';
-      cursorEl.style.opacity   = '0';
-    }, 800);
+    cb && cb();
   }
 }
 
-// Start typing after slide-in animations settle
-setTimeout(typeWriter, 1700);
-
 /* ════════════════════════════════════════════
    Probability Phases
-   Each phase: { blue, clear, cloudy, top }
-   top = which word is the highest prediction
+   Added `word` field = the suffix to type
 ════════════════════════════════════════════ */
 var phases = [
-  { blue: 45, clear: 35, cloudy: 20, top: 'blue'   },
-  { blue: 28, clear: 52, cloudy: 20, top: 'clear'  },
-  { blue: 22, clear: 28, cloudy: 50, top: 'cloudy' }
+  { blue: 45, clear: 35, cloudy: 20, top: 'blue',   word: ' blue'   },
+  { blue: 28, clear: 52, cloudy: 20, top: 'clear',  word: ' clear'  },
+  { blue: 22, clear: 28, cloudy: 50, top: 'cloudy', word: ' cloudy' }
 ];
 var currentPhase = 0;
 
 /* Animate a single percentage counter from its current displayed value to target */
 function animateCounter(word, targetPct) {
-  var el      = document.getElementById('pct-' + word);
-  var barEl   = document.getElementById('bar-' + word);
+  var el       = document.getElementById('pct-' + word);
+  var barEl    = document.getElementById('bar-' + word);
   var startPct = parseInt(el.textContent) || 0;
   var startTime = null;
-  var duration  = 900; // ms
+  var duration  = 900;
 
   function step(ts) {
     if (!startTime) startTime = ts;
     var progress = Math.min((ts - startTime) / duration, 1);
-    // ease-out cubic
-    var eased = 1 - Math.pow(1 - progress, 3);
-    var current = Math.round(startPct + (targetPct - startPct) * eased);
-    el.textContent = current + '%';
+    var eased    = 1 - Math.pow(1 - progress, 3);
+    var current  = Math.round(startPct + (targetPct - startPct) * eased);
+    el.textContent    = current + '%';
     barEl.style.width = current + '%';
     if (progress < 1) requestAnimationFrame(step);
     else {
-      el.textContent = targetPct + '%';
+      el.textContent    = targetPct + '%';
       barEl.style.width = targetPct + '%';
     }
   }
   requestAnimationFrame(step);
 }
 
-/* Apply a full phase: update all three words */
+/* Apply chip + bar styling for a phase */
 function applyPhase(phaseIdx) {
-  var p = phases[phaseIdx];
+  var p     = phases[phaseIdx];
   var words = ['blue', 'clear', 'cloudy'];
 
   words.forEach(function (word) {
-    var chip    = document.getElementById('chip-' + word);
-    var pctEl   = document.getElementById('pct-' + word);
-    var isTop   = (p.top === word);
+    var chip  = document.getElementById('chip-' + word);
+    var pctEl = document.getElementById('pct-' + word);
+    var isTop = (p.top === word);
 
-    // Animate counter
     animateCounter(word, p[word]);
 
-    // Update chip styling
-    chip.className = 'word-chip';
+    chip.className  = 'word-chip';
     pctEl.className = 'pct-label';
 
     if (isTop) {
       chip.classList.add('top-word');
       pctEl.classList.add('top-pct');
-
-      if (word === 'blue')   { chip.classList.add('');           pctEl.classList.add('blue-pct');   }
+      if (word === 'blue')   {                                    pctEl.classList.add('blue-pct');   }
       if (word === 'clear')  { chip.classList.add('clear-top');  pctEl.classList.add('clear-pct');  }
       if (word === 'cloudy') { chip.classList.add('cloudy-top'); pctEl.classList.add('cloudy-pct'); }
     }
   });
 }
 
-/* Start first phase after word chips have appeared (3.7s + 0.5s buffer) */
-setTimeout(function () {
-  applyPhase(0);
+/* ════════════════════════════════════════════
+   Type a suffix char-by-char into the input
+════════════════════════════════════════════ */
+function typeWord(suffix, speed, cb) {
+  var i = 0;
+  function next() {
+    if (i < suffix.length) {
+      typedEl.textContent += suffix[i];
+      i++;
+      setTimeout(next, speed);
+    } else {
+      cb && cb();
+    }
+  }
+  next();
+}
 
-  /* Cycle through phases every 3 seconds */
-  setInterval(function () {
-    currentPhase = (currentPhase + 1) % phases.length;
-    applyPhase(currentPhase);
-  }, 3000);
-}, 4400);
+/* Erase N characters from the end (backspace effect) */
+function eraseChars(n, speed, cb) {
+  var count = 0;
+  function next() {
+    if (count < n) {
+      typedEl.textContent = typedEl.textContent.slice(0, -1);
+      count++;
+      setTimeout(next, speed);
+    } else {
+      cb && cb();
+    }
+  }
+  next();
+}
+
+/* ════════════════════════════════════════════
+   Cycling loop
+   Per cycle:
+     0 ms   → apply phase (bars + chip highlight)
+     700 ms → type the top word into the box
+     after typing → pause 1600 ms (audience reads)
+     → erase the word char-by-char
+     → 300 ms pause → next phase → repeat
+════════════════════════════════════════════ */
+function runCycle() {
+  var p = phases[currentPhase];
+
+  // 1. Update probability bars & chip highlights
+  applyPhase(currentPhase);
+
+  // 2. After bars settle, type the predicted word
+  setTimeout(function () {
+    typeWord(p.word, 100, function () {
+
+      // 3. Pause so audience can read the completed sentence
+      setTimeout(function () {
+
+        // 4. Erase the typed word (backspace)
+        eraseChars(p.word.length, 55, function () {
+
+          // 5. Brief pause then advance to next phase
+          setTimeout(function () {
+            currentPhase = (currentPhase + 1) % phases.length;
+            runCycle();
+          }, 300);
+
+        });
+      }, 1600);
+    });
+  }, 700);
+}
+
+/* ════════════════════════════════════════════
+   Boot sequence
+════════════════════════════════════════════ */
+setTimeout(function () {
+  // Type "The sky is" first
+  typeBase(function () {
+    // Wait for word chips to finish animating in (~1.7 s after typing starts)
+    setTimeout(function () {
+      // Keep cursor visible & blinking throughout
+      cursorEl.style.animation = 'blink .65s step-end infinite';
+      cursorEl.style.opacity   = '1';
+
+      // Kick off the cycling loop
+      runCycle();
+    }, 1700);
+  });
+}, 1700);
 </script>
 </body>
 </html>
