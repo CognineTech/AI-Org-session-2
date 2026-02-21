@@ -258,7 +258,18 @@
         width: 80px;
         flex-shrink: 0;
         z-index: 10;
+        position: relative;
         animation: fadeIn 0.8s ease 0.9s both;
+    }
+
+    .beam-svg {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        overflow: visible;
+        pointer-events: none;
+        z-index: 0;
     }
 
     .arrow-container {
@@ -269,60 +280,15 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 2px solid #475569;
-        box-shadow: 0 0 24px rgba(0,0,0,0.35), 0 0 0 4px rgba(71, 85, 105, 0.15);
+        border: 2px solid #60a5fa;
         z-index: 20;
         position: relative;
+        animation: glowPulse 2.8s ease-in-out infinite;
     }
 
     .arrow-icon {
         font-size: 1.4rem;
-        color: #94a3b8;
-        animation: pulseArrow 2.2s ease-in-out infinite;
-    }
-
-    /* Flow line behind arrow */
-    .flow-line-wrapper {
-        position: absolute;
-        top: 50%;
-        left: 30px;
-        right: 30px;
-        height: 2px;
-        z-index: 0;
-        pointer-events: none;
-        transform: translateY(-50%);
-        overflow: hidden;
-    }
-
-    .flow-line {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background-color: #1e293b;
-    }
-
-    .flow-particle {
-        position: absolute;
-        top: 0;
-        left: -60px;
-        width: 60px;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #60a5fa, transparent);
-        animation: flowRight 2.8s linear infinite;
-        filter: drop-shadow(0 0 4px #60a5fa);
-    }
-
-    .flow-particle-2 {
-        position: absolute;
-        top: 0;
-        left: -60px;
-        width: 60px;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #2dd4bf, transparent);
-        animation: flowRight 2.8s linear 1.4s infinite;
-        filter: drop-shadow(0 0 4px #2dd4bf);
+        animation: pulseArrow 2.8s ease-in-out infinite;
     }
 
     /* ── Animations ── */
@@ -353,16 +319,15 @@
     }
 
     @keyframes pulseArrow {
-        0%   { transform: translateX(-3px); color: #64748b; }
-        50%  { transform: translateX(3px);  color: #e2e8f0; }
-        100% { transform: translateX(-3px); color: #64748b; }
+        0%   { transform: translateX(-3px); color: #60a5fa; }
+        50%  { transform: translateX(3px);  color: #2dd4bf; }
+        100% { transform: translateX(-3px); color: #60a5fa; }
     }
 
-    @keyframes flowRight {
-        0%   { left: -60px; opacity: 0; }
-        15%  { opacity: 1; }
-        85%  { opacity: 1; }
-        100% { left: 100%; opacity: 0; }
+    @keyframes glowPulse {
+        0%   { border-color: #60a5fa; box-shadow: 0 0 20px rgba(0,0,0,0.35), 0 0 0 4px rgba(96,165,250,0.15), 0 0 18px rgba(96,165,250,0.7); }
+        50%  { border-color: #2dd4bf; box-shadow: 0 0 20px rgba(0,0,0,0.35), 0 0 0 4px rgba(45,212,191,0.15), 0 0 18px rgba(45,212,191,0.7); }
+        100% { border-color: #60a5fa; box-shadow: 0 0 20px rgba(0,0,0,0.35), 0 0 0 4px rgba(96,165,250,0.15), 0 0 18px rgba(96,165,250,0.7); }
     }
 
     @keyframes blobPulse {
@@ -456,16 +421,45 @@
 
         <!-- Central Connector -->
         <div class="connector-zone">
+            <!--
+                SVG beam: spans from right edge of left card to left edge of right card.
+                connector-zone is 80px wide; gap on each side is 40px.
+                So x=-40 = right edge of left card, x=120 = left edge of right card.
+                Arrowhead tip at x=120, base at x=108.
+            -->
+            <!-- Circular arrow button on top of beam -->
             <div class="arrow-container">
                 <i class="fas fa-arrow-right arrow-icon"></i>
             </div>
-        </div>
 
-        <!-- Flow Line Animation (behind arrow, full width) -->
-        <div class="flow-line-wrapper">
-            <div class="flow-line"></div>
-            <div class="flow-particle"></div>
-            <div class="flow-particle-2"></div>
+            <svg class="beam-svg" width="80" height="30" viewBox="0 0 80 30">
+                <defs>
+                    <linearGradient id="particleGrad1" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="transparent"/>
+                        <stop offset="50%" stop-color="#60a5fa"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </linearGradient>
+                    <linearGradient id="particleGrad2" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="transparent"/>
+                        <stop offset="50%" stop-color="#2dd4bf"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </linearGradient>
+                    <!-- Clip particles to the full line region -->
+                    <clipPath id="lineClip">
+                        <rect x="-40" y="0" width="160" height="30"/>
+                    </clipPath>
+                </defs>
+
+                <!-- Animated flow particles clipped to line area -->
+                <g clip-path="url(#lineClip)">
+                    <rect y="12" width="70" height="3" rx="1.5" fill="url(#particleGrad1)">
+                        <animate attributeName="x" from="-110" to="160" dur="2.8s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect y="12" width="70" height="3" rx="1.5" fill="url(#particleGrad2)">
+                        <animate attributeName="x" from="-110" to="160" dur="2.8s" begin="1.4s" repeatCount="indefinite"/>
+                    </rect>
+                </g>
+            </svg>
         </div>
 
         <!-- Generation Phase (Right) -->
