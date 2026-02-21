@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Challenges &amp; Limitations of GenAI</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Montserrat:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    /* ── Reset & Base ── */
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 38px 60px 32px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* ── Background dot pattern ── */
+    .bg-pattern {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.2" fill="rgba(255,255,255,0.045)"/></svg>');
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* ── Ambient glow blobs ── */
+    .glow-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        pointer-events: none;
+        z-index: 0;
+        animation: blobPulse 7s ease-in-out infinite alternate;
+    }
+    .glow-blob-red {
+        width: 420px; height: 420px;
+        background: rgba(239, 68, 68, 0.07);
+        top: -100px; left: -80px;
+        animation-delay: 0s;
+    }
+    .glow-blob-amber {
+        width: 360px; height: 360px;
+        background: rgba(245, 158, 11, 0.06);
+        bottom: -80px; right: -60px;
+        animation-delay: 3.5s;
+    }
+
+    /* ── Header ── */
+    header {
+        z-index: 10;
+        margin-bottom: 18px;
+        position: relative;
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: fadeDown 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 8px;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: #f87171;
+        margin: 0;
+        letter-spacing: -1px;
+        text-shadow: 0 0 24px rgba(248, 113, 113, 0.35);
+        line-height: 1;
+    }
+
+    .warning-icon {
+        font-size: 2.4rem;
+        color: #f59e0b;
+        filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));
+        animation: warnPulse 2.2s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+
+    .subtitle-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        color: #94a3b8;
+        text-transform: uppercase;
+        opacity: 0;
+        animation: fadeIn 0.5s ease 0.4s forwards;
+    }
+
+    .subtitle-badge::before {
+        content: '';
+        display: inline-block;
+        width: 28px;
+        height: 2px;
+        background: #f87171;
+        border-radius: 2px;
+    }
+
+    /* ── Cards Grid ── */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 22px;
+        flex: 1;
+        z-index: 5;
+        position: relative;
+    }
+
+    /* ── Individual Card ── */
+    .risk-card {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 22px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(28px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .risk-card:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Colored left accent bar */
+    .risk-card::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        border-radius: 16px 0 0 16px;
+    }
+
+    /* Subtle top-right glow per card */
+    .risk-card::after {
+        content: '';
+        position: absolute;
+        top: -30px; right: -30px;
+        width: 120px; height: 120px;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.12;
+        pointer-events: none;
+    }
+
+    /* ── Card color themes ── */
+    /* Hallucinations — amber/orange */
+    .card-hallucinations::before { background: linear-gradient(180deg, #f59e0b, #f97316); }
+    .card-hallucinations::after  { background: #f59e0b; }
+    .card-hallucinations:hover   { border-color: rgba(245, 158, 11, 0.35); }
+    .card-hallucinations .card-icon-wrap { background: rgba(245, 158, 11, 0.12); color: #fbbf24; }
+    .card-hallucinations .card-title     { color: #fbbf24; }
+
+    /* Bias & Fairness — blue */
+    .card-bias::before { background: linear-gradient(180deg, #3b82f6, #60a5fa); }
+    .card-bias::after  { background: #3b82f6; }
+    .card-bias:hover   { border-color: rgba(59, 130, 246, 0.35); }
+    .card-bias .card-icon-wrap { background: rgba(59, 130, 246, 0.12); color: #60a5fa; }
+    .card-bias .card-title     { color: #60a5fa; }
+
+    /* High Cost — emerald/green */
+    .card-cost::before { background: linear-gradient(180deg, #10b981, #34d399); }
+    .card-cost::after  { background: #10b981; }
+    .card-cost:hover   { border-color: rgba(16, 185, 129, 0.35); }
+    .card-cost .card-icon-wrap { background: rgba(16, 185, 129, 0.12); color: #34d399; }
+    .card-cost .card-title     { color: #34d399; }
+
+    /* Privacy & Security — purple */
+    .card-privacy::before { background: linear-gradient(180deg, #8b5cf6, #a78bfa); }
+    .card-privacy::after  { background: #8b5cf6; }
+    .card-privacy:hover   { border-color: rgba(139, 92, 246, 0.35); }
+    .card-privacy .card-icon-wrap { background: rgba(139, 92, 246, 0.12); color: #a78bfa; }
+    .card-privacy .card-title     { color: #a78bfa; }
+
+    /* ── Card internals ── */
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .card-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .risk-card:hover .card-icon-wrap {
+        transform: scale(1.12) rotate(-4deg);
+    }
+
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .card-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.07);
+        margin: 0;
+        border: none;
+    }
+
+    .card-body {
+        font-size: 0.9rem;
+        line-height: 1.65;
+        color: #cbd5e1;
+        margin: 0;
+        flex: 1;
+    }
+
+    /* ── Staggered card entrance animations ── */
+    .card-hallucinations { animation: cardSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards; }
+    .card-bias           { animation: cardSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.72s forwards; }
+    .card-cost           { animation: cardSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.89s forwards; }
+    .card-privacy        { animation: cardSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 1.06s forwards; }
+
+    /* ── Keyframes ── */
+    @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes cardSlideUp {
+        from { opacity: 0; transform: translateY(28px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes warnPulse {
+        0%, 100% {
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+            transform: scale(1);
+        }
+        50% {
+            filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.9));
+            transform: scale(1.08);
+        }
+    }
+
+    @keyframes blobPulse {
+        from { opacity: 0.6; transform: scale(1); }
+        to   { opacity: 1;   transform: scale(1.1); }
+    }
+
+    /* ── Company Logo ── */
+    .logo-overlay {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        z-index: 100;
+    }
+    .logo-overlay img {
+        height: 50px;
+        opacity: 0.95;
+        object-fit: contain;
+    }
+</style>
+</head>
+<body>
+<div class="slide-container">
+
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo"/>
+    </div>
+
+    <!-- Background -->
+    <div class="bg-pattern"></div>
+    <div class="glow-blob glow-blob-red"></div>
+    <div class="glow-blob glow-blob-amber"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="title-row">
+            <h1>Challenges &amp; Limitations of GenAI</h1>
+            <span class="warning-icon"><i class="fas fa-triangle-exclamation"></i></span>
+        </div>
+        <div class="subtitle-badge">Key Risks to Consider</div>
+    </header>
+
+    <!-- 2×2 Cards Grid -->
+    <div class="cards-grid">
+
+        <!-- Card 1: Hallucinations -->
+        <div class="risk-card card-hallucinations">
+            <div class="card-header">
+                <div class="card-icon-wrap">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="card-title">Hallucinations</h3>
+            </div>
+            <hr class="card-divider"/>
+            <p class="card-body">
+                GenAI can confidently generate false or fabricated information, posing risks in high-stakes domains like healthcare, law, and finance.
+            </p>
+        </div>
+
+        <!-- Card 2: Bias & Fairness -->
+        <div class="risk-card card-bias">
+            <div class="card-header">
+                <div class="card-icon-wrap">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <h3 class="card-title">Bias &amp; Fairness</h3>
+            </div>
+            <hr class="card-divider"/>
+            <p class="card-body">
+                Models trained on biased data can perpetuate or amplify societal biases, leading to unfair or discriminatory outputs.
+            </p>
+        </div>
+
+        <!-- Card 3: High Cost & Resources -->
+        <div class="risk-card card-cost">
+            <div class="card-header">
+                <div class="card-icon-wrap">
+                    <i class="fas fa-sack-dollar"></i>
+                </div>
+                <h3 class="card-title">High Cost &amp; Resources</h3>
+            </div>
+            <hr class="card-divider"/>
+            <p class="card-body">
+                Training and running large models demands massive compute, energy, and financial investment, limiting accessibility.
+            </p>
+        </div>
+
+        <!-- Card 4: Privacy & Security -->
+        <div class="risk-card card-privacy">
+            <div class="card-header">
+                <div class="card-icon-wrap">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="card-title">Privacy &amp; Security</h3>
+            </div>
+            <hr class="card-divider"/>
+            <p class="card-body">
+                Risk of exposing sensitive training data or enabling misuse for phishing, deepfakes, and social engineering attacks.
+            </p>
+        </div>
+
+    </div><!-- /.cards-grid -->
+
+</div><!-- /.slide-container -->
+</body>
+</html>
