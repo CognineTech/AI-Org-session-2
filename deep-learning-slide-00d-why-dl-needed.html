@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Why Deep Learning Became Necessary</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #0f172a; }
+    .slide-container {
+      width: 1280px; height: 720px; position: relative; overflow: hidden;
+      background: #0f172a; color: #fff; font-family: 'Inter', sans-serif;
+      padding: 28px 52px 24px; box-sizing: border-box;
+    }
+    .bg-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .glow { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
+    .g1 { width: 360px; height: 360px; left: -90px; top: -90px; background: #1e3a8a; opacity: .24; }
+    .g2 { width: 330px; height: 330px; right: -80px; bottom: -80px; background: #4c1d95; opacity: .2; }
+    .g3 { width: 280px; height: 280px; left: 44%; top: 50%; background: #0f766e; opacity: .1; transform: translate(-50%, -50%); }
+
+    .logo-overlay { position: absolute; top: 16px; right: 20px; z-index: 100; }
+    .logo-overlay img {
+      height: 50px; opacity: .95; object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.22)) drop-shadow(0 0 4px rgba(255,255,255,.12));
+    }
+
+    header {
+      position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: flex-end;
+      border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 10px; margin-bottom: 14px;
+      opacity: 0; animation: fadeInDown .7s ease-out forwards .15s;
+    }
+    h1 { margin: 0; font-family: 'Montserrat', sans-serif; color: #60a5fa; font-size: 2.05rem; font-weight: 800; letter-spacing: -1px; }
+    .hsub { margin-top: 4px; color: #94a3b8; font-size: .82rem; }
+    .badge {
+      background: rgba(30,41,59,.72); border: 1px solid rgba(45,212,191,.35);
+      padding: 5px 16px; border-radius: 20px; color: #2dd4bf; font-family: 'Montserrat', sans-serif;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: .7rem;
+    }
+
+    .body-row { position: relative; z-index: 10; display: flex; gap: 18px; height: 590px; }
+    .panel {
+      background: rgba(30,41,59,.85); border: 1px solid rgba(255,255,255,.06); border-radius: 16px;
+      backdrop-filter: blur(6px);
+    }
+
+    .left { width: 62%; padding: 14px; display: flex; flex-direction: column; gap: 10px; opacity: 0; animation: fadeInLeft .7s ease-out forwards .35s; }
+    .right { flex: 1; padding: 14px; opacity: 0; animation: fadeInRight .7s ease-out forwards .55s; }
+
+    .phase-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .phase-card {
+      background: rgba(15,23,42,.74); border: 1px solid rgba(255,255,255,.06); border-radius: 12px;
+      padding: 10px 12px; min-height: 214px; display: flex; flex-direction: column;
+    }
+    .pc1 { border-top: 3px solid #f59e0b; }
+    .pc2 { border-top: 3px solid #a855f7; }
+    .pc3 { border-top: 3px solid #2dd4bf; }
+    .phase-title { font-family: 'Montserrat', sans-serif; font-size: .8rem; font-weight: 700; margin: 0 0 7px; color: #f8fafc; }
+    .phase-sub { font-size: .66rem; color: #64748b; margin: 0 0 8px; }
+    .rule-box {
+      background: rgba(0,0,0,.33); border: 1px solid rgba(245,158,11,.24); border-radius: 8px; padding: 8px;
+      font-family: monospace; font-size: .62rem; color: #fcd34d; line-height: 1.5;
+    }
+
+    .mail-stream {
+      margin-top: 4px; height: 90px; border-radius: 8px; position: relative; overflow: hidden;
+      background: linear-gradient(180deg, rgba(2,6,23,.7), rgba(2,6,23,.45)); border: 1px solid rgba(255,255,255,.05);
+    }
+    .mail {
+      position: absolute; left: -120px; width: 120px; height: 24px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; font-size: .58rem; font-weight: 700;
+      animation: stream 6s linear infinite;
+    }
+    .m1 { top: 8px;  background: rgba(245,158,11,.2); color: #fbbf24; animation-delay: 0s; }
+    .m2 { top: 34px; background: rgba(168,85,247,.2); color: #d8b4fe; animation-delay: 1.8s; }
+    .m3 { top: 60px; background: rgba(20,184,166,.2); color: #5eead4; animation-delay: 3.3s; }
+    @keyframes stream {
+      0% { left: -130px; opacity: 0; }
+      10% { opacity: 1; }
+      70% { left: 190px; opacity: 1; }
+      100% { left: 260px; opacity: 0; }
+    }
+
+    .learning-box {
+      margin-top: auto; border-radius: 9px; padding: 8px 10px; font-size: .68rem; line-height: 1.45;
+      background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(20,184,166,.08));
+      border: 1px solid rgba(96,165,250,.25); color: #cbd5e1;
+    }
+
+    .question-card {
+      background: rgba(15,23,42,.76); border: 1px solid rgba(96,165,250,.2); border-radius: 12px;
+      padding: 12px; margin-bottom: 12px;
+    }
+    .question-card h3 { margin: 0 0 8px; color: #60a5fa; font-family: 'Montserrat', sans-serif; font-size: .9rem; }
+    .question-card p { margin: 0; color: #cbd5e1; font-size: .78rem; line-height: 1.5; }
+
+    .timeline {
+      height: 440px; border-radius: 12px; padding: 12px;
+      background: rgba(15,23,42,.7); border: 1px solid rgba(255,255,255,.06);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .step {
+      display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start;
+    }
+    .dot {
+      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; color: #0f172a;
+    }
+    .d1 { background: #f59e0b; }
+    .d2 { background: #a855f7; }
+    .d3 { background: #2dd4bf; }
+    .step h4 { margin: 0 0 4px; font-family: 'Montserrat', sans-serif; font-size: .74rem; color: #f8fafc; }
+    .step p { margin: 0; font-size: .68rem; color: #94a3b8; line-height: 1.45; }
+    .vert {
+      height: 30px; width: 2px; margin-left: 13px;
+      background: linear-gradient(to bottom, rgba(96,165,250,.7), rgba(96,165,250,0));
+    }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="logo-overlay"><img src="assets/Cogninelogo.png" alt="Cognine Logo"></div>
+    <div class="bg-grid"></div>
+    <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+    <header>
+      <div>
+        <h1>Why Deep Learning Became Necessary</h1>
+        <div class="hsub">Rule-based logic worked — until complexity and change outpaced manual rules</div>
+      </div>
+      <div class="badge">Road to DL</div>
+    </header>
+
+    <div class="body-row">
+      <div class="panel left">
+        <div class="phase-grid">
+          <div class="phase-card pc1">
+            <h3 class="phase-title">1) Rule-Based Era</h3>
+            <p class="phase-sub">"If this, then that" software logic.</p>
+            <div class="rule-box">
+              IF wrong_password == true
+              <br/>THEN deny_access()
+            </div>
+            <div class="learning-box">Great for predictable workflows and strict business rules.</div>
+          </div>
+
+          <div class="phase-card pc2">
+            <h3 class="phase-title">2) Spam Problem</h3>
+            <p class="phase-sub">Rules exploded as spam kept evolving.</p>
+            <div class="mail-stream">
+              <div class="mail m1">FREE OFFER!!!</div>
+              <div class="mail m2">Click fast ⚡</div>
+              <div class="mail m3">Urgent invoice</div>
+            </div>
+            <div class="learning-box">Hundreds of handcrafted rules still miss new attack styles.</div>
+          </div>
+
+          <div class="phase-card pc3">
+            <h3 class="phase-title">3) ML Shift</h3>
+            <p class="phase-sub">Train from examples, not hand-written logic.</p>
+            <svg width="100%" height="96" viewBox="0 0 220 96" preserveAspectRatio="none">
+              <line x1="16" y1="78" x2="204" y2="78" stroke="#334155" stroke-width="2"/>
+              <line x1="16" y1="78" x2="16" y2="14" stroke="#334155" stroke-width="2"/>
+              <polyline points="16,74 52,62 88,54 124,40 160,30 204,18" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+              <circle cx="204" cy="18" r="4" fill="#2dd4bf"/>
+              <text x="19" y="12" fill="#64748b" font-size="8">Accuracy</text>
+              <text x="176" y="90" fill="#64748b" font-size="8">Training Data</text>
+            </svg>
+            <div class="learning-box">Model learns patterns directly from spam vs non-spam examples.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel right">
+        <div class="question-card">
+          <h3>Turning Point</h3>
+          <p>Writing <strong>more</strong> rules was not the solution. We needed systems that <strong>adapt</strong> from data.</p>
+        </div>
+
+        <div class="timeline">
+          <div class="step">
+            <div class="dot d1">1</div>
+            <div><h4>Deterministic Software</h4><p>Static condition-action logic.</p></div>
+          </div>
+          <div class="vert"></div>
+          <div class="step">
+            <div class="dot d2">2</div>
+            <div><h4>Pattern Explosion</h4><p>Language tricks and adversarial spam changed too quickly.</p></div>
+          </div>
+          <div class="vert"></div>
+          <div class="step">
+            <div class="dot d3">3</div>
+            <div><h4>Learning Systems</h4><p>Train on examples and discover discriminative signals automatically.</p></div>
+          </div>
+          <div class="vert"></div>
+          <div class="step">
+            <div class="dot d3">4</div>
+            <div><h4>Path to Deep Learning</h4><p>Next challenge: unstructured data still required heavy manual feature design.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

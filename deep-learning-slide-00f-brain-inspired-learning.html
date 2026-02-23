@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Brain-Inspired Learning</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #0f172a; }
+    .slide-container { width: 1280px; height: 720px; position: relative; overflow: hidden; background: #0f172a; color: #fff; font-family: 'Inter', sans-serif; padding: 28px 52px 24px; box-sizing: border-box; }
+    .bg-grid { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 40px 40px; }
+    .glow { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
+    .g1 { width: 360px; height: 360px; left: -90px; top: -90px; background: #1e3a8a; opacity: .24; }
+    .g2 { width: 330px; height: 330px; right: -80px; bottom: -80px; background: #4c1d95; opacity: .2; }
+    .g3 { width: 300px; height: 300px; left: 52%; top: 48%; background: #0f766e; opacity: .11; transform: translate(-50%, -50%); }
+
+    .logo-overlay { position: absolute; top: 16px; right: 20px; z-index: 100; }
+    .logo-overlay img { height: 50px; opacity: .95; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,.22)) drop-shadow(0 0 4px rgba(255,255,255,.12)); }
+
+    header { position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 10px; margin-bottom: 14px; opacity: 0; animation: fadeInDown .7s ease-out forwards .15s; }
+    h1 { margin: 0; font-family: 'Montserrat', sans-serif; color: #60a5fa; font-size: 2.05rem; font-weight: 800; letter-spacing: -1px; }
+    .hsub { margin-top: 4px; color: #94a3b8; font-size: .82rem; }
+    .badge { background: rgba(30,41,59,.72); border: 1px solid rgba(45,212,191,.35); padding: 5px 16px; border-radius: 20px; color: #2dd4bf; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: .7rem; }
+
+    .body { position: relative; z-index: 10; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; height: 588px; }
+    .panel { background: rgba(30,41,59,.84); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 14px; }
+    .left { opacity: 0; animation: fadeInLeft .7s ease-out forwards .35s; }
+    .right { opacity: 0; animation: fadeInRight .7s ease-out forwards .55s; display: flex; flex-direction: column; gap: 10px; }
+
+    #nnCanvas { width: 100%; height: 330px; display: block; background: rgba(15,23,42,.64); border-radius: 12px; border: 1px solid rgba(255,255,255,.06); }
+    .layer-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+    .lbl { border-radius: 8px; padding: 6px; text-align: center; font-size: .63rem; font-weight: 700; letter-spacing: .4px; }
+    .l1 { background: rgba(96,165,250,.12); color: #93c5fd; }
+    .l2 { background: rgba(168,85,247,.12); color: #d8b4fe; }
+    .l3 { background: rgba(168,85,247,.16); color: #d8b4fe; }
+    .l4 { background: rgba(45,212,191,.12); color: #5eead4; }
+
+    .card {
+      border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,.06);
+      background: rgba(15,23,42,.72);
+    }
+    .card h3 { margin: 0 0 6px; font-family: 'Montserrat', sans-serif; color: #f8fafc; font-size: .82rem; }
+    .card p { margin: 0; color: #94a3b8; font-size: .72rem; line-height: 1.45; }
+
+    .baby-curve { height: 170px; }
+    .pill-row { margin-top: 8px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 8px; font-size: .62rem; font-weight: 700; margin-right: 4px; }
+    .p1 { background: rgba(96,165,250,.15); color: #93c5fd; }
+    .p2 { background: rgba(168,85,247,.15); color: #d8b4fe; }
+    .p3 { background: rgba(45,212,191,.15); color: #5eead4; }
+
+    .deep-note {
+      background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(20,184,166,.08));
+      border: 1px solid rgba(96,165,250,.24);
+    }
+    .deep-note h3 { color: #60a5fa; }
+    .deep-note p { color: #e2e8f0; }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="logo-overlay"><img src="assets/Cogninelogo.png" alt="Cognine Logo"></div>
+    <div class="bg-grid"></div>
+    <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+    <header>
+      <div>
+        <h1>Brain-Inspired Learning</h1>
+        <div class="hsub">Artificial neural networks mimic signal flow across connected neurons</div>
+      </div>
+      <div class="badge">Deep Learning Core</div>
+    </header>
+
+    <div class="body">
+      <div class="panel left">
+        <canvas id="nnCanvas" width="560" height="330"></canvas>
+        <div class="layer-row">
+          <div class="lbl l1">Input Layer</div>
+          <div class="lbl l2">Hidden Layer 1</div>
+          <div class="lbl l3">Hidden Layer 2</div>
+          <div class="lbl l4">Output Layer</div>
+        </div>
+        <div class="pill-row">
+          <span class="pill p1"><i class="fas fa-arrow-right"></i> Signals move forward</span>
+          <span class="pill p2"><i class="fas fa-project-diagram"></i> Multiple abstraction levels</span>
+          <span class="pill p3"><i class="fas fa-brain"></i> Learned representations</span>
+        </div>
+      </div>
+
+      <div class="panel right">
+        <div class="card">
+          <h3>How a Baby Learns</h3>
+          <p>From repeated exposure to shapes, sounds, and context, recognition improves over time — similar to deep models trained on large datasets.</p>
+          <svg class="baby-curve" width="100%" viewBox="0 0 420 170" preserveAspectRatio="none">
+            <line x1="32" y1="138" x2="390" y2="138" stroke="#334155" stroke-width="2"/>
+            <line x1="32" y1="138" x2="32" y2="18" stroke="#334155" stroke-width="2"/>
+            <polyline points="32,130 82,122 132,108 182,86 232,66 282,44 332,30 382,24" fill="none" stroke="#2dd4bf" stroke-width="4"/>
+            <circle cx="382" cy="24" r="4" fill="#2dd4bf"/>
+            <text x="36" y="16" fill="#64748b" font-size="10">Pattern Recognition</text>
+            <text x="318" y="157" fill="#64748b" font-size="10">Experience</text>
+          </svg>
+        </div>
+
+        <div class="card deep-note">
+          <h3>What “Deep” Means</h3>
+          <p>The term <strong>deep</strong> refers to multiple layers between input and output. More layers let the system learn increasingly complex and abstract patterns from raw data.</p>
+        </div>
+
+        <div class="card">
+          <h3>Why this changed everything</h3>
+          <p>Instead of hand-coding every feature, networks learn what matters directly from data. This shift unlocks vision, language, and speech breakthroughs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('nnCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const layers = [
+      { x: 70,  count: 6, color: '#60a5fa' },
+      { x: 210, count: 7, color: '#a855f7' },
+      { x: 350, count: 6, color: '#a855f7' },
+      { x: 490, count: 4, color: '#2dd4bf' }
+    ];
+
+    function nodeY(index, count) {
+      const top = 36;
+      const bottom = 294;
+      return top + (index * (bottom - top)) / (count - 1);
+    }
+
+    function drawNetwork(t) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let l = 0; l < layers.length - 1; l++) {
+        const from = layers[l];
+        const to = layers[l + 1];
+        for (let i = 0; i < from.count; i++) {
+          for (let j = 0; j < to.count; j++) {
+            const y1 = nodeY(i, from.count);
+            const y2 = nodeY(j, to.count);
+            const pulse = Math.sin((t * 0.002) + i * 0.7 + j * 0.4 + l) * 0.5 + 0.5;
+            ctx.strokeStyle = `rgba(148,163,184,${0.08 + pulse * 0.18})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(from.x, y1);
+            ctx.lineTo(to.x, y2);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for (const layer of layers) {
+        for (let i = 0; i < layer.count; i++) {
+          const y = nodeY(i, layer.count);
+          const glow = Math.sin((t * 0.003) + i * 0.8 + layer.x * 0.01) * 0.5 + 0.5;
+          ctx.fillStyle = layer.color;
+          ctx.globalAlpha = 0.55 + glow * 0.35;
+          ctx.beginPath();
+          ctx.arc(layer.x, y, 5.5 + glow * 1.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+      requestAnimationFrame(drawNetwork);
+    }
+
+    requestAnimationFrame(drawNetwork);
+  </script>
+</body>
+</html>
