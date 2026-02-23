@@ -14,3 +14,12 @@
   - [x] Click-to-replay on each card
   - [x] Shorter key question bar
 - [x] Files complete: deep-learning-slide-00a-road-to-dl.html + road-to-dl-anim.js
+
+## Brain Behind Deep Learning Slide Redesign
+- [x] Replaced all text bullets with canvas-based mini animations
+- [x] Card 1: Animated biological neuron vs artificial neuron comparison (signal pulses, weights)
+- [x] Card 2: Animated learning curve (scatter dots appear, boundary draws, accuracy counter)
+- [x] Card 3: Animated layer depth (Pixels → Edges → Shapes → Objects → Cat!)
+- [x] Enhanced main neural network (pulsing nodes, signal particles, glow effects)
+- [x] Click-to-replay on each card
+- [x] Files complete: deep-learning-slide-00b-brain-inspired-dl.html + brain-dl-anim.js
