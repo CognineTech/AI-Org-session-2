@@ -153,6 +153,12 @@
       animation: babyBreathe 2.1s ease-in-out infinite;
     }
 
+    .eyelid {
+      opacity: 0;
+      transform-origin: center;
+      animation: blinkEyes 4.1s linear infinite;
+    }
+
     .baby-head { transform-origin: 56px 40px; transition: transform .35s ease; }
     .eye { transition: all .25s ease; }
     .baby-arm-right { transform-origin: 78px 78px; transition: transform .3s ease; }
@@ -184,16 +190,6 @@
 
     .baby-zone.active-crawl .baby-arm-right {
       animation: armCrawlRight .55s ease-in-out infinite;
-    }
-
-    .blink-layer {
-      position: absolute;
-      width: 174px;
-      height: 210px;
-      z-index: 5;
-      pointer-events: none;
-      opacity: 0;
-      animation: blinkEyes 4s linear infinite;
     }
 
     .touch-spark {
@@ -276,6 +272,53 @@
       font-weight: 700;
       text-align: center;
       max-width: 260px;
+    }
+
+    .growth-track {
+      width: 270px;
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,.28);
+      background: rgba(15,23,42,.82);
+      padding: 7px 8px;
+      box-sizing: border-box;
+      z-index: 6;
+    }
+
+    .growth-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .58rem;
+      color: #cbd5e1;
+      font-weight: 700;
+      margin-bottom: 5px;
+      letter-spacing: .2px;
+    }
+
+    .growth-bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(51,65,85,.9);
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,.24);
+    }
+
+    .growth-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(to right, #60a5fa, #2dd4bf);
+      transition: width .55s ease;
+    }
+
+    .growth-years {
+      display: flex;
+      justify-content: space-between;
+      font-size: .54rem;
+      color: #94a3b8;
+      margin-top: 4px;
+      font-weight: 700;
     }
 
     .feedback-note {
@@ -384,8 +427,8 @@
     }
 
     @keyframes blinkEyes {
-      0%, 45%, 52%, 100% { opacity: 0; }
-      47%, 50% { opacity: 1; }
+      0%, 44%, 51%, 73%, 79%, 100% { opacity: 0; }
+      46%, 49%, 75%, 78% { opacity: 1; }
     }
 
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
@@ -451,7 +494,7 @@
 
           <div class="baby-zone">
             <div class="brain-ring"></div>
-            <svg class="baby-svg" viewBox="0 0 120 150" aria-label="Baby illustration">
+            <svg id="babySvg" class="baby-svg" viewBox="0 0 120 150" aria-label="Baby illustration">
               <ellipse cx="60" cy="140" rx="30" ry="8" fill="rgba(2,6,23,.55)"/>
               <g class="baby-head">
                 <circle cx="56" cy="40" r="21" fill="#f8c9a6"/>
@@ -459,6 +502,8 @@
                 <circle cx="75" cy="40" r="4.2" fill="#f8c9a6"/>
                 <ellipse class="eye left-eye" cx="50" cy="38" rx="2.2" ry="2.2" fill="#1e293b"/>
                 <ellipse class="eye right-eye" cx="62" cy="38" rx="2.2" ry="2.2" fill="#1e293b"/>
+                <path class="eyelid" d="M46 38 Q50 34 54 38" fill="none" stroke="#e2a98f" stroke-width="2" stroke-linecap="round"/>
+                <path class="eyelid" d="M58 38 Q62 34 66 38" fill="none" stroke="#e2a98f" stroke-width="2" stroke-linecap="round"/>
                 <ellipse cx="48" cy="45" rx="3.4" ry="2.2" fill="rgba(244,114,182,.2)"/>
                 <ellipse cx="64" cy="45" rx="3.4" ry="2.2" fill="rgba(244,114,182,.2)"/>
                 <path d="M52 49 Q56 53 61 49" fill="none" stroke="#7f1d1d" stroke-width="1.6" stroke-linecap="round"/>
@@ -471,10 +516,6 @@
               <path class="baby-leg-front" d="M74 92 L84 117 C90 120, 95 117, 95 111 L84 92 Z" fill="#334155"/>
               <ellipse cx="60" cy="56" rx="8" ry="3.5" fill="rgba(255,255,255,.12)"/>
             </svg>
-            <svg class="blink-layer" viewBox="0 0 120 150" aria-hidden="true">
-              <path d="M46 38 Q50 40 54 38" fill="none" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M58 38 Q62 40 66 38" fill="none" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
             <div class="sound-wave wave-left-1"></div>
             <div class="sound-wave wave-left-2"></div>
             <div class="sound-wave wave-right-1"></div>
@@ -483,6 +524,18 @@
             <div class="vision-line vision-right"></div>
             <div class="touch-spark"></div>
             <div id="learningState" class="learning-state">Listening to repeated words and matching sounds to faces</div>
+            <div class="growth-track">
+              <div class="growth-head">
+                <span id="growthLabel">Age 0–1: Sensory Discovery</span>
+                <span id="growthPercent">0%</span>
+              </div>
+              <div class="growth-bar">
+                <div id="growthFill" class="growth-fill"></div>
+              </div>
+              <div class="growth-years">
+                <span>0–1 yr</span><span>1–2 yr</span><span>2–3 yr</span><span>3–5 yr</span>
+              </div>
+            </div>
           </div>
 
           <div class="toy-ball" aria-label="Toy ball"></div>
@@ -504,8 +557,12 @@
     const canvas = document.getElementById('flowCanvas');
     const scene = document.querySelector('.learning-scene');
     const babyZone = document.querySelector('.baby-zone');
+    const babySvg = document.getElementById('babySvg');
     const sources = Array.from(document.querySelectorAll('.source'));
     const stateLabel = document.getElementById('learningState');
+    const growthLabel = document.getElementById('growthLabel');
+    const growthPercent = document.getElementById('growthPercent');
+    const growthFill = document.getElementById('growthFill');
     const ctx = canvas.getContext('2d');
 
     const states = [
@@ -519,7 +576,29 @@
     let particles = [];
     let lastSpawn = 0;
     let stateIndex = 0;
+    let cycleCount = 0;
     const allModes = ['active-crawl', 'active-hear', 'active-see', 'active-touch', 'active-grow'];
+
+    function updateGrowthVisuals() {
+      const growthValue = Math.min(100, cycleCount * 4);
+      growthFill.style.width = `${growthValue}%`;
+      growthPercent.textContent = `${growthValue}%`;
+
+      if (growthValue < 25) {
+        growthLabel.textContent = 'Age 0–1: Sensory Discovery';
+      } else if (growthValue < 50) {
+        growthLabel.textContent = 'Age 1–2: Crawl & Language Mapping';
+      } else if (growthValue < 75) {
+        growthLabel.textContent = 'Age 2–3: Action-Feedback Learning';
+      } else {
+        growthLabel.textContent = 'Age 3–5: Concept Building & Prediction';
+      }
+
+      const width = 160 + (growthValue * 0.36);
+      const height = 194 + (growthValue * 0.42);
+      babySvg.style.width = `${width}px`;
+      babySvg.style.height = `${height}px`;
+    }
 
     function applyState(index) {
       const phase = states[index];
@@ -609,10 +688,13 @@
     requestAnimationFrame(draw);
 
     applyState(0);
+    updateGrowthVisuals();
 
     setInterval(() => {
       stateIndex = (stateIndex + 1) % states.length;
+      cycleCount += 1;
       applyState(stateIndex);
+      updateGrowthVisuals();
     }, 2600);
   </script>
 </body>
