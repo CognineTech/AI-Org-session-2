@@ -66,11 +66,7 @@
       height: 720px;
       border: 0;
       background: #0f172a;
-      transition: filter 0.25s ease;
-    }
-
-    body[data-theme="light"] #slideFrame {
-      filter: brightness(1.16) contrast(0.9) saturate(1.06);
+      transition: background 0.25s ease;
     }
 
     body[data-theme="light"] {
@@ -300,10 +296,83 @@
     let controlsHideTimer = null;
     let currentTheme = localStorage.getItem('ppt-theme') || 'dark';
 
+    const LIGHT_THEME_OVERRIDE_CSS = `
+      html, body {
+        background: #f4f8ff !important;
+        color: #0f172a !important;
+      }
+
+      .slide-container {
+        background:
+          radial-gradient(120% 85% at 10% 10%, rgba(59,130,246,0.12), transparent 55%),
+          radial-gradient(120% 90% at 90% 90%, rgba(45,212,191,0.1), transparent 58%),
+          #f8fbff !important;
+        color: #0f172a !important;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+        opacity: 1 !important;
+      }
+
+      .bg-grid, .mesh-overlay {
+        opacity: 0.5 !important;
+        filter: contrast(1.05) !important;
+      }
+
+      .shape, .glow {
+        opacity: 0.2 !important;
+        filter: blur(85px) saturate(1.08) !important;
+      }
+
+      .panel, .card, .baby-card, .learning-world, .comparison, .comp-card,
+      .source, .growth-track, .feedback-note, .badge, .live-chip,
+      .learning-state, .object-learning {
+        background: rgba(255,255,255,0.78) !important;
+        border-color: rgba(100,116,139,0.26) !important;
+        color: #0f172a !important;
+        box-shadow: 0 8px 24px rgba(15,23,42,0.08) !important;
+      }
+
+      h1, h2, h3, h4, .world-title, .comparison-title {
+        color: #1d4ed8 !important;
+        text-shadow: none !important;
+      }
+
+      .hsub, .world-sub, p, .tagline, .comp-line, .ol-note {
+        color: #334155 !important;
+      }
+
+      #particle-canvas, #flowCanvas, canvas {
+        opacity: 0.95 !important;
+      }
+    `;
+
+    function applyThemeToCurrentSlide() {
+      try {
+        const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+        if (!frameDoc || !frameDoc.head) return;
+
+        const existing = frameDoc.getElementById('ppt-theme-overrides');
+
+        if (currentTheme === 'light') {
+          const styleEl = existing || frameDoc.createElement('style');
+          styleEl.id = 'ppt-theme-overrides';
+          styleEl.textContent = LIGHT_THEME_OVERRIDE_CSS;
+          if (!existing) frameDoc.head.appendChild(styleEl);
+        } else if (existing) {
+          existing.remove();
+        }
+      } catch (_) {
+        // Ignore cross-frame access issues.
+      }
+    }
+
     function applyTheme(theme) {
       currentTheme = theme === 'light' ? 'light' : 'dark';
       document.body.setAttribute('data-theme', currentTheme);
       localStorage.setItem('ppt-theme', currentTheme);
+      applyThemeToCurrentSlide();
     }
 
     function toggleTheme() {
@@ -421,7 +490,10 @@
     }
 
     document.addEventListener('keydown', handleNavigationKeydown, true);
-    frame.addEventListener('load', bindFrameKeyboardHandlers);
+    frame.addEventListener('load', () => {
+      bindFrameKeyboardHandlers();
+      applyThemeToCurrentSlide();
+    });
 
     window.addEventListener('message', (event) => {
       const data = event?.data;
