@@ -198,10 +198,37 @@
             object-fit: contain;
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
         }
+
+        .theme-toggle {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            z-index: 120;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            background: rgba(15, 23, 42, 0.72);
+            color: #e2e8f0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: transform 0.15s ease, border-color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+            border-color: rgba(96, 165, 250, 0.7);
+        }
 </style>
 </head>
 <body>
 <div class="slide-container">
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle light/dark theme">
+        <i id="themeIcon" class="fas fa-moon"></i>
+    </button>
     <!-- Company Logo -->
     <div class="logo-overlay">
         <img src="assets/Cogninelogo.png" alt="Cognine Logo">
@@ -312,6 +339,30 @@
 
         init();
         animate();
+
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function getCurrentTheme() {
+            return localStorage.getItem('ppt-theme') || 'dark';
+        }
+
+        function updateThemeIcon(theme) {
+            themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = getCurrentTheme();
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('ppt-theme', nextTheme);
+            updateThemeIcon(nextTheme);
+
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'ppt-theme', action: 'toggle' }, '*');
+            }
+        });
+
+        updateThemeIcon(getCurrentTheme());
 </script>
 </body>
 </html>

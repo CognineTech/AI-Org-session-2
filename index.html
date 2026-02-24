@@ -14,6 +14,15 @@
       --border: rgba(148, 163, 184, 0.25);
     }
 
+    body[data-theme="light"] {
+      --bg: #e2e8f0;
+      --panel: rgba(248, 250, 252, 0.9);
+      --text: #0f172a;
+      --muted: #334155;
+      --accent: #2563eb;
+      --border: rgba(71, 85, 105, 0.28);
+    }
+
     * { box-sizing: border-box; }
 
     html, body {
@@ -54,6 +63,11 @@
       height: 720px;
       border: 0;
       background: #0f172a;
+      transition: filter 0.25s ease;
+    }
+
+    body[data-theme="light"] #slideFrame {
+      filter: invert(1) hue-rotate(180deg) saturate(0.92) brightness(1.04) contrast(0.96);
     }
 
     body.present-mode #stage {
@@ -247,10 +261,23 @@
     const FIT_MARGIN = 0.985;
 
     let controlsHideTimer = null;
+    let currentTheme = localStorage.getItem('ppt-theme') || 'dark';
+
+    function applyTheme(theme) {
+      currentTheme = theme === 'light' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', currentTheme);
+      localStorage.setItem('ppt-theme', currentTheme);
+    }
+
+    function toggleTheme() {
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    }
 
     if (isPresentMode) {
       document.body.classList.add('present-mode');
     }
+
+    applyTheme(currentTheme);
 
     function parseInitialIndex() {
       const hash = window.location.hash.replace('#', '');
@@ -358,6 +385,20 @@
 
     document.addEventListener('keydown', handleNavigationKeydown, true);
     frame.addEventListener('load', bindFrameKeyboardHandlers);
+
+    window.addEventListener('message', (event) => {
+      const data = event?.data;
+      if (!data || data.type !== 'ppt-theme') return;
+
+      if (data.action === 'toggle') {
+        toggleTheme();
+        return;
+      }
+
+      if (data.theme === 'light' || data.theme === 'dark') {
+        applyTheme(data.theme);
+      }
+    });
 
     window.addEventListener('hashchange', () => {
       const next = parseInitialIndex();
