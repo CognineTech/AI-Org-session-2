@@ -125,6 +125,10 @@
       gap: 8px;
     }
 
+    .baby-zone.active-move { animation: babyBounce 1.2s ease-in-out infinite; }
+    .baby-zone.active-grow .baby-svg { transform: scale(1.06); }
+    .baby-zone.active-grow .brain-ring { box-shadow: 0 0 0 20px rgba(45,212,191,.08), 0 0 42px rgba(45,212,191,.3); }
+
     .brain-ring {
       position: absolute;
       width: 188px;
@@ -142,6 +146,67 @@
       filter: drop-shadow(0 8px 16px rgba(0,0,0,.35));
       position: relative;
       z-index: 3;
+      transform-origin: center 70%;
+      transition: transform .55s ease;
+    }
+
+    .baby-head { transform-origin: 59px 34px; transition: transform .35s ease; }
+    .eye { transition: all .25s ease; }
+    .baby-arm-right { transform-origin: 80px 62px; transition: transform .3s ease; }
+    .baby-arm-left { transform-origin: 43px 64px; transition: transform .3s ease; }
+
+    .baby-zone.active-see .baby-head { transform: rotate(-7deg); }
+    .baby-zone.active-see .eye.left-eye { transform: translateX(1.5px); }
+    .baby-zone.active-see .eye.right-eye { transform: translateX(2px); }
+
+    .baby-zone.active-touch .baby-arm-right { transform: rotate(-20deg) translate(2px, -2px); }
+    .baby-zone.active-touch .touch-spark { opacity: 1; transform: scale(1.08); }
+
+    .blink-layer {
+      position: absolute;
+      width: 174px;
+      height: 210px;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      animation: blinkEyes 4s linear infinite;
+    }
+
+    .touch-spark {
+      position: absolute;
+      right: 68px;
+      top: 120px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,212,191,.9), rgba(45,212,191,.1) 70%);
+      opacity: 0;
+      transform: scale(.6);
+      transition: all .25s ease;
+      z-index: 4;
+    }
+
+    .toy-ball {
+      position: absolute;
+      right: 118px;
+      bottom: 44px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fcd34d, #f59e0b 58%, #b45309);
+      border: 1px solid rgba(251,191,36,.45);
+      box-shadow: 0 6px 12px rgba(0,0,0,.35);
+      z-index: 3;
+      animation: toyIdle 2.8s ease-in-out infinite;
+      transition: transform .3s ease;
+    }
+    .baby-zone.active-touch + .toy-ball { transform: translate(-10px, -6px); }
+
+    .source.active-source {
+      border-color: rgba(94,234,212,.55);
+      box-shadow: 0 0 0 1px rgba(94,234,212,.22), 0 0 22px rgba(45,212,191,.12);
+      transform: translateY(-1px);
+      transition: all .25s ease;
     }
 
     .learning-state {
@@ -202,6 +267,21 @@
       0% { box-shadow: 0 0 0 0 rgba(34,211,238,.6); }
       80% { box-shadow: 0 0 0 8px rgba(34,211,238,0); }
       100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
+    }
+
+    @keyframes babyBounce {
+      0%,100% { transform: translate(-50%, -50%); }
+      50% { transform: translate(-50%, -53%); }
+    }
+
+    @keyframes toyIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes blinkEyes {
+      0%, 45%, 52%, 100% { opacity: 0; }
+      47%, 50% { opacity: 1; }
     }
 
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
@@ -269,19 +349,28 @@
             <div class="brain-ring"></div>
             <svg class="baby-svg" viewBox="0 0 120 150" aria-label="Baby illustration">
               <ellipse cx="60" cy="142" rx="32" ry="8" fill="rgba(2,6,23,.55)"/>
-              <circle cx="59" cy="34" r="16" fill="#f8c9a6"/>
-              <ellipse cx="54" cy="33" rx="2.1" ry="2.1" fill="#1e293b"/>
-              <ellipse cx="65" cy="33" rx="2.1" ry="2.1" fill="#1e293b"/>
-              <path d="M54 41 Q59 45 65 41" fill="none" stroke="#7f1d1d" stroke-width="1.8" stroke-linecap="round"/>
+              <g class="baby-head">
+                <circle cx="59" cy="34" r="16" fill="#f8c9a6"/>
+                <ellipse class="eye left-eye" cx="54" cy="33" rx="2.1" ry="2.1" fill="#1e293b"/>
+                <ellipse class="eye right-eye" cx="65" cy="33" rx="2.1" ry="2.1" fill="#1e293b"/>
+                <path d="M54 41 Q59 45 65 41" fill="none" stroke="#7f1d1d" stroke-width="1.8" stroke-linecap="round"/>
+              </g>
               <path d="M42 51 C38 69, 43 95, 50 109 H72 C78 96, 82 68, 78 51 Z" fill="#60a5fa"/>
               <path d="M49 109 L42 136 C46 140, 52 140, 56 134 L59 112 Z" fill="#334155"/>
               <path d="M71 109 L74 136 C79 139, 85 138, 87 131 L80 111 Z" fill="#334155"/>
-              <path d="M43 64 L28 83 C30 87, 34 88, 38 84 L50 70 Z" fill="#60a5fa"/>
-              <path d="M77 64 L95 73 C98 71, 99 66, 95 63 L80 58 Z" fill="#60a5fa"/>
+              <path class="baby-arm-left" d="M43 64 L28 83 C30 87, 34 88, 38 84 L50 70 Z" fill="#60a5fa"/>
+              <path class="baby-arm-right" d="M77 64 L95 73 C98 71, 99 66, 95 63 L80 58 Z" fill="#60a5fa"/>
               <circle cx="60" cy="18" r="10" fill="rgba(15,23,42,.22)"/>
             </svg>
+            <svg class="blink-layer" viewBox="0 0 120 150" aria-hidden="true">
+              <path d="M50 33 Q54 35 58 33" fill="none" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M62 33 Q66 35 70 33" fill="none" stroke="#1e293b" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <div class="touch-spark"></div>
             <div id="learningState" class="learning-state">Listening to repeated words and matching sounds to faces</div>
           </div>
+
+          <div class="toy-ball" aria-label="Toy ball"></div>
 
           <div class="feedback-note"><i class="fas fa-sync-alt"></i> Action → Feedback → Adjustment (continuous loop)</div>
         </div>
@@ -305,15 +394,25 @@
     const ctx = canvas.getContext('2d');
 
     const states = [
-      'Listening to repeated words and matching sounds to faces',
-      'Seeing object motion and linking it with parent labels',
-      'Trying actions, receiving correction, and adapting quickly',
-      'Combining multi-sensory clues into stable concepts'
+      { text: 'Listening to repeated words and matching sounds to faces', mode: 'active-move', source: '.src-audio' },
+      { text: 'Tracking movement with eyes to identify people and objects', mode: 'active-see', source: '.src-visual' },
+      { text: 'Reaching, touching, and learning from immediate feedback', mode: 'active-touch', source: '.src-experience' },
+      { text: 'Growing stronger concepts by combining all experiences daily', mode: 'active-grow', source: '.src-teaching' }
     ];
 
     let particles = [];
     let lastSpawn = 0;
     let stateIndex = 0;
+
+    function applyState(index) {
+      const phase = states[index];
+      babyZone.classList.remove('active-move', 'active-see', 'active-touch', 'active-grow');
+      sources.forEach((source) => source.classList.remove('active-source'));
+      babyZone.classList.add(phase.mode);
+      const activeSource = document.querySelector(phase.source);
+      if (activeSource) activeSource.classList.add('active-source');
+      stateLabel.textContent = phase.text;
+    }
 
     function resizeCanvas() {
       canvas.width = scene.clientWidth;
@@ -392,10 +491,12 @@
     resizeCanvas();
     requestAnimationFrame(draw);
 
+    applyState(0);
+
     setInterval(() => {
       stateIndex = (stateIndex + 1) % states.length;
-      stateLabel.textContent = states[stateIndex];
-    }, 2500);
+      applyState(stateIndex);
+    }, 3800);
   </script>
 </body>
 </html>
