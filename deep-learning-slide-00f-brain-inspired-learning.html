@@ -110,6 +110,60 @@
       animation: floatUp 3.8s ease-in-out infinite;
     }
 
+    .teach-bubble {
+      position: absolute;
+      left: 252px;
+      top: 54px;
+      z-index: 7;
+      border-radius: 12px;
+      padding: 7px 10px;
+      background: rgba(15,23,42,.9);
+      border: 1px solid rgba(45,212,191,.45);
+      color: #99f6e4;
+      font-size: .62rem;
+      font-weight: 800;
+      opacity: 0;
+      transform: translateY(4px) scale(.97);
+      transition: all .25s ease;
+      box-shadow: 0 8px 22px rgba(0,0,0,.28);
+      pointer-events: none;
+    }
+
+    .teach-bubble::after {
+      content: '';
+      position: absolute;
+      left: 16px;
+      bottom: -6px;
+      width: 10px;
+      height: 10px;
+      transform: rotate(45deg);
+      background: rgba(15,23,42,.9);
+      border-right: 1px solid rgba(45,212,191,.45);
+      border-bottom: 1px solid rgba(45,212,191,.45);
+    }
+
+    .teaching-link {
+      position: absolute;
+      left: 328px;
+      top: 138px;
+      width: 146px;
+      height: 3px;
+      background: linear-gradient(to right, rgba(45,212,191,.05), rgba(45,212,191,.95), rgba(45,212,191,.18));
+      border-radius: 999px;
+      transform: rotate(18deg);
+      transform-origin: left center;
+      opacity: 0;
+      z-index: 4;
+      filter: drop-shadow(0 0 8px rgba(45,212,191,.4));
+      animation: teachPulse 1.1s ease-in-out infinite;
+      transition: opacity .25s ease;
+      pointer-events: none;
+    }
+
+    .learning-scene.phase-teach .teach-bubble,
+    .learning-scene.phase-teach .teaching-link { opacity: 1; transform: translateY(0) scale(1); }
+    .learning-scene.phase-teach .caregiver-arm { animation: teachHand 1s ease-in-out infinite; }
+
     .baby-zone {
       position: absolute;
       left: 50%;
@@ -128,6 +182,9 @@
 
     .baby-zone.active-crawl { animation: babyMoveAround 1.1s ease-in-out infinite; }
     .baby-zone.active-hear .sound-wave { opacity: .95; }
+    .baby-zone.active-hear .baby-ear-left,
+    .baby-zone.active-hear .baby-ear-right { filter: drop-shadow(0 0 5px rgba(96,165,250,.8)); }
+    .baby-zone.active-hear .baby-head { transform: rotate(3deg); }
     .baby-zone.active-grow .baby-svg { transform: scale(1.06); }
     .baby-zone.active-grow .brain-ring { box-shadow: 0 0 0 20px rgba(45,212,191,.08), 0 0 42px rgba(45,212,191,.3); }
 
@@ -171,10 +228,13 @@
     .baby-zone.active-see .eye.right-eye { transform: translateX(3.2px) translateY(.4px); }
     .baby-zone.active-see .vision-left,
     .baby-zone.active-see .vision-right { opacity: .95; }
+    .baby-zone.active-see ~ .object-learning,
+    .baby-zone.active-touch ~ .object-learning { opacity: 1; transform: translateY(0); }
 
     .baby-zone.active-touch .baby-arm-right { transform: rotate(-20deg) translate(2px, -2px); }
     .baby-zone.active-touch .baby-arm-left { transform: rotate(12deg) translate(1px, -1px); }
     .baby-zone.active-touch .touch-spark { opacity: 1; transform: scale(1.08); }
+    .learning-scene.phase-touch .toy-ball::before { opacity: .9; }
 
     .baby-zone.active-crawl .baby-leg-front {
       animation: legCrawlFront .55s ease-in-out infinite;
@@ -208,8 +268,8 @@
 
     .sound-wave {
       position: absolute;
-      width: 30px;
-      height: 30px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       border: 2px solid rgba(96,165,250,.9);
       opacity: 0;
@@ -219,14 +279,14 @@
       animation: hearPulse 1.3s ease-out infinite;
     }
 
-    .wave-left-1 { left: 78px; top: 86px; }
-    .wave-left-2 { left: 66px; top: 80px; animation-delay: .22s; }
-    .wave-right-1 { right: 76px; top: 86px; }
-    .wave-right-2 { right: 64px; top: 80px; animation-delay: .22s; }
+    .wave-left-1 { left: 116px; top: 102px; }
+    .wave-left-2 { left: 108px; top: 96px; animation-delay: .22s; }
+    .wave-right-1 { right: 116px; top: 102px; }
+    .wave-right-2 { right: 108px; top: 96px; animation-delay: .22s; }
 
     .vision-line {
       position: absolute;
-      width: 158px;
+      width: 126px;
       height: 2.5px;
       background: linear-gradient(to right, rgba(167,139,250,.05), rgba(167,139,250,.9), rgba(167,139,250,.1));
       opacity: 0;
@@ -236,8 +296,8 @@
       animation: visionPulse 1.1s ease-in-out infinite;
       pointer-events: none;
     }
-    .vision-left { top: 112px; left: 468px; transform: rotate(-13deg); }
-    .vision-right { top: 126px; left: 470px; transform: rotate(16deg); }
+    .vision-left { top: 109px; left: 164px; transform: rotate(-11deg); }
+    .vision-right { top: 119px; left: 168px; transform: rotate(13deg); }
 
     .toy-ball {
       position: absolute;
@@ -265,6 +325,17 @@
       animation: targetPulse 1.05s ease-out infinite;
       pointer-events: none;
     }
+    .toy-ball::before {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 2px dashed rgba(45,212,191,.9);
+      opacity: 0;
+      animation: touchRipple 1s ease-out infinite;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
     .baby-zone.active-touch + .toy-ball { transform: translate(-18px, -12px) scale(1.08); }
     .baby-zone.active-see + .toy-ball {
       animation: toyTrack 1.05s ease-in-out infinite;
@@ -277,6 +348,73 @@
       box-shadow: 0 0 0 1px rgba(94,234,212,.22), 0 0 22px rgba(45,212,191,.12);
       transform: translateY(-1px);
       transition: all .25s ease;
+    }
+
+    .object-learning {
+      position: absolute;
+      right: 82px;
+      bottom: 82px;
+      width: 202px;
+      border-radius: 10px;
+      border: 1px solid rgba(167,139,250,.35);
+      background: rgba(15,23,42,.85);
+      padding: 8px;
+      z-index: 6;
+      opacity: .15;
+      transform: translateY(4px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .ol-title {
+      margin: 0 0 6px;
+      font-size: .58rem;
+      color: #ddd6fe;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+
+    .ol-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      font-size: .58rem;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    .ol-tag {
+      border-radius: 999px;
+      background: rgba(167,139,250,.18);
+      border: 1px solid rgba(167,139,250,.3);
+      color: #ddd6fe;
+      font-size: .54rem;
+      padding: 2px 6px;
+      font-weight: 800;
+    }
+
+    .ol-bar {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(51,65,85,.95);
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,.25);
+    }
+
+    .ol-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(to right, #a78bfa, #2dd4bf);
+      transition: width .45s ease;
+    }
+
+    .ol-note {
+      margin: 5px 0 0;
+      color: #93c5fd;
+      font-size: .55rem;
+      font-weight: 700;
     }
 
     .learning-state {
@@ -363,7 +501,7 @@
       margin: 0 0 6px;
       font-family: 'Montserrat', sans-serif;
       color: #bfdbfe;
-      font-size: .7rem;
+      font-size: .72rem;
       letter-spacing: .2px;
       text-transform: uppercase;
     }
@@ -388,7 +526,7 @@
     }
     .comp-line {
       margin: 3px 0;
-      font-size: .58rem;
+      font-size: .56rem;
       color: #cbd5e1;
       line-height: 1.3;
       font-weight: 700;
@@ -445,9 +583,24 @@
       100% { transform: scale(1.5); opacity: 0; }
     }
 
+    @keyframes touchRipple {
+      0% { transform: scale(.58); opacity: .85; }
+      100% { transform: scale(1.35); opacity: 0; }
+    }
+
     @keyframes toyTrack {
       0%, 100% { transform: translate(0, 0); }
       50% { transform: translate(-7px, -5px); }
+    }
+
+    @keyframes teachPulse {
+      0%,100% { opacity: .72; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes teachHand {
+      0%,100% { transform: rotate(0deg); }
+      50% { transform: rotate(-12deg) translate(2px, -1px); }
     }
 
     @keyframes hearPulse {
@@ -542,9 +695,11 @@
             <path d="M30 34 C26 51, 30 67, 36 80 H56 C61 68, 63 51, 58 34 Z" fill="#475569"/>
             <path d="M38 80 L32 123 C36 127, 41 128, 45 123 L48 83 Z" fill="#334155"/>
             <path d="M52 80 L56 124 C61 128, 66 127, 68 121 L60 82 Z" fill="#334155"/>
-            <path d="M58 48 L79 59 C82 56, 82 51, 79 48 L60 43 Z" fill="#475569"/>
+            <path class="caregiver-arm" d="M58 48 L79 59 C82 56, 82 51, 79 48 L60 43 Z" fill="#475569"/>
             <path d="M34 49 L20 67 C22 71, 27 71, 30 67 L40 53 Z" fill="#475569"/>
           </svg>
+          <div class="teach-bubble"><i class="fas fa-comment-dots"></i> This is a ball, can you say “ball”?</div>
+          <div class="teaching-link"></div>
 
           <div class="baby-zone">
             <div class="brain-ring"></div>
@@ -552,8 +707,8 @@
               <ellipse cx="60" cy="140" rx="30" ry="8" fill="rgba(2,6,23,.55)"/>
               <g class="baby-head">
                 <circle cx="56" cy="40" r="21" fill="#f8c9a6"/>
-                <circle cx="36" cy="40" r="4.2" fill="#f8c9a6"/>
-                <circle cx="75" cy="40" r="4.2" fill="#f8c9a6"/>
+                <circle class="baby-ear-left" cx="36" cy="40" r="4.2" fill="#f8c9a6"/>
+                <circle class="baby-ear-right" cx="75" cy="40" r="4.2" fill="#f8c9a6"/>
                 <ellipse class="eye left-eye" cx="50" cy="38" rx="2.2" ry="2.2" fill="#1e293b"/>
                 <ellipse class="eye right-eye" cx="62" cy="38" rx="2.2" ry="2.2" fill="#1e293b"/>
                 <path class="eyelid" d="M46 38 Q50 34 54 38" fill="none" stroke="#e2a98f" stroke-width="2" stroke-linecap="round"/>
@@ -593,6 +748,19 @@
           </div>
 
           <div class="toy-ball" aria-label="Toy ball"></div>
+          <div class="object-learning">
+            <p class="ol-title">Seeing Object → Learning Concept</p>
+            <div class="ol-row">
+              <span>Object in view:</span>
+              <span class="ol-tag" id="objectName">Ball</span>
+            </div>
+            <div class="ol-row">
+              <span>Concept confidence:</span>
+              <span id="objectPct">0%</span>
+            </div>
+            <div class="ol-bar"><div id="objectFill" class="ol-fill"></div></div>
+            <p id="objectNote" class="ol-note">Looks at shape + motion + color repeatedly</p>
+          </div>
 
           <div class="feedback-note"><i class="fas fa-sync-alt"></i> Action → Feedback → Adjustment (continuous loop)</div>
         </div>
@@ -602,23 +770,23 @@
           <div class="comparison-grid">
             <div class="comp-card">
               <p class="comp-head">Input</p>
-              <p class="comp-line baby-line"><i class="fas fa-baby"></i>Baby: Senses + context</p>
-              <p class="comp-line dl-line"><i class="fas fa-database"></i>DL: Training data</p>
+              <p class="comp-line baby-line"><i class="fas fa-baby"></i>Baby: Sees/hears real objects</p>
+              <p class="comp-line dl-line"><i class="fas fa-database"></i>DL: Gets image/text datasets</p>
             </div>
             <div class="comp-card">
               <p class="comp-head">Teaching</p>
-              <p class="comp-line baby-line"><i class="fas fa-user-friends"></i>Baby: Parent feedback</p>
-              <p class="comp-line dl-line"><i class="fas fa-tags"></i>DL: Labels / supervision</p>
+              <p class="comp-line baby-line"><i class="fas fa-user-friends"></i>Baby: Parent says “this is a ball”</p>
+              <p class="comp-line dl-line"><i class="fas fa-tags"></i>DL: Label says “ball” class</p>
             </div>
             <div class="comp-card">
               <p class="comp-head">Practice</p>
-              <p class="comp-line baby-line"><i class="fas fa-hand-paper"></i>Baby: Try, fail, retry</p>
-              <p class="comp-line dl-line"><i class="fas fa-redo"></i>DL: Epochs + updates</p>
+              <p class="comp-line baby-line"><i class="fas fa-hand-paper"></i>Baby: Looks, crawls, touches repeatedly</p>
+              <p class="comp-line dl-line"><i class="fas fa-redo"></i>DL: Repeats epochs + weight updates</p>
             </div>
             <div class="comp-card">
               <p class="comp-head">Result</p>
-              <p class="comp-line baby-line"><i class="fas fa-lightbulb"></i>Baby: Better decisions</p>
-              <p class="comp-line dl-line"><i class="fas fa-bullseye"></i>DL: Better predictions</p>
+              <p class="comp-line baby-line"><i class="fas fa-lightbulb"></i>Baby: Recognizes object faster</p>
+              <p class="comp-line dl-line"><i class="fas fa-bullseye"></i>DL: Predicts class with higher accuracy</p>
             </div>
           </div>
         </div>
@@ -636,21 +804,25 @@
     const growthLabel = document.getElementById('growthLabel');
     const growthPercent = document.getElementById('growthPercent');
     const growthFill = document.getElementById('growthFill');
+    const objectFill = document.getElementById('objectFill');
+    const objectPct = document.getElementById('objectPct');
+    const objectNote = document.getElementById('objectNote');
     const ctx = canvas.getContext('2d');
 
     const states = [
-      { text: 'Hearing repeated words and voice tone patterns', modes: ['active-hear'], source: '.src-audio' },
-      { text: 'Crawling forward with coordinated arm and leg movement', modes: ['active-crawl'], source: '.src-experience' },
-      { text: 'Seeing and tracking faces, toys, and moving objects', modes: ['active-see'], source: '.src-visual' },
-      { text: 'Touching the toy to learn action and feedback', modes: ['active-touch'], source: '.src-experience' },
-      { text: 'Growing stronger concepts through guidance and repetition', modes: ['active-grow'], source: '.src-teaching' }
+      { text: 'Audio input: baby hears words through ears and stores sound patterns', modes: ['active-hear'], source: '.src-audio', phase: 'phase-hear' },
+      { text: 'Experience input: baby crawls and explores movement in the environment', modes: ['active-crawl'], source: '.src-experience', phase: 'phase-crawl' },
+      { text: 'Visual input: baby sees object through eyes and tracks it repeatedly', modes: ['active-see'], source: '.src-visual', phase: 'phase-see' },
+      { text: 'Experience input: baby touches object with hands and learns feedback', modes: ['active-touch'], source: '.src-experience', phase: 'phase-touch' },
+      { text: 'Teaching input: elder guides baby with words and demonstration', modes: ['active-teach', 'active-grow'], source: '.src-teaching', phase: 'phase-teach' }
     ];
 
     let particles = [];
     let lastSpawn = 0;
     let stateIndex = 0;
     let cycleCount = 0;
-    const allModes = ['active-crawl', 'active-hear', 'active-see', 'active-touch', 'active-grow'];
+    const allModes = ['active-crawl', 'active-hear', 'active-see', 'active-touch', 'active-grow', 'active-teach'];
+    const scenePhases = ['phase-hear', 'phase-crawl', 'phase-see', 'phase-touch', 'phase-teach'];
 
     function updateGrowthVisuals() {
       const growthValue = Math.min(100, cycleCount * 4);
@@ -671,13 +843,27 @@
       const height = 194 + (growthValue * 0.42);
       babySvg.style.width = `${width}px`;
       babySvg.style.height = `${height}px`;
+
+      const objectConfidence = Math.min(100, Math.round(growthValue * 0.92));
+      objectFill.style.width = `${objectConfidence}%`;
+      objectPct.textContent = `${objectConfidence}%`;
+
+      if (objectConfidence < 35) {
+        objectNote.textContent = 'Looks at shape + motion + color repeatedly';
+      } else if (objectConfidence < 70) {
+        objectNote.textContent = 'Links visual pattern with spoken label: “ball”';
+      } else {
+        objectNote.textContent = 'Recognizes object quickly even from new angles';
+      }
     }
 
     function applyState(index) {
       const phase = states[index];
       babyZone.classList.remove(...allModes);
+      scene.classList.remove(...scenePhases);
       sources.forEach((source) => source.classList.remove('active-source'));
       phase.modes.forEach((mode) => babyZone.classList.add(mode));
+      scene.classList.add(phase.phase);
       const activeSource = document.querySelector(phase.source);
       if (activeSource) activeSource.classList.add('active-source');
       stateLabel.textContent = phase.text;
