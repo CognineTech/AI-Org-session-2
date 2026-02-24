@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Understanding Tokens</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 60px;
+        box-sizing: border-box;
+    }
+
+    /* ── Background ── */
+    .bg-pattern {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+        z-index: 0;
+        pointer-events: none;
+        animation: bgDrift 30s linear infinite;
+    }
+
+    @keyframes bgDrift {
+        0%   { background-position: 0 0; }
+        100% { background-position: 40px 40px; }
+    }
+
+    /* Ambient glow orbs */
+    .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .glow-orb-1 {
+        width: 420px; height: 420px;
+        background: radial-gradient(circle, rgba(96,165,250,0.07) 0%, transparent 70%);
+        top: -120px; right: -80px;
+        animation: orbPulse 6s ease-in-out infinite;
+    }
+    .glow-orb-2 {
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(251,191,36,0.05) 0%, transparent 70%);
+        bottom: -80px; left: -60px;
+        animation: orbPulse 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes orbPulse {
+        0%, 100% { transform: scale(1);   opacity: 1; }
+        50%       { transform: scale(1.15); opacity: 0.7; }
+    }
+
+    /* ── Header ── */
+    header {
+        z-index: 10;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+        padding-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        opacity: 0;
+        transform: translateY(-16px);
+        animation: slideDown 0.55s cubic-bezier(0.22,1,0.36,1) 0.05s forwards;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #60a5fa;
+        margin: 0;
+        letter-spacing: -1px;
+        text-shadow: 0 0 30px rgba(96, 165, 250, 0.35);
+    }
+
+    .subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    /* ── Content Wrapper ── */
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 20px;
+        z-index: 10;
+    }
+
+    /* ── Definition Card ── */
+    .definition-card {
+        background-color: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        opacity: 0;
+        transform: translateY(-14px);
+        animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s forwards;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Shimmer sweep on definition card */
+    .definition-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 60%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(96,165,250,0.06), transparent);
+        animation: shimmerSweep 4s ease-in-out 1.2s infinite;
+    }
+
+    @keyframes shimmerSweep {
+        0%   { left: -60%; }
+        100% { left: 160%; }
+    }
+
+    .def-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 1.2rem;
+        color: #e2e8f0;
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    .def-icon {
+        color: #60a5fa;
+        font-size: 1.5rem;
+    }
+
+    .math-eq {
+        font-family: 'JetBrains Mono', monospace;
+        background-color: rgba(15, 23, 42, 0.6);
+        padding: 8px 16px;
+        border-radius: 6px;
+        color: #fbbf24;
+        font-weight: 600;
+        border: 1px solid rgba(251,191,36,0.15);
+        transition: box-shadow 0.3s;
+    }
+
+    .math-eq:hover {
+        box-shadow: 0 0 16px rgba(251,191,36,0.2);
+    }
+
+    /* ── Examples Grid ── */
+    .examples-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        flex: 1;
+    }
+
+    .example-card {
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .example-card:hover {
+        transform: translateY(-3px) scale(1.01);
+        border-color: rgba(96,165,250,0.4);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(96,165,250,0.1);
+    }
+
+    /* Card inner glow on active highlight */
+    .example-card.highlighted {
+        border-color: rgba(96,165,250,0.5);
+        box-shadow: 0 0 20px rgba(96,165,250,0.12), inset 0 0 20px rgba(96,165,250,0.03);
+    }
+
+    .input-text {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        color: #cbd5e1;
+        margin-bottom: 10px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .process-arrow {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 5px 0 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .process-arrow::after {
+        content: '';
+        height: 1px;
+        flex: 1;
+        background-color: rgba(255,255,255,0.1);
+    }
+
+    .token-display {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .token-block {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(255,255,255,0.1);
+        position: relative;
+        opacity: 0;
+        transform: scale(0.7) translateY(6px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .token-block:hover {
+        transform: scale(1.1) translateY(-2px);
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Token Colors */
+    .token-1 { background-color: rgba(59, 130, 246, 0.2);  color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+    .token-2 { background-color: rgba(16, 185, 129, 0.2);  color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
+    .token-3 { background-color: rgba(168, 85, 247, 0.2);  color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); }
+    .token-4 { background-color: rgba(244, 63, 94, 0.2);   color: #fda4af; border-color: rgba(244, 63, 94, 0.3); }
+
+    /* Token glow variants for pulse cycle */
+    .token-1.token-glow { box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .token-2.token-glow { box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+    .token-3.token-glow { box-shadow: 0 0 10px rgba(168,85,247,0.5); }
+    .token-4.token-glow { box-shadow: 0 0 10px rgba(244,63,94,0.5); }
+
+    .count-badge {
+        position: absolute;
+        top: 15px; right: 15px;
+        background-color: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        color: #94a3b8;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    /* ── Bottom Callout ── */
+    .bottom-callout {
+        background: rgba(15, 23, 42, 0.4);
+        border-left: 4px solid #f59e0b;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: auto;
+        opacity: 0;
+        transform: translateY(16px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Amber glow sweep on callout */
+    .bottom-callout::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 4px; height: 100%;
+        background: #f59e0b;
+        box-shadow: 0 0 16px rgba(245,158,11,0.6);
+        animation: calloutGlow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes calloutGlow {
+        0%, 100% { box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+        50%       { box-shadow: 0 0 20px rgba(245,158,11,0.8); }
+    }
+
+    .callout-icon {
+        color: #f59e0b;
+        font-size: 1.2rem;
+        background: rgba(245, 158, 11, 0.1);
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        animation: iconBounce 3s ease-in-out infinite;
+    }
+
+    @keyframes iconBounce {
+        0%, 100% { transform: scale(1); }
+        50%       { transform: scale(1.12); }
+    }
+
+    /* ── Footer ── */
+
+    /* ── Core Keyframes ── */
+    @keyframes slideDown {
+        from { transform: translateY(-16px); opacity: 0; }
+        to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(16px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes popIn {
+        0%   { transform: scale(0.6) translateY(6px); opacity: 0; }
+        70%  { transform: scale(1.08) translateY(-2px); opacity: 1; }
+        100% { transform: scale(1) translateY(0);    opacity: 1; }
+    }
+
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+    <div class="bg-pattern"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <header>
+        <div>
+            <h1>Understanding Tokens</h1>
+            <p class="subtitle">How text is broken down for Natural Language Processing</p>
+        </div>
+        <div style="font-family: 'JetBrains Mono'; color: #64748b; font-size: 0.9rem;">
+            <i class="fas fa-layer-group"></i> NLP Basics
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+
+        <!-- Definition Section -->
+        <div class="definition-card">
+            <div class="def-item" id="def-1">
+                <i class="fas fa-cube def-icon"></i>
+                <p>Basic unit of text processing</p>
+            </div>
+            <div class="def-item" id="def-2">
+                <span class="math-eq">1 Token ≈ 4 Characters</span>
+            </div>
+            <div class="def-item" id="def-3">
+                <span class="math-eq">1 Token ≈ ¾ Word (English)</span>
+            </div>
+        </div>
+
+        <!-- Visual Examples Grid -->
+        <div class="examples-grid">
+
+            <!-- Example 1 -->
+            <div class="example-card" id="card-1">
+                <div class="count-badge" id="badge-1">2 Tokens</div>
+                <div class="input-text">
+                    <i class="fas fa-quote-left" style="color:#64748b; font-size: 0.8rem;"></i>
+                    Hello world
+                </div>
+                <div class="process-arrow">
+                    <i class="fas fa-arrow-down"></i> Tokenize
+                </div>
+                <div class="token-display" id="tokens-1">
+                    <span class="token-block token-1">"Hello"</span>
+                    <span class="token-block token-2">" world"</span>
+                </div>
+            </div>
+
+            <!-- Example 2 -->
+            <div class="example-card" id="card-2">
+                <div class="count-badge" id="badge-2">4 Tokens</div>
+                <div class="input-text">
+                    <i class="fas fa-quote-left" style="color:#64748b; font-size: 0.8rem;"></i>
+                    ChatGPT is powerful
+                </div>
+                <div class="process-arrow">
+                    <i class="fas fa-arrow-down"></i> Tokenize
+                </div>
+                <div class="token-display" id="tokens-2">
+                    <span class="token-block token-1">"Chat"</span>
+                    <span class="token-block token-2">"GPT"</span>
+                    <span class="token-block token-3">" is"</span>
+                    <span class="token-block token-4">" powerful"</span>
+                </div>
+            </div>
+
+            <!-- Example 3 -->
+            <div class="example-card" id="card-3">
+                <div class="count-badge" id="badge-3">2 Tokens</div>
+                <div class="input-text">
+                    <i class="fas fa-quote-left" style="color:#64748b; font-size: 0.8rem;"></i>
+                    extraordinary
+                </div>
+                <div class="process-arrow">
+                    <i class="fas fa-arrow-down"></i> Subword Split
+                </div>
+                <div class="token-display" id="tokens-3">
+                    <span class="token-block token-3">"extra"</span>
+                    <span class="token-block token-1">"ordinary"</span>
+                </div>
+            </div>
+
+            <!-- Example 4 -->
+            <div class="example-card" id="card-4">
+                <div class="count-badge" id="badge-4">1 Token</div>
+                <div class="input-text">
+                    <i class="fas fa-quote-left" style="color:#64748b; font-size: 0.8rem;"></i>
+                    AI
+                </div>
+                <div class="process-arrow">
+                    <i class="fas fa-arrow-down"></i> Tokenize
+                </div>
+                <div class="token-display" id="tokens-4">
+                    <span class="token-block token-2">"AI"</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Callout -->
+        <div class="bottom-callout" id="callout">
+            <div class="callout-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <div>
+                <p style="color: #fbbf24; font-weight: 700; font-family: 'Montserrat'; margin-bottom: 4px;">Why Tokens Matter</p>
+                <p style="color: #cbd5e1; font-size: 0.95rem;">API costs, context window limits, and model processing speed are all measured in tokens, not words.</p>
+            </div>
+        </div>
+
+    </div>
+        
+    </div>
+</div>
+
+<script>
+window.addEventListener('load', () => {
+
+    // ── 1. Animate definition items sequentially ──────────────────────────
+    ['def-1', 'def-2', 'def-3'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateX(0)';
+        }, 400 + i * 130);
+    });
+
+    // ── 2. Stagger example cards in ──────────────────────────────────────
+    const cardOrder = ['card-1', 'card-2', 'card-3', 'card-4'];
+    cardOrder.forEach((id, i) => {
+        const card = document.getElementById(id);
+        card.style.transition = 'opacity 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease, box-shadow 0.3s ease';
+        const delay = 550 + i * 140;
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1) translateY(0)';
+        }, delay);
+
+        // Show badge with bounce after card appears
+        const badge = document.getElementById('badge-' + (i + 1));
+        setTimeout(() => {
+            badge.style.opacity = '1';
+            badge.style.transform = 'scale(1.15)';
+            setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
+        }, delay + 200);
+
+        // Pop in tokens one-by-one after card appears
+        const tokenContainer = document.getElementById('tokens-' + (i + 1));
+        const tokens = tokenContainer.querySelectorAll('.token-block');
+        tokens.forEach((tok, j) => {
+            setTimeout(() => {
+                tok.style.animation = 'popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards';
+            }, delay + 300 + j * 100);
+        });
+    });
+
+    // ── 3. Slide up callout ───────────────────────────────────────────────
+    const callout = document.getElementById('callout');
+    callout.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1)';
+    setTimeout(() => {
+        callout.style.opacity = '1';
+        callout.style.transform = 'translateY(0)';
+    }, 1300);
+
+    // ── 4. Cycle highlight across example cards ───────────────────────────
+    const cards = cardOrder.map(id => document.getElementById(id));
+    let activeCard = -1;
+    setInterval(() => {
+        cards.forEach(c => c.classList.remove('highlighted'));
+        activeCard = (activeCard + 1) % cards.length;
+        cards[activeCard].classList.add('highlighted');
+        setTimeout(() => {
+            if (cards[activeCard]) cards[activeCard].classList.remove('highlighted');
+        }, 1400);
+    }, 2400);
+
+    // ── 5. Periodic token glow pulse ──────────────────────────────────────
+    const allTokens = document.querySelectorAll('.token-block');
+    let tokenIdx = 0;
+    setInterval(() => {
+        allTokens.forEach(t => t.classList.remove('token-glow'));
+        const tok = allTokens[tokenIdx % allTokens.length];
+        tok.classList.add('token-glow');
+        setTimeout(() => tok.classList.remove('token-glow'), 700);
+        tokenIdx++;
+    }, 500);
+
+});
+</script>
+</body>
+</html>

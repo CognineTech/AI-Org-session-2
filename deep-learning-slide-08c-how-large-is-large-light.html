@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How Large is "Large"?</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0; padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px; height: 720px;
+        position: relative;
+        background: linear-gradient(135deg, #0a1628 0%, #0f172a 50%, #0d1f3c 100%);
+        display: flex; flex-direction: column;
+        padding: 40px 80px 36px 80px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* ── Background Grid ── */
+    .bg-grid {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 48px 48px;
+        z-index: 0; pointer-events: none;
+    }
+
+    /* ── Glow Orbs ── */
+    .glow-orb-1 {
+        position: absolute; width: 600px; height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 65%);
+        top: -200px; right: -150px;
+        z-index: 0; pointer-events: none;
+        animation: orb-drift-1 8s ease-in-out infinite alternate;
+    }
+    .glow-orb-2 {
+        position: absolute; width: 400px; height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 65%);
+        bottom: -120px; left: -80px;
+        z-index: 0; pointer-events: none;
+        animation: orb-drift-2 10s ease-in-out infinite alternate;
+    }
+    .glow-orb-3 {
+        position: absolute; width: 300px; height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(96,165,250,0.05) 0%, transparent 65%);
+        bottom: 80px; right: 200px;
+        z-index: 0; pointer-events: none;
+        animation: orb-pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes orb-drift-1 {
+        0%   { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(-30px, 30px) scale(1.08); }
+    }
+    @keyframes orb-drift-2 {
+        0%   { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(20px, -20px) scale(1.05); }
+    }
+    @keyframes orb-pulse {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50%       { opacity: 0.7; transform: scale(1.12); }
+    }
+
+    /* ── Particle Canvas ── */
+    #particle-canvas {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 1; pointer-events: none;
+    }
+
+    /* ── Logo ── */
+    .logo-overlay {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        z-index: 100;
+    }
+    .logo-overlay img {
+        height: 50px;
+        opacity: 0.95;
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+    }
+
+    /* ── Header / Title ── */
+    .slide-header {
+        z-index: 10;
+        margin-bottom: 20px;
+        opacity: 0;
+        transform: translateY(-24px);
+        animation: fade-slide-down 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.9rem; font-weight: 800;
+        margin: 0 0 14px 0;
+        color: white;
+        letter-spacing: -1.5px;
+        line-height: 1.1;
+    }
+
+    .title-accent {
+        width: 64px; height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 2px;
+        animation: accent-grow 0.6s cubic-bezier(0.22,1,0.36,1) 0.7s both;
+        transform-origin: left center;
+    }
+
+    @keyframes accent-grow {
+        from { transform: scaleX(0); opacity: 0; }
+        to   { transform: scaleX(1); opacity: 1; }
+    }
+
+    /* ── Stats Grid ── */
+    .stats-grid {
+        z-index: 10;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        flex: 1;
+        margin-bottom: 12px;
+    }
+
+    /* ── Stat Card ── */
+    .stat-card {
+        background: rgba(15, 28, 55, 0.75);
+        border: 1px solid rgba(59, 130, 246, 0.18);
+        border-radius: 16px;
+        padding: 14px 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(36px);
+        cursor: default;
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Staggered entrance animations */
+    .stat-card:nth-child(1) { animation: fade-slide-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.75s forwards; }
+    .stat-card:nth-child(2) { animation: fade-slide-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.95s forwards; }
+    .stat-card:nth-child(3) { animation: fade-slide-up 0.65s cubic-bezier(0.22,1,0.36,1) 1.15s forwards; }
+    .stat-card:nth-child(4) { animation: fade-slide-up 0.65s cubic-bezier(0.22,1,0.36,1) 1.35s forwards; }
+
+    @keyframes fade-slide-up {
+        from { opacity: 0; transform: translateY(36px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card inner shimmer */
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 60%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59,130,246,0.04), transparent);
+        animation: card-shimmer 4s ease-in-out infinite;
+    }
+
+    .stat-card:nth-child(1)::before { animation-delay: 0s; }
+    .stat-card:nth-child(2)::before { animation-delay: 1s; }
+    .stat-card:nth-child(3)::before { animation-delay: 2s; }
+    .stat-card:nth-child(4)::before { animation-delay: 3s; }
+
+    @keyframes card-shimmer {
+        0%   { left: -100%; }
+        50%  { left: 150%; }
+        100% { left: 150%; }
+    }
+
+    /* Hover effect */
+    .stat-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(59, 130, 246, 0.45);
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15), 0 0 0 1px rgba(59,130,246,0.1);
+    }
+
+    /* Card icon */
+    .card-icon {
+        width: 52px; height: 52px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 6px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Capacity meter */
+    .capacity-meter {
+        display: flex;
+        gap: 4px;
+        align-items: flex-end;
+        margin-bottom: 6px;
+        height: 28px;
+    }
+
+    .meter-bar {
+        width: 10px;
+        border-radius: 3px 3px 0 0;
+        background: rgba(59,130,246,0.2);
+        border: 1px solid rgba(59,130,246,0.15);
+        transition: background 0.4s ease, height 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .meter-bar.filled {
+        background: linear-gradient(180deg, #60a5fa, #3b82f6);
+        border-color: rgba(96,165,250,0.5);
+        box-shadow: 0 0 6px rgba(96,165,250,0.4);
+    }
+
+    /* Stat number */
+    .stat-number {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: #60a5fa;
+        letter-spacing: -1px;
+        line-height: 1;
+        margin-bottom: 6px;
+        text-shadow: 0 0 24px rgba(96, 165, 250, 0.4);
+        animation: number-glow 3s ease-in-out infinite;
+        position: relative; z-index: 2;
+    }
+
+    .stat-card:nth-child(1) .stat-number { animation-delay: 0s; }
+    .stat-card:nth-child(2) .stat-number { animation-delay: 0.75s; }
+    .stat-card:nth-child(3) .stat-number { animation-delay: 1.5s; }
+    .stat-card:nth-child(4) .stat-number { animation-delay: 2.25s; }
+
+    @keyframes number-glow {
+        0%, 100% { text-shadow: 0 0 24px rgba(96,165,250,0.4); }
+        50%       { text-shadow: 0 0 40px rgba(96,165,250,0.7), 0 0 60px rgba(59,130,246,0.3); }
+    }
+
+    /* Stat description */
+    .stat-desc {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 400;
+        color: #cbd5e1;
+        letter-spacing: 0.01em;
+        line-height: 1.4;
+        position: relative; z-index: 2;
+    }
+
+    /* Scale label */
+    .scale-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.6rem;
+        color: #3b82f6;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        opacity: 0.8;
+        position: relative; z-index: 2;
+    }
+
+    /* ── Explanation Lines ── */
+    .explanation {
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        opacity: 0;
+        animation: fade-slide-down 0.6s cubic-bezier(0.22,1,0.36,1) 1.7s forwards;
+        border-top: 1px solid rgba(59,130,246,0.15);
+        padding-top: 16px;
+    }
+
+    .explanation-line {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.88rem;
+        color: #94a3b8;
+        line-height: 1.5;
+    }
+
+    .explanation-line i {
+        color: #3b82f6;
+        font-size: 0.75rem;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+
+    /* ── Shared keyframes ── */
+    @keyframes fade-slide-down {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+
+    <!-- Background layers -->
+    <div class="bg-grid"></div>
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+    <div class="glow-orb-3"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo"/>
+    </div>
+
+    <!-- Title -->
+    <div class="slide-header">
+        <h1>How Large is "Large"?</h1>
+        <div class="title-accent"></div>
+    </div>
+
+    <!-- 2×2 Stats Grid -->
+    <div class="stats-grid">
+
+        <!-- Card 1: 1 GB -->
+        <div class="stat-card">
+            <!-- Icon -->
+            <div class="card-icon" style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);">
+                <i class="fas fa-book-open" style="color:#60a5fa;"></i>
+            </div>
+            <!-- Capacity meter: 2/8 filled — baseline unit -->
+            <div class="capacity-meter">
+                <div class="meter-bar filled" style="height:6px;"></div>
+                <div class="meter-bar filled" style="height:9px;"></div>
+                <div class="meter-bar" style="height:12px;"></div>
+                <div class="meter-bar" style="height:15px;"></div>
+                <div class="meter-bar" style="height:18px;"></div>
+                <div class="meter-bar" style="height:21px;"></div>
+                <div class="meter-bar" style="height:24px;"></div>
+                <div class="meter-bar" style="height:27px;"></div>
+            </div>
+            <div class="scale-label">≈ 178 Million Words</div>
+            <div class="stat-number">1 GB</div>
+            <div class="stat-desc">Baseline text unit</div>
+        </div>
+
+        <!-- Card 2: 1 PB -->
+        <div class="stat-card">
+            <!-- Icon -->
+            <div class="card-icon" style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);">
+                <i class="fas fa-server" style="color:#22d3ee;"></i>
+            </div>
+            <!-- Capacity meter: 8/8 filled — maximum scale -->
+            <div class="capacity-meter">
+                <div class="meter-bar filled" style="height:6px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:9px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:12px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:15px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:18px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:21px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:24px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+                <div class="meter-bar filled" style="height:27px;background:linear-gradient(180deg,#22d3ee,#0891b2);border-color:rgba(34,211,238,0.5);box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
+            </div>
+            <div class="scale-label" style="color:#22d3ee;">= 1,000,000 GB</div>
+            <div class="stat-number" style="color:#22d3ee;">1 PB</div>
+            <div class="stat-desc">Petabyte — maximum storage scale</div>
+        </div>
+
+        <!-- Card 3: ~45 TB -->
+        <div class="stat-card">
+            <!-- Icon -->
+            <div class="card-icon" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);">
+                <i class="fas fa-database" style="color:#c084fc;"></i>
+            </div>
+            <!-- Capacity meter: 6/8 filled -->
+            <div class="capacity-meter">
+                <div class="meter-bar filled" style="height:6px;background:linear-gradient(180deg,#c084fc,#7c3aed);border-color:rgba(192,132,252,0.5);box-shadow:0 0 6px rgba(192,132,252,0.4);"></div>
+                <div class="meter-bar filled" style="height:9px;background:linear-gradient(180deg,#c084fc,#7c3aed);border-color:rgba(192,132,252,0.5);box-shadow:0 0 6px rgba(192,132,252,0.4);"></div>
+                <div class="meter-bar filled" style="height:12px;background:linear-gradient(180deg,#c084fc,#7c3aed);border-color:rgba(192,132,252,0.5);box-shadow:0 0 6px rgba(192,132,252,0.4);"></div>
+                <div class="meter-bar filled" style="height:15px;background:linear-gradient(180deg,#c084fc,#7c3aed);border-color:rgba(192,132,252,0.5);box-shadow:0 0 6px rgba(192,132,252,0.4);"></div>
+                <div class="meter-bar filled" style="height:18px;background:linear-gradient(180deg,#c084fc,#7c3aed);border-color:rgba(192,132,252,0.5);box-shadow:0 0 6px rgba(192,132,252,0.4);"></div>
+                <div class="meter-bar filled" style="height:21px;background:linear-gradient(180deg,#c084fc,#7c3aed);border-color:rgba(192,132,252,0.5);box-shadow:0 0 6px rgba(192,132,252,0.4);"></div>
+                <div class="meter-bar" style="height:24px;"></div>
+                <div class="meter-bar" style="height:27px;"></div>
+            </div>
+            <div class="scale-label" style="color:#c084fc;">GPT-3 Training Data</div>
+            <div class="stat-number" style="color:#c084fc;">~45 TB</div>
+            <div class="stat-desc">Terabytes of web-scraped text</div>
+        </div>
+
+        <!-- Card 4: 175B -->
+        <div class="stat-card">
+            <!-- Icon -->
+            <div class="card-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);">
+                <i class="fas fa-brain" style="color:#34d399;"></i>
+            </div>
+            <!-- Capacity meter: 7/8 filled -->
+            <div class="capacity-meter">
+                <div class="meter-bar filled" style="height:6px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar filled" style="height:9px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar filled" style="height:12px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar filled" style="height:15px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar filled" style="height:18px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar filled" style="height:21px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar filled" style="height:24px;background:linear-gradient(180deg,#34d399,#059669);border-color:rgba(52,211,153,0.5);box-shadow:0 0 6px rgba(52,211,153,0.4);"></div>
+                <div class="meter-bar" style="height:27px;"></div>
+            </div>
+            <div class="scale-label" style="color:#34d399;">Parameters in GPT-3</div>
+            <div class="stat-number" style="color:#34d399;">175B</div>
+            <div class="stat-desc">Billion neural network weights</div>
+        </div>
+
+    </div>
+
+    <!-- 2 Lines of Explanation -->
+    <div class="explanation">
+        <div class="explanation-line">
+            <i class="fas fa-circle"></i>
+            <span>Modern LLMs like GPT-3 require petabytes of training data and hundreds of billions of parameters to function effectively.</span>
+        </div>
+        <div class="explanation-line">
+            <i class="fas fa-circle"></i>
+            <span>Scale is the key driver of emergent capabilities — more data and parameters unlock increasingly powerful language understanding and generation.</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ── Floating Particle System ──
+    const canvas = document.getElementById('particle-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    canvas.width  = 1280;
+    canvas.height = 720;
+
+    const PARTICLE_COUNT = 55;
+    const particles = [];
+
+    class Particle {
+        constructor() { this.reset(true); }
+
+        reset(initial = false) {
+            this.x        = Math.random() * canvas.width;
+            this.y        = initial ? Math.random() * canvas.height : canvas.height + 6;
+            this.size     = 1 + Math.random() * 2.5;
+            this.speedY   = 0.25 + Math.random() * 0.55;
+            this.speedX   = (Math.random() - 0.5) * 0.3;
+            this.opacity  = 0;
+            this.maxOpacity = 0.12 + Math.random() * 0.22;
+            this.life     = 0;
+            this.maxLife  = 280 + Math.random() * 200;
+            const hue     = 210 + Math.floor(Math.random() * 30);
+            this.color    = `hsl(${hue}, 80%, 65%)`;
+        }
+
+        update() {
+            this.life++;
+            this.y -= this.speedY;
+            this.x += this.speedX;
+
+            if (this.life < 40) {
+                this.opacity = (this.life / 40) * this.maxOpacity;
+            } else if (this.life > this.maxLife - 40) {
+                this.opacity = ((this.maxLife - this.life) / 40) * this.maxOpacity;
+            } else {
+                this.opacity = this.maxOpacity;
+            }
+
+            if (this.life >= this.maxLife || this.y < -10) this.reset();
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = this.color;
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+</script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deep Learning Title Slide</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0f172a;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated Gradient Background - Dark Slate Theme */
+        .gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #1e293b, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Neural Mesh Pattern Overlay */
+        .mesh-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.2;
+        }
+
+        /* Particles Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        /* Content Container */
+        .content-wrapper {
+            z-index: 10;
+            text-align: center;
+            padding: 40px;
+            max-width: 1000px;
+            position: relative;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            color: #2dd4bf; /* Teal-400 */
+            opacity: 0;
+            animation: fadeInDown 1s ease-out forwards 0.5s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Title - Updated to Blue-400 solid color */
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 6rem;
+            line-height: 1;
+            margin: 0;
+            letter-spacing: -2px;
+            color: #60a5fa; /* Blue-400 to match content slides */
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards 0.8s;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Subtitle */
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            font-size: 2.2rem;
+            margin: 20px 0 10px 0;
+            color: #e2e8f0; /* Slate-200 */
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards 1.1s;
+        }
+
+        /* Third Line */
+        .tagline {
+            font-size: 1.2rem;
+            color: #94a3b8; /* Slate-400 */
+            font-weight: 300;
+            margin-top: 10px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards 1.4s;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tagline::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, #475569, #64748b);
+            border-radius: 2px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Floating Shapes for Depth */
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            opacity: 0.15;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        .shape-1 { width: 300px; height: 300px; background: #334155; top: -50px; left: -50px; animation-delay: 0s; }
+        .shape-2 { width: 400px; height: 400px; background: #1e293b; bottom: -100px; right: -100px; animation-delay: -5s; }
+        .shape-3 { width: 250px; height: 250px; background: #475569; top: 40%; left: 80%; animation-delay: -2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<!-- Background Elements -->
+<div class="gradient-bg"></div>
+<div class="mesh-overlay"></div>
+<div class="shape shape-1"></div>
+<div class="shape shape-2"></div>
+<div class="shape shape-3"></div>
+<canvas id="particle-canvas"></canvas>
+<!-- Main Content -->
+<div class="content-wrapper">
+<div class="badge">Session 2</div>
+<h1>DEEP LEARNING</h1>
+<h2>Neural Networks, Architectures & Applications</h2>
+<p class="tagline">Modern AI Foundations for Vision, Language, and Generation</p>
+</div>
+
+</div>
+</div>
+<script>
+        // Particle Network Animation
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+
+        // Configuration
+        const particleCount = 60;
+        const connectionDistance = 150;
+        const mouseDistance = 200;
+
+        // Resize handling
+        function resize() {
+            width = canvas.width = canvas.parentElement.clientWidth;
+            height = canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        // Particle Class
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.size = Math.random() * 2 + 1;
+                // Updated colors to Slate-500 and Slate-600 to match dark theme
+                this.color = Math.random() > 0.5 ? '#64748b' : '#475569'; 
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Initialize
+        function init() {
+            resize();
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        // Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Draw connections
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        // Updated strokeStyle to match dark slate theme (approx Slate-500)
+                        ctx.strokeStyle = `rgba(100, 116, 139, ${1 - distance / connectionDistance})`; 
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            resize();
+            particles = []; // Reset particles on resize to prevent clustering
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>The Feature Engineering Bottleneck</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #0f172a; }
+    .slide-container {
+      width: 1280px; height: 720px; position: relative; overflow: hidden;
+      background: #0f172a; color: #fff; font-family: 'Inter', sans-serif;
+      padding: 28px 52px 22px; box-sizing: border-box;
+    }
+    .bg-grid { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 40px 40px; }
+    .glow { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
+    .g1 { width: 360px; height: 360px; left: -90px; top: -90px; background: #1e3a8a; opacity: .24; }
+    .g2 { width: 320px; height: 320px; right: -80px; bottom: -80px; background: #4c1d95; opacity: .2; }
+    .g3 { width: 260px; height: 260px; left: 50%; top: 48%; background: #0f766e; opacity: .1; transform: translate(-50%, -50%); }
+
+    .logo-overlay { position: absolute; top: 16px; right: 20px; z-index: 100; }
+    .logo-overlay img { height: 50px; opacity: .95; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,.22)) drop-shadow(0 0 4px rgba(255,255,255,.12)); }
+
+    header {
+      position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: flex-end;
+      border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 10px; margin-bottom: 12px;
+      opacity: 0; animation: fadeInDown .7s ease-out forwards .15s;
+    }
+    h1 { margin: 0; font-family: 'Montserrat', sans-serif; color: #60a5fa; font-size: 2.05rem; font-weight: 800; letter-spacing: -1px; }
+    .hsub { margin-top: 4px; color: #94a3b8; font-size: .82rem; }
+    .badge { background: rgba(30,41,59,.72); border: 1px solid rgba(245,158,11,.35); padding: 5px 16px; border-radius: 20px; color: #fbbf24; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: .7rem; }
+
+    .body { position: relative; z-index: 10; display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; height: 542px; }
+    .panel {
+      background: rgba(15,23,42,.76);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px;
+      padding: 12px;
+      backdrop-filter: blur(5px);
+    }
+    .left { opacity: 0; animation: fadeInLeft .6s ease-out forwards .35s; display: flex; flex-direction: column; }
+    .right { opacity: 0; animation: fadeInRight .6s ease-out forwards .55s; display: flex; flex-direction: column; gap: 8px; }
+
+    .flow { display: grid; grid-template-columns: 190px 36px 240px 36px 1fr; align-items: center; gap: 6px; min-height: 286px; }
+    .box {
+      background: rgba(15,23,42,.72); border: 1px solid rgba(255,255,255,.06); border-radius: 14px;
+      padding: 12px; min-height: 176px; display: flex; flex-direction: column;
+    }
+    .b1 { border-top: 3px solid #60a5fa; }
+    .b2 { border-top: 3px solid #f59e0b; }
+    .b3 { border-top: 3px solid #2dd4bf; }
+    .boxt { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .8rem; margin: 0 0 8px; color: #f8fafc; }
+    .box p { margin: 0; color: #94a3b8; font-size: .68rem; line-height: 1.45; }
+    .arr { color: #64748b; text-align: center; font-size: 1.1rem; animation: arrowPulse 1.2s ease-in-out infinite; }
+
+    .icons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 9px; }
+    .ic {
+      border-radius: 8px; height: 36px; display: flex; align-items: center; justify-content: center;
+      font-size: .64rem; font-weight: 700;
+      border: 1px solid rgba(255,255,255,.07);
+    }
+    .i1 { background: rgba(96,165,250,.13); color: #93c5fd; }
+    .i2 { background: rgba(168,85,247,.13); color: #d8b4fe; }
+    .i3 { background: rgba(245,158,11,.13); color: #fcd34d; }
+    .i4 { background: rgba(20,184,166,.13); color: #5eead4; }
+
+    .i1, .i2, .i3, .i4 {
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .box:hover .ic {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+    }
+
+    .flow-track {
+      position: relative;
+      margin-top: 8px;
+      height: 42px;
+      border-radius: 9px;
+      border: 1px solid rgba(96,165,250,.16);
+      background: linear-gradient(90deg, rgba(96,165,250,.06), rgba(245,158,11,.06), rgba(45,212,191,.07));
+      overflow: hidden;
+    }
+
+    .track-line {
+      position: absolute; left: 18px; right: 18px; top: 50%; height: 2px; transform: translateY(-50%);
+      background: linear-gradient(to right, rgba(96,165,250,.25), rgba(245,158,11,.35), rgba(45,212,191,.35));
+    }
+
+    .packet {
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transform: translate(-20px, -50%);
+      animation: packetFlow 6.2s linear infinite;
+      box-shadow: 0 0 16px currentColor;
+    }
+    .p1 { background: #60a5fa; color: #60a5fa; animation-delay: .2s; }
+    .p2 { background: #a855f7; color: #a855f7; animation-delay: 2s; }
+    .p3 { background: #f59e0b; color: #f59e0b; animation-delay: 3.8s; }
+    .p4 { background: #2dd4bf; color: #2dd4bf; animation-delay: 5s; }
+
+    .flow-labels {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: flex-end;
+      padding: 0 16px 4px;
+      color: #64748b;
+      font-size: .56rem;
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .bottleneck {
+      margin-top: 10px; border-radius: 10px; padding: 9px 12px;
+      background: linear-gradient(135deg, rgba(239,68,68,.1), rgba(245,158,11,.08));
+      border: 1px solid rgba(248,113,113,.25);
+    }
+    .bottleneck h3 { margin: 0 0 5px; font-family: 'Montserrat', sans-serif; color: #fca5a5; font-size: .78rem; }
+    .bottleneck p { margin: 0; color: #fecaca; font-size: .7rem; line-height: 1.45; }
+
+    .question {
+      border-radius: 11px; padding: 10px 12px;
+      background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(20,184,166,.08));
+      border: 1px solid rgba(96,165,250,.24);
+    }
+    .question h3 { margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-size: .8rem; color: #60a5fa; }
+    .question p { margin: 0; color: #e2e8f0; line-height: 1.5; font-size: .74rem; }
+
+    .data-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1;
+    }
+    .mod {
+      border-radius: 10px; padding: 9px 10px;
+      border: 1px solid rgba(255,255,255,.06); background: rgba(15,23,42,.72);
+      display: flex; flex-direction: column; justify-content: flex-start;
+    }
+    .mod h4 { margin: 0 0 6px; font-size: .7rem; font-family: 'Montserrat', sans-serif; color: #f8fafc; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .61rem; font-weight: 700; margin: 2px 2px 0 0; padding: 4px 7px; border-radius: 999px;
+    }
+    .c1 { background: rgba(30,64,175,.2); color: #93c5fd; }
+    .c2 { background: rgba(126,34,206,.2); color: #d8b4fe; }
+    .c3 { background: rgba(180,83,9,.2); color: #fcd34d; }
+    .c4 { background: rgba(15,118,110,.2); color: #5eead4; }
+
+    @keyframes packetFlow {
+      0%   { left: 4%; opacity: 0; }
+      12%  { opacity: 1; }
+      50%  { left: 50%; opacity: 1; }
+      88%  { opacity: 1; }
+      100% { left: 96%; opacity: 0; }
+    }
+    @keyframes arrowPulse {
+      0%, 100% { opacity: .45; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.12); }
+    }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  </style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+  <div class="slide-container">
+    <div class="logo-overlay"><img src="assets/Cogninelogo.png" alt="Cognine Logo"></div>
+    <div class="bg-grid"></div>
+    <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+    <header>
+      <div>
+        <h1>The Feature Engineering Bottleneck</h1>
+        <div class="hsub">Traditional ML struggled with raw images, audio, language, and video</div>
+      </div>
+      <div class="badge">ML Limitation</div>
+    </header>
+
+    <div class="body">
+      <div class="panel left">
+        <div class="flow">
+          <div class="box b1">
+            <h3 class="boxt">Raw Input</h3>
+            <p>Cat vs dog image enters the pipeline as unstructured pixels.</p>
+            <div class="icons">
+              <div class="ic i1"><i class="fas fa-image"></i>&nbsp; Image</div>
+              <div class="ic i2"><i class="fas fa-wave-square"></i>&nbsp; Audio</div>
+              <div class="ic i3"><i class="fas fa-language"></i>&nbsp; Text</div>
+              <div class="ic i4"><i class="fas fa-video"></i>&nbsp; Video</div>
+            </div>
+          </div>
+          <div class="arr"><i class="fas fa-arrow-right"></i></div>
+          <div class="box b2">
+            <h3 class="boxt">Manual Feature Engineering</h3>
+            <p>Humans handcraft useful attributes before model training.</p>
+            <div class="icons">
+              <div class="ic i3">Edges</div>
+              <div class="ic i2">Texture</div>
+              <div class="ic i1">Color</div>
+              <div class="ic i4">Shape</div>
+            </div>
+          </div>
+          <div class="arr"><i class="fas fa-arrow-right"></i></div>
+          <div class="box b3">
+            <h3 class="boxt">Traditional ML Model</h3>
+            <p>Learns from selected features, not directly from raw reality.</p>
+            <svg width="100%" height="78" viewBox="0 0 220 78" preserveAspectRatio="none" style="margin-top: 10px;">
+              <rect x="8" y="36" width="34" height="34" rx="6" fill="rgba(96,165,250,.18)"/>
+              <rect x="52" y="26" width="34" height="44" rx="6" fill="rgba(96,165,250,.28)"/>
+              <rect x="96" y="18" width="34" height="52" rx="6" fill="rgba(96,165,250,.38)"/>
+              <rect x="140" y="30" width="34" height="40" rx="6" fill="rgba(96,165,250,.52)"/>
+              <rect x="184" y="10" width="28" height="60" rx="6" fill="rgba(45,212,191,.72)"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="flow-track" aria-label="Raw input to traditional ML animated flow">
+          <div class="track-line"></div>
+          <div class="packet p1"></div>
+          <div class="packet p2"></div>
+          <div class="packet p3"></div>
+          <div class="packet p4"></div>
+          <div class="flow-labels">
+            <span>Raw Input</span>
+            <span style="text-align:center;">Feature Engineering</span>
+            <span style="text-align:right;">Traditional ML</span>
+          </div>
+        </div>
+
+        <div class="bottleneck">
+          <h3>Why this became a bottleneck</h3>
+          <p>Performance depended on human intuition. If we missed the right features, the model missed the pattern.</p>
+        </div>
+      </div>
+
+      <div class="panel right">
+        <div class="question">
+          <h3>Core Question</h3>
+          <p>If intelligence is about discovering patterns, why are humans manually deciding which patterns matter?</p>
+        </div>
+
+        <div class="data-grid">
+          <div class="mod">
+            <h4>Where ML Works Well</h4>
+            <span class="chip c1"><i class="fas fa-table"></i> Spreadsheets</span>
+            <span class="chip c1"><i class="fas fa-hashtag"></i> Numeric signals</span>
+            <span class="chip c1"><i class="fas fa-chart-line"></i> Structured rows</span>
+          </div>
+
+          <div class="mod">
+            <h4>Where It Struggled</h4>
+            <span class="chip c2"><i class="fas fa-camera"></i> Images</span>
+            <span class="chip c2"><i class="fas fa-microphone"></i> Speech</span>
+            <span class="chip c2"><i class="fas fa-comments"></i> Language</span>
+          </div>
+
+          <div class="mod">
+            <h4>Human Cost</h4>
+            <span class="chip c3"><i class="fas fa-user-cog"></i> Manual tuning</span>
+            <span class="chip c3"><i class="fas fa-clock"></i> Slow iteration</span>
+            <span class="chip c3"><i class="fas fa-random"></i> Fragile transfer</span>
+          </div>
+
+          <div class="mod">
+            <h4>Need for Shift</h4>
+            <span class="chip c4"><i class="fas fa-brain"></i> Learn features</span>
+            <span class="chip c4"><i class="fas fa-layer-group"></i> End-to-end learning</span>
+            <span class="chip c4"><i class="fas fa-rocket"></i> Deep models</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

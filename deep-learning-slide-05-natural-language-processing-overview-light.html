@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Natural Language Processing Overview</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            padding: 32px 56px;
+            box-sizing: border-box;
+            background-image: radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.05) 0%, transparent 60%);
+        }
+
+        /* Header */
+        header {
+            z-index: 10;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #2dd4bf, #0ea5e9); /* Fallback handled by solid color in print usually, but kept for screen aesthetics */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; 
+            /* Fallback for export tools that don't support text clip */
+            color: #2dd4bf; 
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        /* Main Content Split */
+        .content-split {
+            display: flex;
+            flex: 1;
+            gap: 28px;
+            position: relative;
+            z-index: 5;
+            align-items: center;
+        }
+
+        /* Left Column: Text */
+        .text-column {
+            flex: 0 0 38%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .definition-box {
+            background-color: rgba(30, 41, 59, 0.6);
+            border-left: 4px solid #14b8a6;
+            padding: 16px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 18px;
+            backdrop-filter: blur(5px);
+        }
+
+        .definition-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        .concepts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .concept-item {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .concept-item:hover {
+            transform: translateX(5px);
+            background-color: rgba(20, 184, 166, 0.1);
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        .concept-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background-color: rgba(20, 184, 166, 0.15);
+            color: #2dd4bf;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 0.95rem;
+        }
+
+        .concept-content h4 {
+            margin: 0 0 2px 0;
+            font-family: 'Montserrat', sans-serif;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+        }
+
+        .concept-content p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        /* Right Column: Visualization */
+        .visual-column {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            background-color: rgba(15, 23, 42, 0.4);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        #nlp-flow-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Overlay Labels for Canvas Nodes (for accessibility/better text rendering) */
+        .canvas-label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            color: #e2e8f0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            background-color: rgba(15, 23, 42, 0.8);
+            padding: 4px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<header>
+<h1>Natural Language Processing</h1>
+<p class="subtitle">Bridging the gap between human communication and computational understanding</p>
+</header>
+<div class="content-split">
+<!-- Left: Text Content -->
+<div class="text-column">
+<div class="definition-box">
+<p class="definition-text">
+<strong>NLP</strong> is a branch of AI that enables computers to understand, interpret, and generate human language by combining computational linguistics with statistical machine learning.
+                    </p>
+</div>
+<div class="concepts-list">
+<div class="concept-item">
+<div class="concept-icon"><i class="fas fa-cubes"></i></div>
+<div class="concept-content">
+<h4>Tokens</h4>
+<p>Breaking text into smaller units (words/subwords) for processing.</p>
+</div>
+</div>
+<div class="concept-item">
+<div class="concept-icon"><i class="fas fa-project-diagram"></i></div>
+<div class="concept-content">
+<h4>Context</h4>
+<p>Understanding meaning based on surrounding words and position.</p>
+</div>
+</div>
+<div class="concept-item">
+<div class="concept-icon"><i class="fas fa-book-open"></i></div>
+<div class="concept-content">
+<h4>Semantics</h4>
+<p>Extracting the actual meaning, intent, and sentiment behind text.</p>
+</div>
+</div>
+<div class="concept-item">
+<div class="concept-icon"><i class="fas fa-pen-fancy"></i></div>
+<div class="concept-content">
+<h4>Generation</h4>
+<p>Creating coherent, human-like text responses from learned patterns.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Interactive Visualization -->
+<div class="visual-column" id="visual-container">
+<canvas id="nlp-flow-canvas"></canvas>
+<!-- Labels positioned via JS to match canvas nodes -->
+<div id="labels-container"></div>
+</div>
+</div>
+
+</div>
+<script>
+        const canvas = document.getElementById('nlp-flow-canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('visual-container');
+        const labelsContainer = document.getElementById('labels-container');
+
+        // Set canvas size
+        function resize() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // Initial resize
+        resize();
+
+        // Node Configuration
+        // Layout: Left -> Middle -> Right branching
+        const nodes = [
+            { id: 'doc', x: 0.15, y: 0.5, type: 'icon', icon: '\uf15b', label: 'Raw Text', color: '#94a3b8' }, // File Alt
+            { id: 'embed', x: 0.4, y: 0.5, type: 'grid', label: 'Embeddings', color: '#2dd4bf' }, // Vector Grid
+            { id: 'model', x: 0.65, y: 0.5, type: 'brain', label: 'AI Model', color: '#a855f7' }, // Brain
+            // Outputs
+            { id: 'out1', x: 0.85, y: 0.25, type: 'icon', icon: '\uf086', label: 'Chat', color: '#60a5fa' }, // Comments
+            { id: 'out2', x: 0.85, y: 0.5, type: 'icon', icon: '\uf02b', label: 'Labels', color: '#f472b6' }, // Tags
+            { id: 'out3', x: 0.85, y: 0.75, type: 'icon', icon: '\uf53f', label: 'Entities', color: '#fbbf24' } // Palette/Entities
+        ];
+
+        // Connections
+        const connections = [
+            { from: 'doc', to: 'embed' },
+            { from: 'embed', to: 'model' },
+            { from: 'model', to: 'out1' },
+            { from: 'model', to: 'out2' },
+            { from: 'model', to: 'out3' }
+        ];
+
+        // Particles system
+        const particles = [];
+        
+        function createLabels() {
+            labelsContainer.innerHTML = '';
+            nodes.forEach(node => {
+                const div = document.createElement('div');
+                div.className = 'canvas-label';
+                div.textContent = node.label;
+                div.style.left = (node.x * canvas.width) + 'px';
+                div.style.top = (node.y * canvas.height + 40) + 'px'; // Offset below node
+                labelsContainer.appendChild(div);
+            });
+        }
+
+        function drawNode(node) {
+            const x = node.x * canvas.width;
+            const y = node.y * canvas.height;
+            const size = 30;
+
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = node.color;
+            ctx.fillStyle = '#1e293b';
+            
+            // Draw Background Circle
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = node.color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+
+            // Draw Icon/Content
+            ctx.fillStyle = node.color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            if (node.type === 'icon') {
+                ctx.font = '900 24px "Font Awesome 6 Free"';
+                ctx.fillText(node.icon, x, y);
+            } else if (node.type === 'brain') {
+                ctx.font = '900 24px "Font Awesome 6 Free"';
+                ctx.fillText('\uf5dc', x, y); // Brain icon
+            } else if (node.type === 'grid') {
+                // Draw a mini grid
+                const gridSize = 14;
+                const cols = 3;
+                const rows = 3;
+                const startX = x - (cols * gridSize)/2 + gridSize/2;
+                const startY = y - (rows * gridSize)/2 + gridSize/2;
+                
+                ctx.fillStyle = node.color;
+                for(let r=0; r<rows; r++){
+                    for(let c=0; c<cols; c++){
+                        ctx.globalAlpha = 0.5 + Math.random()*0.5; // Twinkle effect
+                        ctx.fillRect(startX + c*gridSize - 2, startY + r*gridSize - 2, 4, 4);
+                    }
+                }
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function drawConnection(conn) {
+            const startNode = nodes.find(n => n.id === conn.from);
+            const endNode = nodes.find(n => n.id === conn.to);
+            
+            const sx = startNode.x * canvas.width;
+            const sy = startNode.y * canvas.height;
+            const ex = endNode.x * canvas.width;
+            const ey = endNode.y * canvas.height;
+
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            
+            // Bezier curve for smoother flow
+            const midX = (sx + ex) / 2;
+            ctx.bezierCurveTo(midX, sy, midX, ey, ex, ey);
+            
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Store path for particles
+            return { sx, sy, ex, ey, midX };
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                // Choose a random connection path
+                const connIndex = Math.floor(Math.random() * connections.length);
+                const conn = connections[connIndex];
+                
+                // We actually want flow: Doc -> Embed -> Model -> Out
+                // So let's pick based on weighted probability or just flow sequentially
+                // Simplification: Pick a random start node that isn't an output
+                const possibleStarts = ['doc', 'embed', 'model'];
+                const startId = possibleStarts[Math.floor(Math.random() * possibleStarts.length)];
+                
+                // Find connection from this start
+                const validConns = connections.filter(c => c.from === startId);
+                const chosenConn = validConns[Math.floor(Math.random() * validConns.length)];
+
+                this.startNode = nodes.find(n => n.id === chosenConn.from);
+                this.endNode = nodes.find(n => n.id === chosenConn.to);
+                this.progress = 0;
+                this.speed = 0.01 + Math.random() * 0.01;
+                this.size = 2 + Math.random() * 2;
+            }
+
+            update() {
+                this.progress += this.speed;
+                if (this.progress >= 1) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const sx = this.startNode.x * canvas.width;
+                const sy = this.startNode.y * canvas.height;
+                const ex = this.endNode.x * canvas.width;
+                const ey = this.endNode.y * canvas.height;
+                const midX = (sx + ex) / 2;
+
+                // Calculate position on Bezier curve
+                const t = this.progress;
+                // B(t) = (1-t)^3 P0 + 3(1-t)^2 t P1 + 3(1-t)t^2 P2 + t^3 P3
+                // Here P0=(sx,sy), P1=(midX,sy), P2=(midX,ey), P3=(ex,ey)
+                
+                // Cubic Bezier formula expansion
+                const cx = Math.pow(1-t, 3)*sx + 3*Math.pow(1-t, 2)*t*midX + 3*(1-t)*Math.pow(t, 2)*midX + Math.pow(t, 3)*ex;
+                const cy = Math.pow(1-t, 3)*sy + 3*Math.pow(1-t, 2)*t*sy + 3*(1-t)*Math.pow(t, 2)*ey + Math.pow(t, 3)*ey;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#2dd4bf'; // Teal particles
+                ctx.fill();
+                
+                // Trail
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = '#2dd4bf';
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < 20; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw connections
+            connections.forEach(conn => drawConnection(conn));
+
+            // Draw nodes
+            nodes.forEach(node => drawNode(node));
+
+            // Animate particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            ctx.shadowBlur = 0; // Reset
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize
+        createLabels();
+        animate();
+
+        // Handle window resize (though slide is fixed size, good practice)
+        window.addEventListener('resize', () => {
+            resize();
+            createLabels();
+        });
+
+    </script>
+</body>
+</html>

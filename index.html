@@ -238,7 +238,7 @@
   </div>
 
   <script>
-    const slides = [
+    const darkSlides = [
       'deep-learning-intro-slide.html',
       'deep-learning-slide-01-session1-recap.html',
       'deep-learning-session2-agenda-slide.html',
@@ -276,6 +276,14 @@
       'deep-learning-slide-21-thank-you-and-questions.html'
     ];
 
+    const slides = darkSlides.map((filePath) => {
+      const dotIndex = filePath.lastIndexOf('.html');
+      const lightPath = dotIndex > 0
+        ? `${filePath.slice(0, dotIndex)}-light.html`
+        : `${filePath}-light.html`;
+      return { dark: filePath, light: lightPath };
+    });
+
     const frame = document.getElementById('slideFrame');
     const stage = document.getElementById('stage');
     const stageScaler = document.getElementById('stageScaler');
@@ -296,83 +304,16 @@
     let controlsHideTimer = null;
     let currentTheme = localStorage.getItem('ppt-theme') || 'dark';
 
-    const LIGHT_THEME_OVERRIDE_CSS = `
-      html, body {
-        background: #f4f8ff !important;
-        color: #0f172a !important;
-      }
-
-      .slide-container {
-        background:
-          radial-gradient(120% 85% at 10% 10%, rgba(59,130,246,0.12), transparent 55%),
-          radial-gradient(120% 90% at 90% 90%, rgba(45,212,191,0.1), transparent 58%),
-          #f8fbff !important;
-        color: #0f172a !important;
-      }
-
-      .gradient-bg {
-        background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
-        opacity: 1 !important;
-      }
-
-      .bg-grid, .mesh-overlay {
-        opacity: 0.5 !important;
-        filter: contrast(1.05) !important;
-      }
-
-      .shape, .glow {
-        opacity: 0.2 !important;
-        filter: blur(85px) saturate(1.08) !important;
-      }
-
-      .panel, .card, .baby-card, .learning-world, .comparison, .comp-card,
-      .source, .growth-track, .feedback-note, .badge, .live-chip,
-      .learning-state, .object-learning {
-        background: rgba(255,255,255,0.78) !important;
-        border-color: rgba(100,116,139,0.26) !important;
-        color: #0f172a !important;
-        box-shadow: 0 8px 24px rgba(15,23,42,0.08) !important;
-      }
-
-      h1, h2, h3, h4, .world-title, .comparison-title {
-        color: #1d4ed8 !important;
-        text-shadow: none !important;
-      }
-
-      .hsub, .world-sub, p, .tagline, .comp-line, .ol-note {
-        color: #334155 !important;
-      }
-
-      #particle-canvas, #flowCanvas, canvas {
-        opacity: 0.95 !important;
-      }
-    `;
-
-    function applyThemeToCurrentSlide() {
-      try {
-        const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-        if (!frameDoc || !frameDoc.head) return;
-
-        const existing = frameDoc.getElementById('ppt-theme-overrides');
-
-        if (currentTheme === 'light') {
-          const styleEl = existing || frameDoc.createElement('style');
-          styleEl.id = 'ppt-theme-overrides';
-          styleEl.textContent = LIGHT_THEME_OVERRIDE_CSS;
-          if (!existing) frameDoc.head.appendChild(styleEl);
-        } else if (existing) {
-          existing.remove();
-        }
-      } catch (_) {
-        // Ignore cross-frame access issues.
-      }
+    function getCurrentSlidePath() {
+      const slide = slides[current];
+      return currentTheme === 'light' ? slide.light : slide.dark;
     }
 
     function applyTheme(theme) {
       currentTheme = theme === 'light' ? 'light' : 'dark';
       document.body.setAttribute('data-theme', currentTheme);
       localStorage.setItem('ppt-theme', currentTheme);
-      applyThemeToCurrentSlide();
+      render();
     }
 
     function toggleTheme() {
@@ -424,7 +365,7 @@
     }
 
     function render() {
-      frame.src = slides[current];
+      frame.src = getCurrentSlidePath();
       counter.textContent = `${current + 1} / ${slides.length}`;
       window.location.hash = `${current + 1}`;
       document.title = `Slide ${current + 1} - Deep Learning Deck`;
@@ -455,7 +396,7 @@
     prevBtn.addEventListener('click', prevSlide);
     nextBtn.addEventListener('click', nextSlide);
     fullBtn.addEventListener('click', toggleFullscreen);
-    openBtn.addEventListener('click', () => window.open(slides[current], '_blank'));
+    openBtn.addEventListener('click', () => window.open(getCurrentSlidePath(), '_blank'));
 
     function handleNavigationKeydown(e) {
       const key = e.key;
@@ -490,10 +431,7 @@
     }
 
     document.addEventListener('keydown', handleNavigationKeydown, true);
-    frame.addEventListener('load', () => {
-      bindFrameKeyboardHandlers();
-      applyThemeToCurrentSlide();
-    });
+    frame.addEventListener('load', bindFrameKeyboardHandlers);
 
     window.addEventListener('message', (event) => {
       const data = event?.data;

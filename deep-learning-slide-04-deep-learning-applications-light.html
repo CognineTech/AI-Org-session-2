@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deep Learning Applications</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            box-sizing: border-box;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 30px 30px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        header {
+            z-index: 10;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            color: white;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Grid Layout */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 24px;
+            z-index: 5;
+            flex: 1;
+        }
+
+        /* Center the bottom row which has 3 items */
+        .apps-grid .bottom-row-wrapper {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            height: 100%;
+        }
+
+        /* Flip Card Styles */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Front Side Design */
+        .flip-card-front {
+            background-color: #1e293b; /* Slate 800 */
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .flip-card:hover .icon-circle {
+            transform: scale(1.1);
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #e2e8f0;
+        }
+
+        /* Back Side Design */
+        .flip-card-back {
+            transform: rotateY(180deg);
+            background-color: #334155;
+            text-align: left;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        .back-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .back-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .back-list li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .back-list li i {
+            margin-top: 5px;
+            margin-right: 8px;
+            font-size: 0.6rem;
+            opacity: 0.7;
+        }
+
+        /* Color Variations */
+        /* Vision - Blue */
+        .card-vision .icon-circle { color: #60a5fa; background-color: rgba(59, 130, 246, 0.1); }
+        .card-vision .flip-card-back { background-color: #1e3a8a; } /* Dark Blue */
+
+        /* NLP - Purple */
+        .card-nlp .icon-circle { color: #c084fc; background-color: rgba(168, 85, 247, 0.1); }
+        .card-nlp .flip-card-back { background-color: #581c87; } /* Dark Purple */
+
+        /* Speech - Teal */
+        .card-speech .icon-circle { color: #2dd4bf; background-color: rgba(20, 184, 166, 0.1); }
+        .card-speech .flip-card-back { background-color: #134e4a; } /* Dark Teal */
+
+        /* Recommender - Rose */
+        .card-rec .icon-circle { color: #fb7185; background-color: rgba(244, 63, 94, 0.1); }
+        .card-rec .flip-card-back { background-color: #881337; } /* Dark Rose */
+
+        /* Healthcare - Emerald */
+        .card-health .icon-circle { color: #34d399; background-color: rgba(16, 185, 129, 0.1); }
+        .card-health .flip-card-back { background-color: #064e3b; } /* Dark Emerald */
+
+        /* Finance - Amber */
+        .card-finance .icon-circle { color: #fbbf24; background-color: rgba(245, 158, 11, 0.1); }
+        .card-finance .flip-card-back { background-color: #78350f; } /* Dark Amber */
+
+        /* Auto - Cyan */
+        .card-auto .icon-circle { color: #22d3ee; background-color: rgba(6, 182, 212, 0.1); }
+        .card-auto .flip-card-back { background-color: #164e63; } /* Dark Cyan */
+
+        /* Helper for the bottom row wrapper to size cards correctly */
+        .bottom-card-wrapper {
+            flex: 1;
+            max-width: 25%; /* Matches the 4-column grid width roughly */
+        }
+        
+        .click-hint {
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+        }
+
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<div class="bg-pattern"></div>
+<header>
+<h1>Deep Learning Applications</h1>
+<p class="subtitle">Transforming industries through intelligent automation and understanding</p>
+</header>
+<div class="apps-grid">
+<!-- Row 1 -->
+<!-- 1. Computer Vision -->
+<div class="flip-card card-vision">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-eye"></i></div>
+<h3 class="card-title">Computer Vision</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">Computer Vision</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Facial Recognition</li>
+<li><i class="fas fa-circle"></i>Medical Imaging</li>
+<li><i class="fas fa-circle"></i>Object Detection</li>
+<li><i class="fas fa-circle"></i>Image Generation</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- 2. NLP -->
+<div class="flip-card card-nlp">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-brain"></i></div>
+<h3 class="card-title">Natural Language<br/>Processing</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">NLP</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Machine Translation</li>
+<li><i class="fas fa-circle"></i>Sentiment Analysis</li>
+<li><i class="fas fa-circle"></i>Chatbots &amp; Assistants</li>
+<li><i class="fas fa-circle"></i>Text Summarization</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- 3. Speech Recognition -->
+<div class="flip-card card-speech">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-microphone-lines"></i></div>
+<h3 class="card-title">Speech<br/>Recognition</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">Speech</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Voice Assistants (Siri)</li>
+<li><i class="fas fa-circle"></i>Speech-to-Text</li>
+<li><i class="fas fa-circle"></i>Voice Authentication</li>
+<li><i class="fas fa-circle"></i>Real-time Transcription</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- 4. Recommender Systems -->
+<div class="flip-card card-rec">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-thumbs-up"></i></div>
+<h3 class="card-title">Recommendation<br/>Systems</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">Recommendations</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Content Streaming</li>
+<li><i class="fas fa-circle"></i>E-commerce Product Ads</li>
+<li><i class="fas fa-circle"></i>Social Media Feeds</li>
+<li><i class="fas fa-circle"></i>Personalized Search</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Row 2 Wrapper for centering -->
+<div class="bottom-row-wrapper">
+<!-- 5. Healthcare -->
+<div class="bottom-card-wrapper">
+<div class="flip-card card-health">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-heart-pulse"></i></div>
+<h3 class="card-title">Healthcare</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">Healthcare</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Disease Diagnosis</li>
+<li><i class="fas fa-circle"></i>Drug Discovery</li>
+<li><i class="fas fa-circle"></i>Genomic Analysis</li>
+<li><i class="fas fa-circle"></i>Patient Monitoring</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. Finance -->
+<div class="bottom-card-wrapper">
+<div class="flip-card card-finance">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-chart-line"></i></div>
+<h3 class="card-title">Finance</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">Finance</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Fraud Detection</li>
+<li><i class="fas fa-circle"></i>Algorithmic Trading</li>
+<li><i class="fas fa-circle"></i>Risk Assessment</li>
+<li><i class="fas fa-circle"></i>Credit Scoring</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- 7. Autonomous Systems -->
+<div class="bottom-card-wrapper">
+<div class="flip-card card-auto">
+<div class="flip-card-inner">
+<div class="flip-card-front">
+<div class="icon-circle"><i class="fas fa-robot"></i></div>
+<h3 class="card-title">Autonomous<br/>Systems</h3>
+<span class="click-hint">Hover to flip</span>
+</div>
+<div class="flip-card-back">
+<h3 class="back-title">Autonomous Systems</h3>
+<ul class="back-list">
+<li><i class="fas fa-circle"></i>Self-Driving Cars</li>
+<li><i class="fas fa-circle"></i>Robotics Control</li>
+<li><i class="fas fa-circle"></i>Drone Navigation</li>
+<li><i class="fas fa-circle"></i>Smart Manufacturing</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

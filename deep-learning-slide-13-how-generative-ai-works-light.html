@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How Generative AI Works</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 60px;
+        box-sizing: border-box;
+    }
+
+    /* Background Pattern */
+    .bg-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.03)"/></svg>');
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* Ambient glow blobs */
+    .glow-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+        animation: blobPulse 6s ease-in-out infinite alternate;
+    }
+    .glow-blob-blue {
+        width: 400px;
+        height: 400px;
+        background: rgba(59, 130, 246, 0.07);
+        top: -80px;
+        left: -80px;
+        animation-delay: 0s;
+    }
+    .glow-blob-teal {
+        width: 350px;
+        height: 350px;
+        background: rgba(45, 212, 191, 0.06);
+        bottom: -60px;
+        right: -60px;
+        animation-delay: 3s;
+    }
+
+    /* Header */
+    header {
+        z-index: 10;
+        margin-bottom: 28px;
+        border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+        padding-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        animation: fadeDown 0.6s ease both;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #60a5fa;
+        margin: 0;
+        letter-spacing: -1px;
+        text-shadow: 0 0 30px rgba(96, 165, 250, 0.25);
+    }
+
+    .subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    /* Main Layout */
+    .content-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        flex: 1;
+        gap: 40px;
+        z-index: 10;
+        position: relative;
+    }
+
+    /* Phase Containers */
+    .phase-column {
+        flex: 1;
+        background-color: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .phase-column:hover {
+        border-color: rgba(96, 165, 250, 0.3);
+        background-color: rgba(30, 41, 59, 0.65);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Phase Header */
+    .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .phase-icon-large {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        transition: transform 0.3s ease;
+    }
+
+    .phase-column:hover .phase-icon-large {
+        transform: scale(1.08) rotate(-3deg);
+    }
+
+    .phase-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.45rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Styling for Training Phase */
+    .training-phase .phase-icon-large {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .training-phase .phase-title { color: #93c5fd; }
+    .training-phase {
+        border-top: 4px solid #3b82f6;
+        animation: slideInLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+
+    /* Styling for Generation Phase */
+    .generation-phase .phase-icon-large {
+        background-color: rgba(45, 212, 191, 0.2);
+        color: #2dd4bf;
+        border: 1px solid rgba(45, 212, 191, 0.35);
+    }
+    .generation-phase .phase-title { color: #5eead4; }
+    .generation-phase {
+        border-top: 4px solid #2dd4bf;
+        animation: slideInRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+
+    /* Steps List */
+    .steps-container {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        flex: 1;
+    }
+
+    .step-card {
+        background-color: #1e293b;
+        border-radius: 8px;
+        padding: 14px 15px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        opacity: 0;
+        animation: riseUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .step-card:hover {
+        transform: translateX(6px);
+        background-color: #273549;
+        border-color: rgba(255,255,255,0.1);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    .training-phase .step-card:hover { border-left: 2px solid #3b82f6; }
+    .generation-phase .step-card:hover { border-left: 2px solid #2dd4bf; }
+
+    .step-number {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.78rem;
+        color: #64748b;
+        background: rgba(15, 23, 42, 0.6);
+        padding: 2px 6px;
+        border-radius: 4px;
+        min-width: 26px;
+        text-align: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .step-icon {
+        color: #94a3b8;
+        font-size: 1.05rem;
+        margin-top: 2px;
+        width: 22px;
+        text-align: center;
+        flex-shrink: 0;
+        transition: color 0.25s ease, transform 0.25s ease;
+    }
+
+    .step-card:hover .step-icon { transform: scale(1.15); }
+    .training-phase .step-card:hover .step-icon { color: #60a5fa; }
+    .generation-phase .step-card:hover .step-icon { color: #2dd4bf; }
+
+    .step-text {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.93rem;
+        color: #e2e8f0;
+        line-height: 1.45;
+        margin: 0;
+    }
+
+    /* Central Connector */
+    .connector-zone {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        flex-shrink: 0;
+        z-index: 10;
+        position: relative;
+        animation: fadeIn 0.8s ease 0.9s both;
+    }
+
+    .beam-svg {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        overflow: visible;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .arrow-container {
+        width: 58px;
+        height: 58px;
+        background-color: #1e293b;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #60a5fa;
+        z-index: 20;
+        position: relative;
+        animation: glowPulse 2.8s ease-in-out infinite;
+    }
+
+    .arrow-icon {
+        font-size: 1.4rem;
+        animation: pulseArrow 2.8s ease-in-out infinite;
+    }
+
+    /* ── Animations ── */
+
+    @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-18px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-40px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(40px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes riseUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseArrow {
+        0%   { transform: translateX(-3px); color: #60a5fa; }
+        50%  { transform: translateX(3px);  color: #2dd4bf; }
+        100% { transform: translateX(-3px); color: #60a5fa; }
+    }
+
+    @keyframes glowPulse {
+        0%   { border-color: #60a5fa; box-shadow: 0 0 20px rgba(0,0,0,0.35), 0 0 0 4px rgba(96,165,250,0.15), 0 0 18px rgba(96,165,250,0.7); }
+        50%  { border-color: #2dd4bf; box-shadow: 0 0 20px rgba(0,0,0,0.35), 0 0 0 4px rgba(45,212,191,0.15), 0 0 18px rgba(45,212,191,0.7); }
+        100% { border-color: #60a5fa; box-shadow: 0 0 20px rgba(0,0,0,0.35), 0 0 0 4px rgba(96,165,250,0.15), 0 0 18px rgba(96,165,250,0.7); }
+    }
+
+    @keyframes blobPulse {
+        from { opacity: 0.6; transform: scale(1); }
+        to   { opacity: 1;   transform: scale(1.12); }
+    }
+
+    /* Staggered step delays — Training */
+    .delay-1 { animation-delay: 0.45s; }
+    .delay-2 { animation-delay: 0.65s; }
+    .delay-3 { animation-delay: 0.85s; }
+    .delay-4 { animation-delay: 1.05s; }
+
+    /* Staggered step delays — Generation */
+    .delay-5 { animation-delay: 0.55s; }
+    .delay-6 { animation-delay: 0.75s; }
+    .delay-7 { animation-delay: 0.95s; }
+    .delay-8 { animation-delay: 1.15s; }
+
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+    <div class="bg-pattern"></div>
+    <div class="glow-blob glow-blob-blue"></div>
+    <div class="glow-blob glow-blob-teal"></div>
+
+    <header>
+        <div>
+            <h1>How Generative AI Works</h1>
+            <p class="subtitle">From learning patterns to creating novel content</p>
+        </div>
+        <div style="font-family: 'JetBrains Mono'; color: #64748b; font-size: 0.9rem;">
+            <i class="fas fa-microchip"></i> Architecture
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+
+        <!-- Training Phase (Left) -->
+        <div class="phase-column training-phase">
+            <div class="phase-header">
+                <div class="phase-icon-large">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div>
+                    <h2 class="phase-title">Training Phase</h2>
+                    <p style="margin:0; color:#64748b; font-size:0.85rem;">Pattern Recognition &amp; Optimization</p>
+                </div>
+            </div>
+            <div class="steps-container">
+                <div class="step-card delay-1">
+                    <div class="step-number">01</div>
+                    <i class="fas fa-database step-icon"></i>
+                    <p class="step-text">Massive datasets collected (text, images, code, etc.)</p>
+                </div>
+                <div class="step-card delay-2">
+                    <div class="step-number">02</div>
+                    <i class="fas fa-project-diagram step-icon"></i>
+                    <p class="step-text">Model learns patterns, structures, and relationships</p>
+                </div>
+                <div class="step-card delay-3">
+                    <div class="step-number">03</div>
+                    <i class="fas fa-sliders-h step-icon"></i>
+                    <p class="step-text">Billions of parameters optimized through backpropagation</p>
+                </div>
+                <div class="step-card delay-4">
+                    <div class="step-number">04</div>
+                    <i class="fas fa-chart-bar step-icon"></i>
+                    <p class="step-text">Model captures statistical distributions of training data</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Central Connector -->
+        <div class="connector-zone">
+            <!--
+                SVG beam: spans from right edge of left card to left edge of right card.
+                connector-zone is 80px wide; gap on each side is 40px.
+                So x=-40 = right edge of left card, x=120 = left edge of right card.
+                Arrowhead tip at x=120, base at x=108.
+            -->
+            <!-- Circular arrow button on top of beam -->
+            <div class="arrow-container">
+                <i class="fas fa-arrow-right arrow-icon"></i>
+            </div>
+
+            <svg class="beam-svg" width="80" height="30" viewBox="0 0 80 30">
+                <defs>
+                    <linearGradient id="particleGrad1" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="transparent"/>
+                        <stop offset="50%" stop-color="#60a5fa"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </linearGradient>
+                    <linearGradient id="particleGrad2" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="transparent"/>
+                        <stop offset="50%" stop-color="#2dd4bf"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </linearGradient>
+                    <!-- Clip particles to the full line region -->
+                    <clipPath id="lineClip">
+                        <rect x="-40" y="0" width="160" height="30"/>
+                    </clipPath>
+                </defs>
+
+                <!-- Animated flow particles clipped to line area -->
+                <g clip-path="url(#lineClip)">
+                    <rect y="12" width="70" height="3" rx="1.5" fill="url(#particleGrad1)">
+                        <animate attributeName="x" from="-110" to="160" dur="2.8s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect y="12" width="70" height="3" rx="1.5" fill="url(#particleGrad2)">
+                        <animate attributeName="x" from="-110" to="160" dur="2.8s" begin="1.4s" repeatCount="indefinite"/>
+                    </rect>
+                </g>
+            </svg>
+        </div>
+
+        <!-- Generation Phase (Right) -->
+        <div class="phase-column generation-phase">
+            <div class="phase-header">
+                <div class="phase-icon-large">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div>
+                    <h2 class="phase-title">Generation Phase</h2>
+                    <p style="margin:0; color:#64748b; font-size:0.85rem;">Inference &amp; Creation</p>
+                </div>
+            </div>
+            <div class="steps-container">
+                <div class="step-card delay-5">
+                    <div class="step-number">01</div>
+                    <i class="fas fa-keyboard step-icon"></i>
+                    <p class="step-text">User provides prompt or seed input context</p>
+                </div>
+                <div class="step-card delay-6">
+                    <div class="step-number">02</div>
+                    <i class="fas fa-network-wired step-icon"></i>
+                    <p class="step-text">Model processes input through pre-trained neural networks</p>
+                </div>
+                <div class="step-card delay-7">
+                    <div class="step-number">03</div>
+                    <i class="fas fa-dice step-icon"></i>
+                    <p class="step-text">Samples from learned probability distributions</p>
+                </div>
+                <div class="step-card delay-8">
+                    <div class="step-number">04</div>
+                    <i class="fas fa-pen-nib step-icon"></i>
+                    <p class="step-text">Generates new content token-by-token or pixel-by-pixel</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+        
+    </div>
+</div>
+</body>
+</html>

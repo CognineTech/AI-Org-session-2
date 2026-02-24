@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NLP Processing Pipeline</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 20%);
+        }
+
+        /* Decorative Grid Background */
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        header {
+            z-index: 10;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
+            color: white;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        /* Pipeline Container */
+        .pipeline-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 15px;
+            z-index: 5;
+            flex: 1;
+        }
+
+        /* Step Card */
+        .step-card {
+            flex: 1;
+            background-color: #1e293b;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            z-index: 10;
+        }
+
+        /* Step Number Badge */
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            border: 2px solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+
+        /* Icon Container */
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 12px;
+            color: #f1f5f9;
+            line-height: 1.2;
+            height: 40px; /* Fixed height for alignment */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-desc {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        /* Code/Example Box */
+        .example-box {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 10px;
+            width: 100%;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #cbd5e1;
+            border-left: 3px solid;
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+
+        /* Arrows between cards */
+        .connector-arrow {
+            position: absolute;
+            right: -18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #475569;
+            font-size: 1.2rem;
+            z-index: 1;
+        }
+
+        /* Color Themes for Steps */
+        /* Step 1: Blue */
+        .step-1 { border-bottom: 4px solid #3b82f6; }
+        .step-1:hover { box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
+        .step-1 .step-number { border-color: #3b82f6; color: #3b82f6; }
+        .step-1 .icon-box { color: #60a5fa; background-color: rgba(59, 130, 246, 0.1); }
+        .step-1 .example-box { border-left-color: #3b82f6; background-color: rgba(59, 130, 246, 0.05); }
+
+        /* Step 2: Indigo */
+        .step-2 { border-bottom: 4px solid #6366f1; }
+        .step-2:hover { box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.3); border-color: #6366f1; }
+        .step-2 .step-number { border-color: #6366f1; color: #6366f1; }
+        .step-2 .icon-box { color: #818cf8; background-color: rgba(99, 102, 241, 0.1); }
+        .step-2 .example-box { border-left-color: #6366f1; background-color: rgba(99, 102, 241, 0.05); }
+
+        /* Step 3: Purple */
+        .step-3 { border-bottom: 4px solid #a855f7; }
+        .step-3:hover { box-shadow: 0 10px 20px -5px rgba(168, 85, 247, 0.3); border-color: #a855f7; }
+        .step-3 .step-number { border-color: #a855f7; color: #a855f7; }
+        .step-3 .icon-box { color: #c084fc; background-color: rgba(168, 85, 247, 0.1); }
+        .step-3 .example-box { border-left-color: #a855f7; background-color: rgba(168, 85, 247, 0.05); }
+
+        /* Step 4: Pink */
+        .step-4 { border-bottom: 4px solid #ec4899; }
+        .step-4:hover { box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.3); border-color: #ec4899; }
+        .step-4 .step-number { border-color: #ec4899; color: #ec4899; }
+        .step-4 .icon-box { color: #f472b6; background-color: rgba(236, 72, 153, 0.1); }
+        .step-4 .example-box { border-left-color: #ec4899; background-color: rgba(236, 72, 153, 0.05); }
+
+        /* Step 5: Teal */
+        .step-5 { border-bottom: 4px solid #14b8a6; }
+        .step-5:hover { box-shadow: 0 10px 20px -5px rgba(20, 184, 166, 0.3); border-color: #14b8a6; }
+        .step-5 .step-number { border-color: #14b8a6; color: #14b8a6; }
+        .step-5 .icon-box { color: #2dd4bf; background-color: rgba(20, 184, 166, 0.1); }
+        .step-5 .example-box { border-left-color: #14b8a6; background-color: rgba(20, 184, 166, 0.05); }
+
+        /* Arrow Flow Animation */
+        @keyframes arrowFlow {
+            0%   { transform: translateY(-50%) translateX(0px);  opacity: 0.3; color: #475569; filter: none; }
+            40%  { transform: translateY(-50%) translateX(7px);  opacity: 1;   color: #ffffff; filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)); }
+            70%  { transform: translateY(-50%) translateX(10px); opacity: 1;   color: #ffffff; filter: drop-shadow(0 0 12px rgba(255,255,255,1)); }
+            100% { transform: translateY(-50%) translateX(0px);  opacity: 0.3; color: #475569; filter: none; }
+        }
+
+        .connector-arrow.flowing {
+            animation: arrowFlow 0.65s ease-in-out forwards;
+        }
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<div class="grid-bg"></div>
+<header>
+<h1>NLP Processing Pipeline</h1>
+<p class="subtitle">From raw text to meaningful insights: The 5-stage workflow</p>
+</header>
+<div class="pipeline-wrapper">
+<!-- Step 1 -->
+<div class="step-card step-1">
+<div class="step-number">1</div>
+<div class="icon-box"><i class="fas fa-filter"></i></div>
+<h3 class="step-title">Text<br/>Preprocessing</h3>
+<p class="step-desc">Cleaning raw data: Tokenization, lowercasing, punctuation removal.</p>
+<div class="example-box">
+<p class="font-bold mb-1" style="color:#60a5fa">In:</p>
+<p>"The movies were Amazing!"</p>
+<p class="font-bold mt-2 mb-1" style="color:#60a5fa">Out:</p>
+<p>["the", "movies", "were", "amazing"]</p>
+</div>
+<i class="fas fa-chevron-right connector-arrow" id="arrow-1"></i>
+</div>
+<!-- Step 2 -->
+<div class="step-card step-2">
+<div class="step-number">2</div>
+<div class="icon-box"><i class="fas fa-compress-alt"></i></div>
+<h3 class="step-title">Normalization</h3>
+<p class="step-desc">Standardizing words: Stemming, Lemmatization, Stopword removal.</p>
+<div class="example-box">
+<p class="font-bold mb-1" style="color:#818cf8">In:</p>
+<p>["the", "movies", "were", "amazing"]</p>
+<p class="font-bold mt-2 mb-1" style="color:#818cf8">Out:</p>
+<p>["movie", "amazing"]</p>
+</div>
+<i class="fas fa-chevron-right connector-arrow" id="arrow-2"></i>
+</div>
+<!-- Step 3 -->
+<div class="step-card step-3">
+<div class="step-number">3</div>
+<div class="icon-box"><i class="fas fa-vector-square"></i></div>
+<h3 class="step-title">Feature<br/>Extraction</h3>
+<p class="step-desc">Converting text to numbers: Bag of Words, TF-IDF, Embeddings.</p>
+<div class="example-box">
+<p class="font-bold mb-1" style="color:#c084fc">In:</p>
+<p>["movie", "amazing"]</p>
+<p class="font-bold mt-2 mb-1" style="color:#c084fc">Out:</p>
+<p>[0.12, 0.98, ...]</p>
+</div>
+<i class="fas fa-chevron-right connector-arrow" id="arrow-3"></i>
+</div>
+<!-- Step 4 -->
+<div class="step-card step-4">
+<div class="step-number">4</div>
+<div class="icon-box"><i class="fas fa-brain"></i></div>
+<h3 class="step-title">Model<br/>Processing</h3>
+<p class="step-desc">Applying AI algorithms: Classification, NER, Sentiment Analysis.</p>
+<div class="example-box">
+<p class="font-bold mb-1" style="color:#f472b6">Task:</p>
+<p>Sentiment</p>
+<p class="font-bold mt-2 mb-1" style="color:#f472b6">Result:</p>
+<p>Positive (0.97)</p>
+</div>
+<i class="fas fa-chevron-right connector-arrow" id="arrow-4"></i>
+</div>
+<!-- Step 5 -->
+<div class="step-card step-5">
+<div class="step-number">5</div>
+<div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
+<h3 class="step-title">Post-<br/>processing</h3>
+<p class="step-desc">Refining output: Formatting, ranking, aggregation.</p>
+<div class="example-box">
+<p class="font-bold mb-1" style="color:#2dd4bf">Raw:</p>
+<p>{cls: 1, p: 0.97}</p>
+<p class="font-bold mt-2 mb-1" style="color:#2dd4bf">Final:</p>
+<p>"Positive Review"</p>
+</div>
+<!-- No Arrow on last card -->
+</div>
+</div>
+
+</div>
+<script>
+        // Sequential arrow animation — fires arrows 1→2→3→4 in a wave
+        const arrowIds = ['arrow-1', 'arrow-2', 'arrow-3', 'arrow-4'];
+        const ARROW_STEP_DELAY = 400;  // ms between each arrow firing
+        const ARROW_ANIM_DURATION = 650; // must match CSS animation duration
+        const WAVE_INTERVAL = 2200;    // ms between each full wave
+
+        function triggerArrow(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            // Remove class to reset, force reflow, then re-add
+            el.classList.remove('flowing');
+            void el.offsetWidth; // trigger reflow
+            el.classList.add('flowing');
+            // Clean up class after animation completes
+            setTimeout(() => el.classList.remove('flowing'), ARROW_ANIM_DURATION);
+        }
+
+        function runWave() {
+            arrowIds.forEach((id, index) => {
+                setTimeout(() => triggerArrow(id), index * ARROW_STEP_DELAY);
+            });
+        }
+
+        // Kick off first wave shortly after load, then repeat
+        setTimeout(runWave, 600);
+        setInterval(runWave, WAVE_INTERVAL);
+    </script>
+</body>
+</html>

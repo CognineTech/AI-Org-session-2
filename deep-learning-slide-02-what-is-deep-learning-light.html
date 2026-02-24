@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>What is Deep Learning?</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0f172a; /* Slate 900 */
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            padding: 32px 56px;
+            box-sizing: border-box;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.03)"/></svg>');
+        }
+        
+        /* Header Styling */
+        header {
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            /* Simulating gradient text with solid fallback for export safety,
+               but using a high-contrast color if gradient fails is better.
+               Here we use a solid color since gradients are discouraged in CSS rules for export. */
+            color: #60a5fa; /* Blue-400 */
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+
+        .definition-box {
+            background-color: rgba(30, 41, 59, 0.7);
+            border-left: 5px solid #3b82f6;
+            padding: 16px 24px;
+            border-radius: 0 10px 10px 0;
+            max-width: 900px;
+            margin-bottom: 18px;
+            backdrop-filter: blur(10px);
+        }
+
+        .definition-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        /* Quadrant Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 18px;
+            flex: 1;
+            height: 100%;
+        }
+
+        .card {
+            background-color: #1e293b; /* Slate 800 */
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Card Colors & Glows (Simulated with Box Shadow/Border) */
+        .card-blue { border-bottom: 4px solid #3b82f6; }
+        .card-purple { border-bottom: 4px solid #a855f7; }
+        .card-teal { border-bottom: 4px solid #14b8a6; }
+        .card-rose { border-bottom: 4px solid #f43f5e; }
+
+        .icon-circle {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.7rem;
+            margin-right: 18px;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-blue .icon-circle { color: #60a5fa; background-color: rgba(59, 130, 246, 0.15); }
+        .card-purple .icon-circle { color: #c084fc; background-color: rgba(168, 85, 247, 0.15); }
+        .card-teal .icon-circle { color: #2dd4bf; background-color: rgba(20, 184, 166, 0.15); }
+        .card-rose .icon-circle { color: #fb7185; background-color: rgba(244, 63, 94, 0.15); }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+
+        .card-stat {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .card-blue .card-stat { color: #93c5fd; }
+        .card-purple .card-stat { color: #d8b4fe; }
+        .card-teal .card-stat { color: #5eead4; }
+        .card-rose .card-stat { color: #fda4af; }
+
+        .card-desc {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        /* Background Shapes */
+        .bg-shape {
+            position: absolute;
+            z-index: 0;
+            filter: blur(80px);
+            opacity: 0.2;
+        }
+        .shape-1 { top: -100px; right: -100px; width: 500px; height: 500px; background-color: #3b82f6; border-radius: 50%; }
+        .shape-2 { bottom: -100px; left: -100px; width: 400px; height: 400px; background-color: #a855f7; border-radius: 50%; }
+
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<!-- Ambient Background -->
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+<header>
+<h1>What is Deep Learning?</h1>
+</header>
+<div class="definition-box">
+<p class="definition-text">
+                Deep Learning is a specialized subset of machine learning that uses <strong>multi-layered neural networks</strong> to automatically learn hierarchical patterns and complex features directly from raw data, mimicking the human brain's structure.
+            </p>
+</div>
+<div class="grid-container">
+<!-- Card 1: Multiple Layers -->
+<div class="card card-blue">
+<div class="icon-circle">
+<i class="fas fa-layer-group"></i>
+</div>
+<div class="card-content">
+<h3 class="card-title">Multiple Layers</h3>
+<p class="card-stat">Depth: 10s to 100s of layers</p>
+<p class="card-desc">Unlike traditional shallow networks, deep models process information through many successive layers of representation.</p>
+</div>
+</div>
+<!-- Card 2: Large Scale -->
+<div class="card card-purple">
+<div class="icon-circle">
+<i class="fas fa-project-diagram"></i>
+</div>
+<div class="card-content">
+<h3 class="card-title">Large Scale</h3>
+<p class="card-stat">Parameters: Millions to Billions</p>
+<p class="card-desc">Massive architecture sizes allow models to capture intricate nuances and vast amounts of knowledge.</p>
+</div>
+</div>
+<!-- Card 3: Automatic Features -->
+<div class="card card-teal">
+<div class="icon-circle">
+<i class="fas fa-magic"></i>
+</div>
+<div class="card-content">
+<h3 class="card-title">Automatic Features</h3>
+<p class="card-stat">No Manual Engineering</p>
+<p class="card-desc">The network learns to identify relevant features (edges, shapes, concepts) automatically during training.</p>
+</div>
+</div>
+<!-- Card 4: Data Hungry -->
+<div class="card card-rose">
+<div class="icon-circle">
+<i class="fas fa-database"></i>
+</div>
+<div class="card-content">
+<h3 class="card-title">Data Hungry</h3>
+<p class="card-stat">Requires Massive Datasets</p>
+<p class="card-desc">Performance scales logarithmically with data volume; thrives on big data where traditional algorithms plateau.</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Essential Prompt Components</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Montserrat:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+            box-sizing: border-box;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.03)"/></svg>');
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Header */
+        header {
+            z-index: 10;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            color: #60a5fa; /* Blue 400 */
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 300;
+        }
+
+        /* Main Content - 4 Steps Horizontal */
+        .steps-wrapper {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex: 1;
+            z-index: 10;
+        }
+
+        .step-card {
+            flex: 1;
+            background-color: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            opacity: 0;
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(96, 165, 250, 0.4);
+            background-color: #25334d;
+        }
+
+        /* Connecting Lines (visual only) */
+        .step-card:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -22px;
+            width: 24px;
+            height: 2px;
+            background-color: rgba(96, 165, 250, 0.2);
+            z-index: 0;
+        }
+
+        /* Step Number Badge */
+        .step-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.1);
+        }
+
+        .step-card:hover .step-badge {
+            background-color: #60a5fa;
+            color: white;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+        }
+
+        /* Step Title */
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            flex-grow: 0;
+        }
+
+        /* Example Box */
+        .example-box {
+            background-color: rgba(15, 23, 42, 0.6);
+            border-left: 3px solid #60a5fa;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: auto; /* Pushes to bottom */
+        }
+
+        .example-label {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .example-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .highlight {
+            color: #60a5fa;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.5s; }
+        .delay-4 { animation-delay: 0.7s; }
+
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<div class="bg-pattern"></div>
+<header>
+<h1>Essential Prompt Components</h1>
+<p class="subtitle">The four pillars of effective prompt construction for optimal AI results</p>
+</header>
+<div class="steps-wrapper">
+<!-- Step 1: ROLE -->
+<div class="step-card delay-1">
+<div class="step-badge">1</div>
+<h2 class="step-title">ROLE</h2>
+<p class="step-subtitle">Define who the AI should be to set the tone and perspective.</p>
+<div class="example-box">
+<span class="example-label">Example</span>
+<p class="example-content">"<span class="highlight">You are a senior software developer with strong backend expertise.</span>"</p>
+</div>
+</div>
+<!-- Step 2: CONTEXT -->
+<div class="step-card delay-2">
+<div class="step-badge">2</div>
+<h2 class="step-title">CONTEXT</h2>
+<p class="step-subtitle">Provide background information to frame the request.</p>
+<div class="example-box">
+<span class="example-label">Example</span>
+<p class="example-content">"<span class="highlight">I am a junior developer currently learning Spring Boot basics.</span>"</p>
+</div>
+</div>
+<!-- Step 3: TASK -->
+<div class="step-card delay-3">
+<div class="step-badge">3</div>
+<h2 class="step-title">TASK</h2>
+<p class="step-subtitle">Clearly state exactly what you need the AI to do.</p>
+<div class="example-box">
+<span class="example-label">Example</span>
+<p class="example-content">"<span class="highlight">Explain dependency injection in simple and practical terms.</span>"</p>
+</div>
+</div>
+<!-- Step 4: FORMAT -->
+<div class="step-card delay-4">
+<div class="step-badge">4</div>
+<h2 class="step-title">FORMAT</h2>
+<p class="step-subtitle">Specify the output structure you expect.</p>
+<div class="example-box">
+<span class="example-label">Example</span>
+<p class="example-content">"<span class="highlight">Provide the explanation using bullet points with a small example.</span>"</p>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

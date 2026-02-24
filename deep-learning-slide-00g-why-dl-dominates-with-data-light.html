@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Why Deep Learning Dominates with Data</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #0f172a; }
+    .slide-container {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      overflow: hidden;
+      background: #0f172a;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      padding: 28px 52px 22px;
+      box-sizing: border-box;
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .g1 { width: 360px; height: 360px; left: -90px; top: -90px; background: #1e3a8a; opacity: .24; }
+    .g2 { width: 320px; height: 320px; right: -80px; bottom: -80px; background: #4c1d95; opacity: .2; }
+    .g3 { width: 260px; height: 260px; left: 52%; top: 48%; background: #0f766e; opacity: .1; transform: translate(-50%, -50%); }
+
+    .logo-overlay { position: absolute; top: 16px; right: 20px; z-index: 100; }
+    .logo-overlay img {
+      height: 50px;
+      opacity: .95;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.22)) drop-shadow(0 0 4px rgba(255,255,255,.12));
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeInDown .7s ease-out forwards .15s;
+    }
+    h1 {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      color: #60a5fa;
+      font-size: 2.05rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+    .hsub {
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: .82rem;
+    }
+    .badge {
+      background: rgba(30,41,59,.72);
+      border: 1px solid rgba(45,212,191,.35);
+      padding: 5px 16px;
+      border-radius: 20px;
+      color: #2dd4bf;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: .7rem;
+    }
+
+    .example-tag {
+      position: relative;
+      z-index: 10;
+      margin-bottom: 10px;
+      border-radius: 11px;
+      padding: 10px 12px;
+      border: 1px solid rgba(96,165,250,.2);
+      background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(20,184,166,.08));
+      color: #e2e8f0;
+      font-size: .76rem;
+    }
+    .example-tag strong { color: #60a5fa; }
+
+    .compare {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      height: 505px;
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.07);
+      background: rgba(15,23,42,.76);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      opacity: 0;
+      animation: fadeInUp .6s ease-out forwards;
+      backdrop-filter: blur(5px);
+    }
+    .c1 { border-top: 3px solid #f59e0b; animation-delay: .35s; }
+    .c2 { border-top: 3px solid #a855f7; animation-delay: .55s; }
+    .c3 { border-top: 3px solid #2dd4bf; animation-delay: .75s; }
+
+    .ctop { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .cicon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+    }
+    .c1 .cicon { background: rgba(245,158,11,.14); color: #fbbf24; }
+    .c2 .cicon { background: rgba(168,85,247,.14); color: #d8b4fe; }
+    .c3 .cicon { background: rgba(20,184,166,.14); color: #5eead4; }
+
+    .ctitle {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: .8rem;
+      color: #f8fafc;
+    }
+    .cdesc {
+      margin: 0;
+      color: #94a3b8;
+      font-size: .68rem;
+      line-height: 1.45;
+    }
+
+    .data-lane {
+      margin-top: 10px;
+      height: 64px;
+      border-radius: 9px;
+      border: 1px solid rgba(148,163,184,.15);
+      background: linear-gradient(180deg, rgba(2,6,23,.72), rgba(2,6,23,.42));
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .chunk {
+      position: absolute;
+      width: 126px;
+      height: 24px;
+      border-radius: 6px;
+      left: -136px;
+      top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .56rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      animation: laneFlow 6.2s linear infinite;
+    }
+    .d1 { background: rgba(245,158,11,.26); animation-delay: .2s; }
+    .d2 { background: rgba(168,85,247,.24); animation-delay: 2s; }
+    .d3 { background: rgba(20,184,166,.24); animation-delay: 3.8s; }
+
+    .scale-mini {
+      margin-top: 9px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(30,41,59,.76);
+      padding: 6px;
+      flex-shrink: 0;
+    }
+
+    .points {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .points li {
+      display: flex;
+      gap: 7px;
+      color: #cbd5e1;
+      font-size: .66rem;
+      line-height: 1.42;
+      align-items: flex-start;
+    }
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .c1 .dot { background: #f59e0b; }
+    .c2 .dot { background: #a855f7; }
+    .c3 .dot { background: #2dd4bf; }
+
+    .score {
+      margin-top: 9px;
+      border-radius: 9px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: .64rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #e2e8f0;
+      background: rgba(2,6,23,.38);
+    }
+
+    .conclusion {
+      position: relative;
+      z-index: 10;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(45,212,191,.25);
+      background: linear-gradient(135deg, rgba(45,212,191,.08), rgba(59,130,246,.08));
+      padding: 8px 12px;
+      color: #e2e8f0;
+      font-size: .72rem;
+      line-height: 1.45;
+    }
+    .conclusion strong { color: #5eead4; }
+
+    @keyframes laneFlow {
+      0% { left: -136px; opacity: 0; }
+      10% { opacity: 1; }
+      72% { left: 250px; opacity: 1; }
+      100% { left: 330px; opacity: 0; }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+  <div class="slide-container">
+    <div class="logo-overlay"><img src="assets/Cogninelogo.png" alt="Cognine Logo"></div>
+    <div class="bg-grid"></div>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="glow g3"></div>
+
+    <header>
+      <div>
+        <h1>Why Deep Learning Dominates with Data</h1>
+        <div class="hsub">Same scenario, different scale behavior as data grows</div>
+      </div>
+      <div class="badge">Scaling Comparison</div>
+    </header>
+
+    <div class="example-tag">
+      <strong>Single Scenario:</strong> Model performance as available training data increases from small to very large.
+    </div>
+
+    <div class="compare">
+      <div class="card c1">
+        <div class="ctop">
+          <div class="cicon"><i class="fas fa-feather-alt"></i></div>
+          <h3 class="ctitle">Small Data</h3>
+        </div>
+        <p class="cdesc">Simple models can generalize quickly with limited examples.</p>
+
+        <div class="data-lane">
+          <div class="chunk d1">Few samples</div>
+          <div class="chunk d2">Sparse coverage</div>
+          <div class="chunk d3">Low diversity</div>
+        </div>
+
+        <div class="scale-mini">
+          <svg width="100%" height="72" viewBox="0 0 220 72" preserveAspectRatio="none">
+            <line x1="14" y1="58" x2="206" y2="58" stroke="#334155" stroke-width="1.6"/>
+            <line x1="14" y1="58" x2="14" y2="12" stroke="#334155" stroke-width="1.6"/>
+            <polyline points="14,52 60,44 106,34 152,28 206,24" fill="none" stroke="#f59e0b" stroke-width="3"/>
+            <polyline points="14,55 60,50 106,46 152,42 206,39" fill="none" stroke="#2dd4bf" stroke-width="2.4" opacity=".7"/>
+          </svg>
+        </div>
+
+        <ul class="points">
+          <li><span class="dot"></span>Lower variance, fewer parameters needed.</li>
+          <li><span class="dot"></span>Traditional ML is often competitive here.</li>
+          <li><span class="dot"></span>Deep models may be under-trained.</li>
+        </ul>
+
+        <div class="score"><span>Best fit at this stage</span><span>Traditional ML</span></div>
+      </div>
+
+      <div class="card c2">
+        <div class="ctop">
+          <div class="cicon"><i class="fas fa-balance-scale"></i></div>
+          <h3 class="ctitle">Medium Data</h3>
+        </div>
+        <p class="cdesc">Both improve, but manual feature engineering starts capping gains.</p>
+
+        <div class="data-lane">
+          <div class="chunk d1">More labels</div>
+          <div class="chunk d2">More variation</div>
+          <div class="chunk d3">Long-tail cases</div>
+        </div>
+
+        <div class="scale-mini">
+          <svg width="100%" height="72" viewBox="0 0 220 72" preserveAspectRatio="none">
+            <line x1="14" y1="58" x2="206" y2="58" stroke="#334155" stroke-width="1.6"/>
+            <line x1="14" y1="58" x2="14" y2="12" stroke="#334155" stroke-width="1.6"/>
+            <polyline points="14,52 60,41 106,34 152,30 206,28" fill="none" stroke="#f59e0b" stroke-width="3"/>
+            <polyline points="14,55 60,46 106,34 152,23 206,16" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+          </svg>
+        </div>
+
+        <ul class="points">
+          <li><span class="dot"></span>Traditional ML rises, then begins to plateau.</li>
+          <li><span class="dot"></span>Feature engineering effort keeps increasing.</li>
+          <li><span class="dot"></span>Deep models start passing ML baseline.</li>
+        </ul>
+
+        <div class="score"><span>Crossover trend</span><span>Deep Learning begins lead</span></div>
+      </div>
+
+      <div class="card c3">
+        <div class="ctop">
+          <div class="cicon"><i class="fas fa-rocket"></i></div>
+          <h3 class="ctitle">Large Data</h3>
+        </div>
+        <p class="cdesc">Deep networks continue improving through representation learning.</p>
+
+        <div class="data-lane">
+          <div class="chunk d1">Massive corpus</div>
+          <div class="chunk d2">Rich contexts</div>
+          <div class="chunk d3">Complex patterns</div>
+        </div>
+
+        <div class="scale-mini">
+          <svg width="100%" height="72" viewBox="0 0 220 72" preserveAspectRatio="none">
+            <line x1="14" y1="58" x2="206" y2="58" stroke="#334155" stroke-width="1.6"/>
+            <line x1="14" y1="58" x2="14" y2="12" stroke="#334155" stroke-width="1.6"/>
+            <polyline points="14,50 60,39 106,32 152,29 206,27" fill="none" stroke="#f59e0b" stroke-width="2.8" opacity=".85"/>
+            <polyline points="14,55 60,42 106,29 152,17 206,10" fill="none" stroke="#2dd4bf" stroke-width="3.2"/>
+          </svg>
+        </div>
+
+        <ul class="points">
+          <li><span class="dot"></span>Learns hierarchical features from raw input.</li>
+          <li><span class="dot"></span>Handles complex non-linear structure better.</li>
+          <li><span class="dot"></span>Keeps improving with additional data scale.</li>
+        </ul>
+
+        <div class="score"><span>Best fit at this stage</span><span>Deep Learning</span></div>
+      </div>
+    </div>
+
+    <div class="conclusion">
+      <strong>Core takeaway:</strong> Traditional ML improves early but plateaus; deep learning scales its performance with larger data and richer representations.
+    </div>
+  </div>
+</body>
+</html>

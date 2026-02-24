@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Advanced Techniques</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Montserrat:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a; /* Slate 900 */
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 60px;
+        box-sizing: border-box;
+    }
+
+    /* Background Pattern */
+    .bg-dots {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    header {
+        z-index: 10;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 3rem;
+        font-weight: 800;
+        margin: 0 0 10px 0;
+        letter-spacing: -1px;
+        color: #60a5fa; /* Blue 400 requested */
+        text-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 300;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* Grid Layout */
+    .techniques-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 20px;
+        z-index: 5;
+        flex: 1;
+    }
+
+    /* Technique Card */
+    .tech-card {
+        background-color: #1e293b; /* Slate 800 */
+        border-radius: 16px;
+        padding: 20px;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .tech-card:hover {
+        transform: translateY(-6px);
+        background-color: #25334d;
+        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Header: Icon & Title */
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.25rem;
+        margin-right: 14px;
+        flex-shrink: 0;
+        background-color: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #f8fafc;
+        line-height: 1.3;
+    }
+
+    /* Content */
+    .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tech-desc {
+        font-size: 0.85rem;
+        color: #cbd5e1;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Card Hover Colors */
+    
+    /* 1. Chain of Thought - Blue */
+    .tech-cot:hover { border-color: #3b82f6; }
+    .tech-cot .icon-box { color: #60a5fa; background-color: rgba(59, 130, 246, 0.1); }
+    .tech-cot:hover .icon-box { background-color: #3b82f6; color: white; }
+
+    /* 2. Few-Shot - Purple */
+    .tech-few:hover { border-color: #a855f7; }
+    .tech-few .icon-box { color: #c084fc; background-color: rgba(168, 85, 247, 0.1); }
+    .tech-few:hover .icon-box { background-color: #a855f7; color: white; }
+
+    /* 3. Constraints - Rose */
+    .tech-const:hover { border-color: #f43f5e; }
+    .tech-const .icon-box { color: #fb7185; background-color: rgba(244, 63, 94, 0.1); }
+    .tech-const:hover .icon-box { background-color: #f43f5e; color: white; }
+
+    /* 4. Iterative - Emerald */
+    .tech-iter:hover { border-color: #10b981; }
+    .tech-iter .icon-box { color: #34d399; background-color: rgba(16, 185, 129, 0.1); }
+    .tech-iter:hover .icon-box { background-color: #10b981; color: white; }
+
+    /* 5. Temperature - Amber */
+    .tech-temp:hover { border-color: #f59e0b; }
+    .tech-temp .icon-box { color: #fbbf24; background-color: rgba(245, 158, 11, 0.1); }
+    .tech-temp:hover .icon-box { background-color: #f59e0b; color: white; }
+
+    /* 6. Persona - Cyan */
+    .tech-pers:hover { border-color: #06b6d4; }
+    .tech-pers .icon-box { color: #22d3ee; background-color: rgba(6, 182, 212, 0.1); }
+    .tech-pers:hover .icon-box { background-color: #06b6d4; color: white; }
+
+    /* Number Badge */
+    .card-number {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.03);
+        line-height: 1;
+        transition: color 0.3s;
+    }
+    .tech-card:hover .card-number {
+        color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Bottom Reminder */
+    .reminder-box {
+        background-color: rgba(30, 41, 59, 0.7);
+        border-left: 4px solid #60a5fa;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        display: flex;
+        align-items: center;
+        margin-top: 16px;
+    }
+    .reminder-icon {
+        color: #60a5fa;
+        font-size: 1.2rem;
+        margin-right: 15px;
+    }
+    .reminder-text {
+        font-size: 0.95rem;
+        color: #e2e8f0;
+        font-weight: 500;
+        font-style: italic;
+    }
+
+
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<div class="bg-dots"></div>
+<header>
+<h1>Advanced Techniques</h1>
+<p class="subtitle">Sophisticated strategies to optimize LLM performance and reliability</p>
+</header>
+<div class="techniques-grid">
+<!-- 1. Chain of Thought -->
+<div class="tech-card tech-cot">
+<span class="card-number">01</span>
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-link"></i></div>
+<h3 class="card-title">Chain of<br/>Thought</h3>
+</div>
+<div class="card-content">
+<p class="tech-desc">Ask AI to "think step-by-step" for complex reasoning tasks to improve logic and accuracy.</p>
+</div>
+</div>
+<!-- 2. Few-Shot Learning -->
+<div class="tech-card tech-few">
+<span class="card-number">02</span>
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-layer-group"></i></div>
+<h3 class="card-title">Few-Shot<br/>Learning</h3>
+</div>
+<div class="card-content">
+<p class="tech-desc">Provide 2-3 examples of desired input-output pairs to guide the model's pattern recognition.</p>
+</div>
+</div>
+<!-- 3. Constraints & Guardrails -->
+<div class="tech-card tech-const">
+<span class="card-number">03</span>
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-shield-halved"></i></div>
+<h3 class="card-title">Constraints &amp;<br/>Guardrails</h3>
+</div>
+<div class="card-content">
+<p class="tech-desc">Specify exactly what NOT to include or set strict length limits to control output scope.</p>
+</div>
+</div>
+<!-- 4. Iterative Refinement -->
+<div class="tech-card tech-iter">
+<span class="card-number">04</span>
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-arrows-rotate"></i></div>
+<h3 class="card-title">Iterative<br/>Refinement</h3>
+</div>
+<div class="card-content">
+<p class="tech-desc">Build on previous responses with specific follow-up prompts to polish and perfect the output.</p>
+</div>
+</div>
+<!-- 5. Temperature Control -->
+<div class="tech-card tech-temp">
+<span class="card-number">05</span>
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-temperature-half"></i></div>
+<h3 class="card-title">Temperature<br/>Control</h3>
+</div>
+<div class="card-content">
+<p class="tech-desc">Adjust creativity vs. consistency in responses. Low for facts, high for creative writing.</p>
+</div>
+</div>
+<!-- 6. Persona Consistency -->
+<div class="tech-card tech-pers">
+<span class="card-number">06</span>
+<div class="card-header">
+<div class="icon-box"><i class="fas fa-user-tag"></i></div>
+<h3 class="card-title">Persona<br/>Consistency</h3>
+</div>
+<div class="card-content">
+<p class="tech-desc">Maintain the same assigned role throughout the entire conversation for uniform tone.</p>
+</div>
+</div>
+</div>
+<!-- Bottom Reminder -->
+<div class="reminder-box">
+<i class="fas fa-lightbulb reminder-icon"></i>
+<p class="reminder-text">Remember: Great prompts are clear, specific, and give the AI enough context to understand your goals.</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

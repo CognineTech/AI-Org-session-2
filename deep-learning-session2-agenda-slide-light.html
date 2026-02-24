@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Session 2 Agenda</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 32px 56px;
+        box-sizing: border-box;
+        background-image: url('data:image/svg+xml;utf8,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M1 1h2v2H1V1zm29 29h2v2h-2v-2z" fill="rgba(255,255,255,0.03)"/></svg>');
+    }
+
+    /* Ambient Glows */
+    .glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        z-index: 0;
+        opacity: 0.2;
+    }
+    .glow-1 { top: -150px; left: 20%; width: 500px; height: 500px; background-color: #3b82f6; }
+    .glow-2 { bottom: -150px; right: 20%; width: 500px; height: 500px; background-color: #a855f7; }
+
+    /* Header Section */
+    header {
+        z-index: 10;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .header-content {
+        flex: 1;
+    }
+
+    .session-tag {
+        display: inline-block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #2dd4bf;
+        background: rgba(45, 212, 191, 0.1);
+        padding: 5px 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(45, 212, 191, 0.2);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 3rem;
+        font-weight: 900;
+        margin: 0;
+        line-height: 1.1;
+        color: #60a5fa;
+        letter-spacing: -1px;
+        opacity: 0;
+        animation: slideInLeft 0.8s ease-out forwards 0.2s;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        margin-top: 8px;
+        margin-bottom: 0;
+        font-weight: 300;
+        max-width: 600px;
+        opacity: 0;
+        animation: slideInLeft 0.8s ease-out forwards 0.4s;
+    }
+
+    /* Agenda Cards Row */
+    .agenda-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        z-index: 10;
+        flex: 1;
+        min-height: 0;
+    }
+
+    /* Card Styles */
+    .topic-card {
+        flex: 1;
+        background-color: #1e293b;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 16px;
+        text-align: center;
+        opacity: 0;
+        transform-origin: bottom center;
+        animation: popUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        cursor: default;
+    }
+
+    .topic-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        background-color: #334155;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        z-index: 20;
+    }
+
+    /* Background Number */
+    .card-number {
+        position: absolute;
+        top: -16px;
+        right: -16px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 5rem;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.03);
+        line-height: 1;
+        transition: color 0.3s;
+        user-select: none;
+    }
+
+    .topic-card:hover .card-number {
+        color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Icon */
+    .icon-wrapper {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 18px;
+        transition: transform 0.4s, background-color 0.4s;
+        position: relative;
+        z-index: 2;
+        flex-shrink: 0;
+    }
+
+    .topic-card:hover .icon-wrapper {
+        transform: scale(1.1) rotate(5deg);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Card Text */
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: white;
+        line-height: 1.4;
+        margin-bottom: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-desc {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        height: 0;
+        overflow: hidden;
+        position: relative;
+        z-index: 2;
+    }
+
+    .topic-card:hover .card-desc {
+        opacity: 1;
+        transform: translateY(0);
+        height: auto;
+        margin-top: 8px;
+    }
+
+    /* Card Colour Themes */
+    /* 1. Deep Learning — Blue */
+    .card-1 { border-top: 4px solid #3b82f6; animation-delay: 0.6s; }
+    .card-1 .icon-wrapper { color: #60a5fa; box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
+
+    /* 2. NLP — Teal */
+    .card-2 { border-top: 4px solid #14b8a6; animation-delay: 0.7s; }
+    .card-2 .icon-wrapper { color: #2dd4bf; box-shadow: 0 0 20px rgba(20, 184, 166, 0.1); }
+
+    /* 3. LLMs — Purple */
+    .card-3 { border-top: 4px solid #a855f7; animation-delay: 0.8s; }
+    .card-3 .icon-wrapper { color: #c084fc; box-shadow: 0 0 20px rgba(168, 85, 247, 0.1); }
+
+    /* 4. GenAI — Rose */
+    .card-4 { border-top: 4px solid #f43f5e; animation-delay: 0.9s; }
+    .card-4 .icon-wrapper { color: #fb7185; box-shadow: 0 0 20px rgba(244, 63, 94, 0.1); }
+
+    /* 5. Prompt Engineering — Amber */
+    .card-5 { border-top: 4px solid #f59e0b; animation-delay: 1.0s; }
+    .card-5 .icon-wrapper { color: #fbbf24; box-shadow: 0 0 20px rgba(245, 158, 11, 0.1); }
+
+    /* Animations */
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes popUp {
+        from { opacity: 0; transform: translateY(40px) scale(0.9); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+
+    <!-- Background Glows -->
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="session-tag">SESSION 2</div>
+            <h1>What We'll Cover</h1>
+            <p class="subtitle">From neurons to generative intelligence — a complete deep dive.</p>
+        </div>
+    </header>
+
+    <!-- Agenda Cards -->
+    <div class="agenda-container">
+
+        <!-- 01 Deep Learning -->
+        <div class="topic-card card-1">
+            <div class="card-number">01</div>
+            <div class="icon-wrapper"><i class="fas fa-brain"></i></div>
+            <div class="card-title">Deep Learning</div>
+            <div class="card-desc">Neural Networks &amp; Architectures</div>
+        </div>
+
+        <!-- 02 NLP -->
+        <div class="topic-card card-2">
+            <div class="card-number">02</div>
+            <div class="icon-wrapper"><i class="fas fa-comments"></i></div>
+            <div class="card-title">Natural Language Processing</div>
+            <div class="card-desc">Understanding Human Language</div>
+        </div>
+
+        <!-- 03 LLMs -->
+        <div class="topic-card card-3">
+            <div class="card-number">03</div>
+            <div class="icon-wrapper"><i class="fas fa-robot"></i></div>
+            <div class="card-title">Large Language Models</div>
+            <div class="card-desc">Transformers &amp; Scale</div>
+        </div>
+
+        <!-- 04 GenAI -->
+        <div class="topic-card card-4">
+            <div class="card-number">04</div>
+            <div class="icon-wrapper"><i class="fas fa-wand-magic-sparkles"></i></div>
+            <div class="card-title">Generative AI</div>
+            <div class="card-desc">Creating Text, Images &amp; More</div>
+        </div>
+
+        <!-- 05 Prompt Engineering -->
+        <div class="topic-card card-5">
+            <div class="card-number">05</div>
+            <div class="icon-wrapper"><i class="fas fa-bolt"></i></div>
+            <div class="card-title">Prompt Engineering</div>
+            <div class="card-desc">Mastering Inputs for Output</div>
+        </div>
+
+    </div>
+        
+    </div>
+
+</div>
+</body>
+</html>

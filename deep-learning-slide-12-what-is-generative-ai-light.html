@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>What is Generative AI?</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 100px;
+        box-sizing: border-box;
+    }
+
+    /* Background Pattern */
+    .bg-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* Animated gradient orbs in background */
+    .bg-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.07;
+        pointer-events: none;
+        z-index: 0;
+        animation: orbFloat 8s ease-in-out infinite;
+    }
+    .bg-orb-1 {
+        width: 400px; height: 400px;
+        background: #60a5fa;
+        top: -100px; left: -100px;
+        animation-delay: 0s;
+    }
+    .bg-orb-2 {
+        width: 350px; height: 350px;
+        background: #e879f9;
+        bottom: -80px; right: -80px;
+        animation-delay: -4s;
+    }
+    @keyframes orbFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(20px, 20px) scale(1.05); }
+    }
+
+    header {
+        z-index: 10;
+        margin-bottom: 20px;
+        text-align: center;
+        position: relative;
+        animation: fadeSlideDown 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes fadeSlideDown {
+        from { opacity: 0; transform: translateY(-24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 10px 0;
+        color: #60a5fa;
+        letter-spacing: -1px;
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Animated underline on h1 */
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #60a5fa, #e879f9);
+        border-radius: 2px;
+        animation: underlineGrow 0.8s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes underlineGrow {
+        to { width: 80%; }
+    }
+
+    .subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        color: #94a3b8;
+        font-weight: 400;
+        line-height: 1.5;
+        max-width: 900px;
+        margin: 0 auto;
+        animation: fadeIn 0.8s 0.3s ease both;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    /* Main Content Area */
+    .showcase-area {
+        flex: 1;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 260px;
+        z-index: 10;
+        padding: 0;
+        margin-top: 10px;
+        overflow: visible;
+    }
+
+    /* Canvas for Connections */
+    #connection-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* Center Hub */
+    .hub-container {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 220px;
+        height: 220px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 20;
+        animation: hubAppear 0.9s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes hubAppear {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .hub-core {
+        width: 160px;
+        height: 160px;
+        background-color: #1e293b;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        box-shadow: 0 0 50px rgba(96, 165, 250, 0.2);
+        z-index: 20;
+        transition: box-shadow 0.4s ease;
+    }
+    .hub-core:hover {
+        box-shadow: 0 0 80px rgba(96, 165, 250, 0.45);
+    }
+
+    /* Outer pulse ring */
+    .hub-pulse {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 2px solid rgba(96, 165, 250, 0.3);
+        transform: translate(-50%, -50%);
+        animation: pulseRing 2.5s ease-out infinite;
+        pointer-events: none;
+    }
+    .hub-pulse-2 {
+        animation-delay: 1.25s;
+    }
+    @keyframes pulseRing {
+        0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.6; }
+        100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
+    }
+
+    .hub-ring {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+        animation: spin 20s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .hub-icon {
+        font-size: 3rem;
+        color: white;
+        margin-bottom: 10px;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        animation: brainPulse 3s ease-in-out infinite;
+    }
+    @keyframes brainPulse {
+        0%, 100% { text-shadow: 0 0 15px rgba(255,255,255,0.5); transform: scale(1); }
+        50%       { text-shadow: 0 0 30px rgba(96,165,250,0.8); transform: scale(1.08); }
+    }
+
+    .hub-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    /* Modality Columns */
+    .modality-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+        width: 290px;
+        z-index: 10;
+        height: 100%;
+        overflow: visible;
+    }
+
+    /* Modality Card */
+    .modality-card {
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        cursor: pointer;
+        overflow: visible;
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    .right-col .modality-card {
+        transform: translateX(30px);
+    }
+
+    /* Staggered entrance animations */
+    .modality-card.animate-in {
+        animation: cardSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .right-col .modality-card.animate-in {
+        animation: cardSlideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes cardSlideIn {
+        from { opacity: 0; transform: translateX(-30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes cardSlideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .modality-card:hover {
+        transform: scale(1.05);
+        background-color: #334155;
+        z-index: 30;
+    }
+
+    .card-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+        color: white;
+        transition: transform 0.3s ease;
+    }
+    .modality-card:hover .card-icon-box {
+        transform: rotate(10deg) scale(1.15);
+    }
+
+    .card-content {
+        flex: 1;
+    }
+
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0 0 4px 0;
+        color: white;
+    }
+
+    .card-models {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.3;
+    }
+
+    /* Preview Popover (Sample Output) */
+    .preview-popover {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 200px;
+        background-color: #0f172a;
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid transparent;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    /* Left column: popover appears to the left of the card */
+    .theme-teal .preview-popover {
+        right: calc(100% + 15px);
+        left: auto;
+    }
+
+    /* Right column: popover appears to the right of the card */
+    .theme-magenta .preview-popover {
+        left: calc(100% + 15px);
+        right: auto;
+    }
+
+    /* Show popover on card hover (CSS-driven — works for entire card area) */
+    .modality-card:hover .preview-popover {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .preview-header {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        opacity: 0.8;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .preview-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.75rem;
+        color: #e2e8f0;
+    }
+    .preview-list li {
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .modality-card:hover .preview-list li:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.05s; }
+    .modality-card:hover .preview-list li:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.12s; }
+    .modality-card:hover .preview-list li:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.19s; }
+
+    .preview-list li i {
+        margin-right: 8px;
+        font-size: 0.6rem;
+        opacity: 0.7;
+    }
+
+    /* Theme Colors */
+    
+    /* Left Side - Teal/Blue Theme */
+    .theme-teal .card-icon-box { background-color: rgba(96, 165, 250, 0.1); color: #60a5fa; }
+    .theme-teal:hover { border-color: #60a5fa; box-shadow: 0 0 20px rgba(96, 165, 250, 0.2); }
+    .theme-teal .card-title { color: #93c5fd; }
+    .theme-teal .preview-popover { border-color: #60a5fa; }
+    
+    /* Right Side - Magenta/Purple Theme */
+    .theme-magenta .card-icon-box { background-color: rgba(232, 121, 249, 0.1); color: #e879f9; }
+    .theme-magenta:hover { border-color: #e879f9; box-shadow: 0 0 20px rgba(232, 121, 249, 0.2); }
+    .theme-magenta .card-title { color: #f0abfc; }
+    .theme-magenta .preview-popover { border-color: #e879f9; }
+
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+    <div class="bg-pattern"></div>
+    <!-- Ambient orbs -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+
+    <header>
+        <h1>What is Generative AI?</h1>
+        <p class="subtitle">Generative AI is a type of AI that creates new content—such as text, images, audio, video, and code—by learning patterns from data, unlike traditional AI which mainly classifies or predicts.</p>
+    </header>
+
+    <!-- Canvas for Connections -->
+    <canvas id="connection-canvas"></canvas>
+
+    <!-- Main Content -->
+    <div class="showcase-area">
+        <!-- Left Column (Blue/Teal Theme) -->
+        <div class="modality-column left-col">
+            <!-- Text Card -->
+            <div class="modality-card theme-teal" data-index="0">
+                <div class="card-icon-box"><i class="fas fa-file-alt"></i></div>
+                <div class="card-content">
+                    <h3 class="card-title">Text</h3>
+                    <p class="card-models">GPT-4, Claude, Gemini</p>
+                </div>
+                <div class="preview-popover">
+                    <div class="preview-header"><span>Outputs</span> <i class="fas fa-paragraph"></i></div>
+                    <ul class="preview-list">
+                        <li><i class="fas fa-chevron-right"></i> Articles</li>
+                        <li><i class="fas fa-chevron-right"></i> Code</li>
+                        <li><i class="fas fa-chevron-right"></i> Conversations</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Audio Card -->
+            <div class="modality-card theme-teal" data-index="1">
+                <div class="card-icon-box"><i class="fas fa-microphone"></i></div>
+                <div class="card-content">
+                    <h3 class="card-title">Audio</h3>
+                    <p class="card-models">ElevenLabs, MusicGen</p>
+                </div>
+                <div class="preview-popover">
+                    <div class="preview-header"><span>Outputs</span> <i class="fas fa-volume-up"></i></div>
+                    <ul class="preview-list">
+                        <li><i class="fas fa-chevron-right"></i> Voice</li>
+                        <li><i class="fas fa-chevron-right"></i> Music</li>
+                        <li><i class="fas fa-chevron-right"></i> Sound Effects</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Code Card -->
+            <div class="modality-card theme-teal" data-index="2">
+                <div class="card-icon-box"><i class="fas fa-code"></i></div>
+                <div class="card-content">
+                    <h3 class="card-title">Code</h3>
+                    <p class="card-models">Copilot, CodeLlama</p>
+                </div>
+                <div class="preview-popover">
+                    <div class="preview-header"><span>Outputs</span> <i class="fas fa-terminal"></i></div>
+                    <ul class="preview-list">
+                        <li><i class="fas fa-chevron-right"></i> Functions</li>
+                        <li><i class="fas fa-chevron-right"></i> Apps</li>
+                        <li><i class="fas fa-chevron-right"></i> Scripts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Hub -->
+        <div class="hub-container">
+            <div class="hub-pulse"></div>
+            <div class="hub-pulse hub-pulse-2"></div>
+            <div class="hub-ring"></div>
+            <div class="hub-core" id="hub-core">
+                <i class="fas fa-brain hub-icon"></i>
+                <h2 class="hub-title">Foundational<br/>Model</h2>
+            </div>
+        </div>
+
+        <!-- Right Column (Magenta Theme) -->
+        <div class="modality-column right-col">
+            <!-- Image Card -->
+            <div class="modality-card theme-magenta" data-index="3">
+                <div class="card-icon-box"><i class="fas fa-image"></i></div>
+                <div class="card-content">
+                    <h3 class="card-title">Image</h3>
+                    <p class="card-models">DALL·E, Midjourney, SD</p>
+                </div>
+                <div class="preview-popover">
+                    <div class="preview-header"><span>Outputs</span> <i class="fas fa-palette"></i></div>
+                    <ul class="preview-list">
+                        <li><i class="fas fa-chevron-right"></i> Art</li>
+                        <li><i class="fas fa-chevron-right"></i> Designs</li>
+                        <li><i class="fas fa-chevron-right"></i> Photos</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Video Card -->
+            <div class="modality-card theme-magenta" data-index="4">
+                <div class="card-icon-box"><i class="fas fa-video"></i></div>
+                <div class="card-content">
+                    <h3 class="card-title">Video</h3>
+                    <p class="card-models">Sora, Runway, Pika</p>
+                </div>
+                <div class="preview-popover">
+                    <div class="preview-header"><span>Outputs</span> <i class="fas fa-film"></i></div>
+                    <ul class="preview-list">
+                        <li><i class="fas fa-chevron-right"></i> Clips</li>
+                        <li><i class="fas fa-chevron-right"></i> Animations</li>
+                        <li><i class="fas fa-chevron-right"></i> Edits</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 3D Card -->
+            <div class="modality-card theme-magenta" data-index="5">
+                <div class="card-icon-box"><i class="fas fa-cube"></i></div>
+                <div class="card-content">
+                    <h3 class="card-title">3D</h3>
+                    <p class="card-models">Point-E, Shap-E</p>
+                </div>
+                <div class="preview-popover">
+                    <div class="preview-header"><span>Outputs</span> <i class="fas fa-cubes"></i></div>
+                    <ul class="preview-list">
+                        <li><i class="fas fa-chevron-right"></i> Models</li>
+                        <li><i class="fas fa-chevron-right"></i> Scenes</li>
+                        <li><i class="fas fa-chevron-right"></i> Assets</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('connection-canvas');
+    const ctx = canvas.getContext('2d');
+    const hub = document.getElementById('hub-core');
+    const cards = document.querySelectorAll('.modality-card');
+
+    // ── Staggered card entrance ──────────────────────────────────────────────
+    cards.forEach((card, i) => {
+        const delay = 0.5 + i * 0.12;
+        card.style.animationDelay = `${delay}s`;
+        card.classList.add('animate-in');
+    });
+
+    // ── Canvas resize ────────────────────────────────────────────────────────
+    function resize() {
+        canvas.width  = 1280;
+        canvas.height = 720;
+    }
+    resize();
+
+    // ── Position tracking ────────────────────────────────────────────────────
+    let hubCenter  = { x: 0, y: 0 };
+    let cardPoints = [];
+
+    function updatePositions() {
+        const hubRect       = hub.getBoundingClientRect();
+        const containerRect = document.querySelector('.slide-container').getBoundingClientRect();
+
+        hubCenter = {
+            x: hubRect.left + hubRect.width  / 2 - containerRect.left,
+            y: hubRect.top  + hubRect.height / 2 - containerRect.top
+        };
+
+        cardPoints = [];
+        cards.forEach((card, index) => {
+            const rect   = card.getBoundingClientRect();
+            const isLeft = index < 3;
+            const x = isLeft
+                ? rect.right  - containerRect.left
+                : rect.left   - containerRect.left;
+            const y = rect.top + rect.height / 2 - containerRect.top;
+            cardPoints.push({ x, y, isLeft, el: card });
+        });
+    }
+
+    // ── Particle System ──────────────────────────────────────────────────────
+    const particles = [];
+
+    class Particle {
+        constructor(targetIndex) {
+            this.reset(targetIndex);
+        }
+
+        reset(targetIndex) {
+            this.targetIndex = targetIndex !== undefined
+                ? targetIndex
+                : Math.floor(Math.random() * 6);
+            this.progress = 0;
+            this.speed    = 0.008 + Math.random() * 0.012;
+            this.size     = 1.5 + Math.random() * 1.5;
+            this.alpha    = 0.6 + Math.random() * 0.4;
+        }
+
+        update() {
+            this.progress += this.speed;
+            if (this.progress >= 1) {
+                this.reset();
+            }
+        }
+
+        draw() {
+            const target = cardPoints[this.targetIndex];
+            if (!target) return;
+
+            const dx = target.x - hubCenter.x;
+            const dy = target.y - hubCenter.y;
+
+            const x = hubCenter.x + dx * this.progress;
+            const y = hubCenter.y + dy * this.progress;
+
+            // Fade in/out along path
+            const fade = this.progress < 0.15
+                ? this.progress / 0.15
+                : this.progress > 0.85
+                    ? (1 - this.progress) / 0.15
+                    : 1;
+
+            ctx.beginPath();
+            ctx.arc(x, y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = target.isLeft
+                ? `rgba(96, 165, 250, ${this.alpha * fade})`
+                : `rgba(232, 121, 249, ${this.alpha * fade})`;
+            ctx.fill();
+        }
+    }
+
+    // Initialise particles
+    for (let i = 0; i < 36; i++) {
+        const p = new Particle(Math.floor(Math.random() * 6));
+        p.progress = Math.random(); // stagger start positions
+        particles.push(p);
+    }
+
+    // ── Hover tracking (for canvas line highlight) ────────────────────────────
+    let hoveredIndex = -1;
+
+    cards.forEach((card, idx) => {
+        card.addEventListener('mouseenter', () => {
+            hoveredIndex = idx;
+        });
+        card.addEventListener('mouseleave', () => {
+            hoveredIndex = -1;
+        });
+    });
+
+    // ── Draw a bezier connection line ────────────────────────────────────────
+    function drawLine(pt, idx) {
+        const isHovered = hoveredIndex === idx;
+        const baseColor = pt.isLeft ? '96, 165, 250' : '232, 121, 249';
+
+        // Control point for a gentle curve
+        const cpX = (hubCenter.x + pt.x) / 2;
+        const cpY = (hubCenter.y + pt.y) / 2 + (pt.isLeft ? -20 : 20);
+
+        ctx.beginPath();
+        ctx.moveTo(hubCenter.x, hubCenter.y);
+        ctx.quadraticCurveTo(cpX, cpY, pt.x, pt.y);
+
+        if (isHovered) {
+            ctx.strokeStyle = `rgba(${baseColor}, 0.85)`;
+            ctx.lineWidth   = 2.5;
+            ctx.shadowBlur  = 12;
+            ctx.shadowColor = `rgb(${baseColor})`;
+        } else {
+            ctx.strokeStyle = `rgba(${baseColor}, 0.15)`;
+            ctx.lineWidth   = 1;
+            ctx.shadowBlur  = 0;
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+
+    // ── Animation loop ───────────────────────────────────────────────────────
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (cardPoints.length === 0) updatePositions();
+
+        // Lines
+        cardPoints.forEach((pt, idx) => drawLine(pt, idx));
+
+        // Particles
+        particles.forEach(p => { p.update(); p.draw(); });
+
+        requestAnimationFrame(animate);
+    }
+
+    // Delay start to ensure layout is complete
+    setTimeout(() => {
+        updatePositions();
+        animate();
+    }, 150);
+</script>
+</body>
+</html>

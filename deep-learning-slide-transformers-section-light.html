@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Large Language Models (LLM) Section Cover</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        background-color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    /* Background Canvas */
+    #particle-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    /* Glow orbs */
+    .glow-orb-left {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%);
+        top: -120px;
+        left: -120px;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .glow-orb-right {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
+        bottom: -120px;
+        right: -120px;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    /* Content Wrapper */
+    .content-wrapper {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 85%;
+    }
+
+    /* Icon */
+    .section-icon {
+        font-size: 4rem;
+        color: #a855f7;
+        margin-bottom: 28px;
+        opacity: 0;
+        filter: drop-shadow(0 0 24px rgba(168, 85, 247, 0.6));
+        animation: iconFloat 3s ease-in-out infinite, fadeZoomIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    /* Tag above title */
+    .section-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(168, 85, 247, 0.12);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+        color: #d8b4fe;
+        padding: 6px 18px;
+        border-radius: 999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+        opacity: 0;
+        animation: subtitleFade 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s forwards;
+    }
+
+    /* Main Title */
+    h1.main-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 3.2rem;
+        font-weight: 900;
+        line-height: 1.15;
+        margin: 0;
+        letter-spacing: -1.5px;
+        text-transform: uppercase;
+        opacity: 0;
+        transform: translateY(24px);
+        animation: titleReveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s forwards;
+    }
+
+    h1.main-title .word-transformers {
+        color: #a855f7;
+        text-shadow: 0 0 50px rgba(168, 85, 247, 0.35);
+    }
+
+    h1.main-title .word-amp {
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 3.5rem;
+        margin: 0 12px;
+    }
+
+    h1.main-title .word-llms {
+        color: #c084fc;
+        text-shadow: 0 0 50px rgba(192, 132, 252, 0.35);
+    }
+
+    /* Decorative Line */
+    .separator {
+        width: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc);
+        margin: 26px auto;
+        border-radius: 3px;
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+        animation: lineExpand 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.65s forwards;
+    }
+
+    /* Subtitle */
+    p.subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.35rem;
+        color: #e2e8f0;
+        font-weight: 300;
+        margin: 0 0 32px 0;
+        opacity: 0;
+        letter-spacing: 0.3px;
+        transform: translateY(10px);
+        animation: subtitleFade 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.85s forwards;
+    }
+
+    /* Topic pills row */
+    .topics-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        opacity: 0;
+        animation: subtitleFade 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.1s forwards;
+    }
+
+    .topic-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(168, 85, 247, 0.25);
+        border-radius: 999px;
+        padding: 7px 16px;
+        font-size: 0.78rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #cbd5e1;
+        backdrop-filter: blur(4px);
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .topic-pill i {
+        color: #a855f7;
+        font-size: 0.75rem;
+    }
+
+    .topic-pill:hover {
+        border-color: rgba(168, 85, 247, 0.55);
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.2);
+    }
+
+    /* Animations */
+    @keyframes fadeZoomIn {
+        from { opacity: 0; transform: scale(0.75); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes titleReveal {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes lineExpand {
+        from { width: 0; opacity: 0; }
+        to   { width: 160px; opacity: 1; }
+    }
+
+    @keyframes subtitleFade {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 0.92; transform: translateY(0); }
+    }
+
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0px); }
+        50%       { transform: translateY(-12px); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Glow orbs -->
+    <div class="glow-orb-left"></div>
+    <div class="glow-orb-right"></div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+
+        <!-- Icon -->
+        <div class="section-icon">
+            <i class="fas fa-brain"></i>
+        </div>
+
+        <!-- Title -->
+        <h1 class="main-title">
+            <span class="word-transformers">Large Language Models</span><br>
+            <span class="word-llms">(LLM)</span>
+        </h1>
+
+        <!-- Separator -->
+        <div class="separator"></div>
+
+        <!-- Subtitle -->
+        <p class="subtitle">AI Systems That Understand, Reason &amp; Generate Human Language at Scale</p>
+
+    </div>
+        
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = 1280;
+    canvas.height = 720;
+
+    const particles = [];
+    const particleCount = 65;
+    const connectionDistance = 145;
+
+    class Particle {
+        constructor() {
+            this.reset();
+        }
+
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.45;
+            this.vy = (Math.random() - 0.5) * 0.45;
+            this.size = Math.random() * 2.2 + 0.8;
+            // Purple / violet palette matching transformer slides
+            const colors = ['#a855f7', '#7c3aed', '#c084fc', '#8b5cf6', '#6d28d9', '#d8b4fe'];
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.alpha = Math.random() * 0.55 + 0.1;
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width)  this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.alpha;
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw connections
+        ctx.lineWidth = 0.8;
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < connectionDistance) {
+                    const opacity = (1 - dist / connectionDistance) * 0.18;
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(168, 85, 247, ${opacity})`;
+                    ctx.globalAlpha = 1;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw particles
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+</body>
+</html>

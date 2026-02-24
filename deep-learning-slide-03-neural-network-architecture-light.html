@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Neural Network Architecture</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 40px;
+            box-sizing: border-box;
+            background-color: #0f172a;
+        }
+        
+        /* Header */
+        header {
+            z-index: 10;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        /* Main Architecture Container */
+        .architecture-container {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding: 0 60px;
+            z-index: 5;
+        }
+
+        /* Canvas for connections */
+        #network-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Layer Columns */
+        .layer-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            height: 100%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .layer-title-box {
+            background-color: #1e293b;
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+            width: 220px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s;
+        }
+        .layer-title-box:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .layer-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .layer-desc {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.3;
+        }
+
+        /* Nodes Container */
+        .nodes-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px; /* Spacing between nodes */
+            padding: 10px;
+        }
+
+        /* Individual Nodes */
+        .node {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #1e293b;
+            border: 3px solid;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            position: relative;
+            transition: transform 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+        
+        .node:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        /* Specific Layer Styles */
+        .input-layer .node {
+            border-color: #3b82f6; /* Blue */
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        .hidden-layer .node {
+            border-color: #a855f7; /* Purple */
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+            width: 40px;
+            height: 40px;
+        }
+        .output-layer .node {
+            border-color: #14b8a6; /* Teal */
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Icons inside nodes/panels */
+        .feature-icon {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Data Panel (Floating infos) */
+        .info-panel {
+            margin-top: 30px;
+            background-color: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            backdrop-filter: blur(5px);
+        }
+        .info-panel i {
+            font-size: 1.2rem;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            display: flex;
+            gap: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+    
+        /* Company Logo Overlay */
+        .logo-overlay {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+        .logo-overlay img {
+            height: 50px;
+            opacity: 0.95;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.12));
+        }
+</style>
+
+<style id="light-version-overrides">
+  body { background: #f4f8ff !important; color: #0f172a !important; }
+  .slide-container {
+    background:
+      radial-gradient(120% 90% at 12% 8%, rgba(59,130,246,.14), transparent 55%),
+      radial-gradient(110% 85% at 88% 88%, rgba(45,212,191,.12), transparent 58%),
+      #f8fbff !important;
+    color: #0f172a !important;
+  }
+  .gradient-bg {
+    background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0f2fe, #eef2ff, #f8fafc) !important;
+    opacity: 1 !important;
+  }
+  .bg-grid, .mesh-overlay, .bg-dots { opacity: .45 !important; }
+  .shape, .glow { opacity: .18 !important; filter: blur(80px) !important; }
+
+  header, h1, h2, h3, h4, .title, .world-title, .comparison-title, .layer-title {
+    color: #1d4ed8 !important;
+    text-shadow: none !important;
+  }
+
+  p, .subtitle, .hsub, .tagline, .cdesc, .task-desc, .comp-line, .layer-desc,
+  .points li, .verdict, .conclusion, .node, .tag, .info-panel, .score, .legend {
+    color: #334155 !important;
+  }
+
+  .panel, .card, .task-card, .baby-card, .learning-world, .comparison, .comp-card,
+  .source, .growth-track, .feedback-note, .badge, .live-chip, .learning-state,
+  .layer-title-box, .info-panel, .start-card, .conclusion, .example-tag {
+    background: rgba(255,255,255,.82) !important;
+    border-color: rgba(100,116,139,.28) !important;
+    box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+  }
+
+  .icon-box, .cicon {
+    background: rgba(59,130,246,.12) !important;
+  }
+
+  .dot, .feature-icon, i {
+    filter: saturate(1.05);
+  }
+</style>
+
+</head>
+<body>
+<div class="slide-container">
+    <!-- Company Logo -->
+    <div class="logo-overlay">
+        <img src="assets/Cogninelogo.png" alt="Cognine Logo">
+    </div>
+
+<header>
+<h1>Neural Network Architecture</h1>
+<p class="subtitle">How data flows through Deep Learning models</p>
+</header>
+<div class="architecture-container">
+<canvas id="network-canvas"></canvas>
+<!-- INPUT LAYER -->
+<div class="layer-column input-layer">
+<div class="layer-title-box" style="border-left: 4px solid #3b82f6;">
+<div class="layer-title">Input Layer</div>
+<div class="layer-desc">Receives raw data</div>
+</div>
+<div class="nodes-wrapper" id="input-nodes">
+<div class="node"><i class="fas fa-image feature-icon" style="font-size: 0.9rem;"></i></div>
+<div class="node"><i class="fas fa-font feature-icon" style="font-size: 0.9rem;"></i></div>
+<div class="node"><i class="fas fa-wave-square feature-icon" style="font-size: 0.9rem;"></i></div>
+<div class="node"><i class="fas fa-table feature-icon" style="font-size: 0.9rem;"></i></div>
+</div>
+<div class="info-panel" style="border-color: rgba(59, 130, 246, 0.3);">
+<i class="fas fa-arrow-right text-blue-400"></i>
+<span>Pixels, Text, Audio</span>
+</div>
+</div>
+<!-- HIDDEN LAYERS -->
+<div class="layer-column hidden-layer">
+<div class="layer-title-box" style="border-left: 4px solid #a855f7;">
+<div class="layer-title">Hidden Layers</div>
+<div class="layer-desc">Extract features &amp; patterns</div>
+</div>
+<!-- Visualizing multiple hidden columns to show depth -->
+<div style="display: flex; gap: 34px;">
+<div class="nodes-wrapper" id="hidden-nodes-1">
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+</div>
+<div class="nodes-wrapper" id="hidden-nodes-2">
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+</div>
+<div class="nodes-wrapper" id="hidden-nodes-3">
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+</div>
+<div class="nodes-wrapper" id="hidden-nodes-4">
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+</div>
+</div>
+<div class="info-panel" style="border-color: rgba(168, 85, 247, 0.3);">
+<i class="fas fa-cogs text-purple-400"></i>
+<span>Feature Extraction</span>
+</div>
+</div>
+<!-- OUTPUT LAYER -->
+<div class="layer-column output-layer">
+<div class="layer-title-box" style="border-left: 4px solid #14b8a6;">
+<div class="layer-title">Output Layer</div>
+<div class="layer-desc">Produces predictions</div>
+</div>
+<div class="nodes-wrapper" id="output-nodes">
+<div class="node"><i class="fas fa-tag feature-icon"></i></div>
+<div class="node"><i class="fas fa-chart-line feature-icon"></i></div>
+</div>
+<div class="info-panel" style="border-color: rgba(20, 184, 166, 0.3);">
+<i class="fas fa-bullseye text-teal-400"></i>
+<span>Classify / Regress</span>
+</div>
+</div>
+</div>
+<div class="legend">
+<div class="legend-item"><div class="dot" style="background: #3b82f6;"></div>Input</div>
+<div class="legend-item"><div class="dot" style="background: #a855f7;"></div>Neuron</div>
+<div class="legend-item"><div class="dot" style="background: #14b8a6;"></div>Prediction</div>
+<div class="legend-item"><i class="fas fa-circle" style="color: white; font-size: 6px; opacity: 0.8;"></i> Data Flow</div>
+</div>
+
+</div>
+<script>
+        const canvas = document.getElementById('network-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Wait for layout
+        window.onload = function() {
+            // Set canvas resolution to match display size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            // Function to get center coordinates of an element relative to the canvas
+            function getCenter(element) {
+                const rect = element.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2 - canvasRect.left,
+                    y: rect.top + rect.height / 2 - canvasRect.top
+                };
+            }
+
+            // Get all nodes
+            const inputNodes = Array.from(document.querySelectorAll('#input-nodes .node'));
+            const hidden1Nodes = Array.from(document.querySelectorAll('#hidden-nodes-1 .node'));
+            const hidden2Nodes = Array.from(document.querySelectorAll('#hidden-nodes-2 .node'));
+            const hidden3Nodes = Array.from(document.querySelectorAll('#hidden-nodes-3 .node'));
+            const hidden4Nodes = Array.from(document.querySelectorAll('#hidden-nodes-4 .node'));
+            const outputNodes = Array.from(document.querySelectorAll('#output-nodes .node'));
+
+            const layers = [inputNodes, hidden1Nodes, hidden2Nodes, hidden3Nodes, hidden4Nodes, outputNodes];
+            const connections = [];
+
+            // Build connections list (Layer i connected to Layer i+1)
+            for (let i = 0; i < layers.length - 1; i++) {
+                const currentLayer = layers[i];
+                const nextLayer = layers[i+1];
+                
+                currentLayer.forEach(startNode => {
+                    nextLayer.forEach(endNode => {
+                        connections.push({
+                            start: startNode,
+                            end: endNode,
+                            layerIndex: i
+                        });
+                    });
+                });
+            }
+
+            // Animation Particles
+            const particles = [];
+            
+            function spawnParticle() {
+                const startNode = inputNodes[Math.floor(Math.random() * inputNodes.length)];
+                particles.push({
+                    currentNode: startNode,
+                    targetNode: null,
+                    layerIndex: 0,
+                    progress: 0,
+                    speed: 0.02 + Math.random() * 0.02,
+                });
+            }
+
+            // Spawn loop
+            setInterval(spawnParticle, 300);
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw Connections
+                connections.forEach(conn => {
+                    const start = getCenter(conn.start);
+                    const end = getCenter(conn.end);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    
+                    if (conn.layerIndex === 0) ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
+                    else if (conn.layerIndex === layers.length - 2) ctx.strokeStyle = 'rgba(20, 184, 166, 0.15)';
+                    else ctx.strokeStyle = 'rgba(168, 85, 247, 0.15)';
+                    
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                });
+
+                // Update and Draw Particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    let p = particles[i];
+                    
+                    if (!p.targetNode) {
+                        const nextLayerNodes = layers[p.layerIndex + 1];
+                        if (!nextLayerNodes) {
+                            particles.splice(i, 1);
+                            continue;
+                        }
+                        p.targetNode = nextLayerNodes[Math.floor(Math.random() * nextLayerNodes.length)];
+                    }
+
+                    const start = getCenter(p.currentNode);
+                    const end = getCenter(p.targetNode);
+
+                    p.progress += p.speed;
+
+                    const curX = start.x + (end.x - start.x) * p.progress;
+                    const curY = start.y + (end.y - start.y) * p.progress;
+
+                    // Draw Particle
+                    ctx.beginPath();
+                    ctx.arc(curX, curY, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill();
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = '#fff';
+
+                    if (p.progress >= 1) {
+                        p.currentNode = p.targetNode;
+                        p.targetNode = null;
+                        p.progress = 0;
+                        p.layerIndex++;
+                    }
+                    
+                    ctx.shadowBlur = 0;
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+        };
+    </script>
+</body>
+</html>
