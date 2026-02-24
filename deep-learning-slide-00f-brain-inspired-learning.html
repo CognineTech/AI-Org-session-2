@@ -24,162 +24,188 @@
     .hsub { margin-top: 4px; color: #94a3b8; font-size: .82rem; }
     .badge { background: rgba(30,41,59,.72); border: 1px solid rgba(45,212,191,.35); padding: 5px 16px; border-radius: 20px; color: #2dd4bf; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: .7rem; }
 
-    .body { position: relative; z-index: 10; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; height: 588px; }
-    .panel { background: rgba(30,41,59,.84); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 14px; }
-    .left { opacity: 0; animation: fadeInLeft .7s ease-out forwards .35s; }
-    .right { opacity: 0; animation: fadeInRight .7s ease-out forwards .55s; }
+    .body { position: relative; z-index: 10; height: 588px; opacity: 0; animation: fadeInUp .75s ease-out forwards .3s; }
 
-    #nnCanvas { width: 100%; height: 330px; display: block; background: rgba(15,23,42,.64); border-radius: 12px; border: 1px solid rgba(255,255,255,.06); }
-    .layer-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-    .lbl { border-radius: 8px; padding: 6px; text-align: center; font-size: .63rem; font-weight: 700; letter-spacing: .4px; }
-    .l1 { background: rgba(96,165,250,.12); color: #93c5fd; }
-    .l2 { background: rgba(168,85,247,.12); color: #d8b4fe; }
-    .l3 { background: rgba(168,85,247,.16); color: #d8b4fe; }
-    .l4 { background: rgba(45,212,191,.12); color: #5eead4; }
-
-    .card {
-      border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,.06);
-      background: rgba(15,23,42,.72);
-    }
-    .card h3 { margin: 0 0 6px; font-family: 'Montserrat', sans-serif; color: #f8fafc; font-size: .82rem; }
-    .card p { margin: 0; color: #94a3b8; font-size: .72rem; line-height: 1.45; }
-
-    .baby-curve { height: 136px; }
-    .pill-row { margin-top: 8px; }
-    .pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 8px; font-size: .62rem; font-weight: 700; margin-right: 4px; }
-    .p1 { background: rgba(96,165,250,.15); color: #93c5fd; }
-    .p2 { background: rgba(168,85,247,.15); color: #d8b4fe; }
-    .p3 { background: rgba(45,212,191,.15); color: #5eead4; }
-
-    .deep-note {
-      background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(20,184,166,.08));
-      border: 1px solid rgba(96,165,250,.24);
-    }
-    .deep-note h3 { color: #60a5fa; }
-    .deep-note p { color: #e2e8f0; }
-
-    .baby-card {
+    .learning-world {
       height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      border-radius: 14px;
-      padding: 14px;
-      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
       background:
-        radial-gradient(120% 100% at 10% 10%, rgba(59,130,246,.12), transparent 55%),
-        radial-gradient(110% 90% at 90% 90%, rgba(45,212,191,.1), transparent 58%),
-        rgba(15,23,42,.76);
-      overflow: hidden;
+        radial-gradient(85% 85% at 20% 10%, rgba(59,130,246,.16), transparent 62%),
+        radial-gradient(80% 100% at 90% 90%, rgba(45,212,191,.12), transparent 65%),
+        rgba(15,23,42,.8);
+      padding: 14px;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+    }
+
+    .world-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .world-title { margin: 0; font-family: 'Montserrat', sans-serif; font-size: .95rem; color: #f8fafc; }
+    .world-sub { margin: 2px 0 0; color: #cbd5e1; font-size: .72rem; }
+    .live-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: rgba(2,132,199,.18);
+      border: 1px solid rgba(56,189,248,.3);
+      color: #7dd3fc;
+      padding: 5px 10px;
+      font-size: .63rem;
+      font-weight: 700;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #22d3ee; box-shadow: 0 0 0 0 rgba(34,211,238,.7); animation: pulseDot 1.6s ease-out infinite; }
+
+    .learning-scene {
       position: relative;
-    }
-
-    .baby-title {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      font-size: .88rem;
-      color: #f8fafc;
-    }
-
-    .baby-sub {
-      margin: 0;
-      color: #cbd5e1;
-      font-size: .72rem;
-      line-height: 1.45;
-    }
-
-    .growth-scene {
-      flex: 1;
       border-radius: 12px;
-      border: 1px solid rgba(148,163,184,.18);
-      background: linear-gradient(180deg, rgba(15,23,42,.72), rgba(2,6,23,.8));
-      position: relative;
+      border: 1px solid rgba(148,163,184,.2);
       overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(15,23,42,.75), rgba(2,6,23,.85)),
+        linear-gradient(to top, rgba(51,65,85,.25) 18%, transparent 18%);
     }
 
-    .sensory {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      opacity: 0;
-      filter: blur(.3px);
-      animation: sensoryFlow 6s linear infinite;
-    }
-    .sA { background: #60a5fa; top: 38%; left: 2%; animation-delay: .4s; }
-    .sB { background: #a855f7; top: 56%; left: 4%; animation-delay: 1.6s; }
-    .sC { background: #2dd4bf; top: 30%; left: 6%; animation-delay: 2.8s; }
+    #flowCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 
-    .growth-ground {
+    .source {
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 24px;
-      height: 2px;
-      background: linear-gradient(to right, rgba(96,165,250,.1), rgba(45,212,191,.3), rgba(96,165,250,.1));
+      z-index: 3;
+      width: 214px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.26);
+      background: rgba(15,23,42,.84);
+      padding: 10px 11px;
+      box-sizing: border-box;
+      backdrop-filter: blur(2px);
+    }
+    .source h4 { margin: 0; font-size: .74rem; color: #f8fafc; font-family: 'Montserrat', sans-serif; }
+    .source p { margin: 4px 0 0; font-size: .65rem; color: #cbd5e1; line-height: 1.4; }
+    .source i { margin-right: 6px; }
+
+    .src-audio { left: 18px; top: 18px; }
+    .src-visual { right: 18px; top: 18px; }
+    .src-teaching { left: 18px; bottom: 58px; }
+    .src-experience { right: 18px; bottom: 58px; }
+
+    .src-audio h4 i { color: #60a5fa; }
+    .src-visual h4 i { color: #a78bfa; }
+    .src-teaching h4 i { color: #2dd4bf; }
+    .src-experience h4 i { color: #f59e0b; }
+
+    .caregiver {
+      position: absolute;
+      left: 278px;
+      top: 116px;
+      width: 86px;
+      z-index: 2;
+      opacity: .92;
+      animation: floatUp 3.8s ease-in-out infinite;
     }
 
-    .baby-stage {
+    .baby-zone {
       position: absolute;
-      bottom: 26px;
-      width: 120px;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 286px;
+      z-index: 4;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-    }
-    .st1 { left: 52px; animation: stagePulse 4.8s ease-in-out infinite; }
-    .st2 { left: 190px; animation: stagePulse 4.8s ease-in-out infinite 1.2s; }
-    .st3 { left: 328px; animation: stagePulse 4.8s ease-in-out infinite 2.4s; }
-
-    .stage-label {
-      color: #94a3b8;
-      font-size: .6rem;
-      font-weight: 700;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-    }
-
-    .silhouette {
-      width: 94px;
-      height: 132px;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,.35));
-    }
-
-    .learning-tags {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      justify-content: center;
       gap: 8px;
     }
-    .lt {
+
+    .brain-ring {
+      position: absolute;
+      width: 188px;
+      height: 188px;
+      border-radius: 50%;
+      border: 1px solid rgba(45,212,191,.45);
+      box-shadow: 0 0 0 14px rgba(45,212,191,.06), 0 0 35px rgba(45,212,191,.22);
+      animation: ringPulse 2.6s ease-in-out infinite;
+      top: 38px;
+    }
+
+    .baby-svg {
+      width: 174px;
+      height: 210px;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.35));
+      position: relative;
+      z-index: 3;
+    }
+
+    .learning-state {
+      border-radius: 999px;
+      padding: 5px 12px;
+      border: 1px solid rgba(96,165,250,.35);
+      background: rgba(30,41,59,.82);
+      color: #bfdbfe;
+      font-size: .66rem;
+      font-weight: 700;
+      text-align: center;
+      max-width: 260px;
+    }
+
+    .feedback-note {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      border-radius: 9px;
+      border: 1px solid rgba(45,212,191,.35);
+      background: rgba(15,23,42,.82);
+      color: #99f6e4;
+      font-size: .64rem;
+      font-weight: 700;
+      padding: 6px 10px;
+      z-index: 5;
+    }
+
+    .outcomes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .outcome {
       border-radius: 9px;
       border: 1px solid rgba(148,163,184,.22);
       background: rgba(15,23,42,.78);
       color: #cbd5e1;
       font-size: .64rem;
+      font-weight: 700;
       padding: 7px 8px;
       text-align: center;
-      font-weight: 700;
+    }
+    .outcome i { margin-right: 5px; color: #5eead4; }
+
+    @keyframes ringPulse {
+      0%, 100% { transform: scale(1); opacity: .82; }
+      50% { transform: scale(1.04); opacity: 1; }
     }
 
-    .learning-tags .lt i { margin-right: 4px; color: #5eead4; }
-
-    @keyframes sensoryFlow {
-      0% { transform: translate(0, 0) scale(.7); opacity: 0; }
-      15% { opacity: .95; }
-      55% { transform: translate(220px, -24px) scale(1); opacity: .85; }
-      85% { transform: translate(360px, 4px) scale(.9); opacity: .35; }
-      100% { transform: translate(420px, -8px) scale(.7); opacity: 0; }
+    @keyframes floatUp {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
 
-    @keyframes stagePulse {
-      0%, 100% { transform: translateY(0); opacity: .78; }
-      50% { transform: translateY(-4px); opacity: 1; }
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 0 rgba(34,211,238,.6); }
+      80% { box-shadow: 0 0 0 8px rgba(34,211,238,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
     }
 
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes fadeInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -191,170 +217,185 @@
     <header>
       <div>
         <h1>Brain-Inspired Learning</h1>
-        <div class="hsub">Artificial neural networks mimic signal flow across connected neurons</div>
+        <div class="hsub">How babies learn through multisensory input, guidance, and real-world feedback</div>
       </div>
       <div class="badge">Deep Learning Core</div>
     </header>
 
     <div class="body">
-      <div class="panel left">
-        <canvas id="nnCanvas" width="560" height="330"></canvas>
-        <div class="layer-row">
-          <div class="lbl l1">Input Layer</div>
-          <div class="lbl l2">Hidden Layer 1</div>
-          <div class="lbl l3">Hidden Layer 2</div>
-          <div class="lbl l4">Output Layer</div>
+      <div class="learning-world">
+        <div class="world-head">
+          <div>
+            <h3 class="world-title">Realistic Baby Learning in Daily Life</h3>
+            <p class="world-sub">The child combines sound, visuals, direct teaching, and trial-and-error experience to form stable concepts.</p>
+          </div>
+          <div class="live-chip"><span class="dot"></span> Live Learning Loop</div>
         </div>
-        <div class="pill-row">
-          <span class="pill p1"><i class="fas fa-arrow-right"></i> Signals move forward</span>
-          <span class="pill p2"><i class="fas fa-project-diagram"></i> Multiple abstraction levels</span>
-          <span class="pill p3"><i class="fas fa-brain"></i> Learned representations</span>
-        </div>
-      </div>
 
-      <div class="panel right">
-        <div class="baby-card">
-          <h3 class="baby-title">How a Baby Learns in the Real World</h3>
-          <p class="baby-sub">Repeated visual, audio, and contextual exposure builds stronger internal representations over time — just like deep networks improve with more experience.</p>
+        <div class="learning-scene">
+          <canvas id="flowCanvas"></canvas>
 
-          <div class="growth-scene">
-            <div class="sensory sA"></div>
-            <div class="sensory sB"></div>
-            <div class="sensory sC"></div>
-
-            <div class="baby-stage st1">
-              <svg class="silhouette" viewBox="0 0 94 132" aria-label="Infant silhouette">
-                <defs>
-                  <linearGradient id="sg1" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#475569"/>
-                    <stop offset="100%" stop-color="#1e293b"/>
-                  </linearGradient>
-                </defs>
-                <ellipse cx="47" cy="122" rx="30" ry="6" fill="rgba(2,6,23,.55)"/>
-                <circle cx="45" cy="24" r="12" fill="url(#sg1)"/>
-                <path d="M27 44 C26 56, 31 66, 38 70 L54 70 C62 66, 64 54, 60 44 Z" fill="url(#sg1)"/>
-                <path d="M38 70 L31 92 C35 96, 39 96, 43 92 L47 74 Z" fill="#334155"/>
-                <path d="M52 70 L49 90 C53 95, 58 95, 62 90 L60 72 Z" fill="#334155"/>
-                <path d="M29 50 L18 66 C20 70, 24 71, 27 67 L35 58 Z" fill="#334155"/>
-                <path d="M59 52 L71 62 C74 61, 76 58, 74 54 L64 46 Z" fill="#334155"/>
-              </svg>
-              <div class="stage-label">0–8 Months</div>
-            </div>
-
-            <div class="baby-stage st2">
-              <svg class="silhouette" viewBox="0 0 94 132" aria-label="Toddler silhouette">
-                <defs>
-                  <linearGradient id="sg2" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#64748b"/>
-                    <stop offset="100%" stop-color="#334155"/>
-                  </linearGradient>
-                </defs>
-                <ellipse cx="47" cy="122" rx="30" ry="6" fill="rgba(2,6,23,.55)"/>
-                <circle cx="47" cy="20" r="11" fill="url(#sg2)"/>
-                <path d="M35 34 C32 46, 34 62, 39 72 H56 C61 62, 62 46, 59 34 Z" fill="url(#sg2)"/>
-                <path d="M40 72 L35 99 C39 103, 44 102, 47 97 L49 76 Z" fill="#475569"/>
-                <path d="M54 72 L56 100 C61 103, 66 101, 67 95 L63 75 Z" fill="#475569"/>
-                <path d="M35 45 L24 61 C26 64, 31 64, 33 60 L42 50 Z" fill="#475569"/>
-                <path d="M59 45 L70 52 C73 50, 74 47, 72 44 L63 40 Z" fill="#475569"/>
-              </svg>
-              <div class="stage-label">8–20 Months</div>
-            </div>
-
-            <div class="baby-stage st3">
-              <svg class="silhouette" viewBox="0 0 94 132" aria-label="Young child silhouette">
-                <defs>
-                  <linearGradient id="sg3" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#94a3b8"/>
-                    <stop offset="100%" stop-color="#475569"/>
-                  </linearGradient>
-                </defs>
-                <ellipse cx="47" cy="122" rx="30" ry="6" fill="rgba(2,6,23,.55)"/>
-                <circle cx="48" cy="17" r="10" fill="url(#sg3)"/>
-                <path d="M38 29 C34 43, 35 62, 40 76 H57 C61 61, 62 43, 57 29 Z" fill="url(#sg3)"/>
-                <path d="M42 76 L37 112 C41 116, 46 116, 49 110 L51 78 Z" fill="#64748b"/>
-                <path d="M55 76 L58 112 C63 116, 68 114, 69 108 L63 78 Z" fill="#64748b"/>
-                <path d="M39 41 L26 61 C28 64, 32 65, 35 61 L45 48 Z" fill="#64748b"/>
-                <path d="M57 40 L70 33 C73 35, 74 39, 71 42 L60 45 Z" fill="#64748b"/>
-              </svg>
-              <div class="stage-label">2–3 Years</div>
-            </div>
-
-            <div class="growth-ground"></div>
+          <div class="source src-audio" data-color="#60a5fa">
+            <h4><i class="fas fa-volume-up"></i>Audio Input</h4>
+            <p>Hears “ball”, “clap”, and name repetition from parents in different tones.</p>
           </div>
 
-          <svg class="baby-curve" width="100%" viewBox="0 0 420 136" preserveAspectRatio="none" aria-label="Learning progression curve">
-            <line x1="28" y1="108" x2="392" y2="108" stroke="#334155" stroke-width="2"/>
-            <line x1="28" y1="108" x2="28" y2="16" stroke="#334155" stroke-width="2"/>
-            <polyline points="28,100 82,94 132,82 182,66 232,50 282,36 332,26 382,20" fill="none" stroke="#2dd4bf" stroke-width="4"/>
-            <circle cx="382" cy="20" r="4" fill="#2dd4bf"/>
-            <text x="32" y="13" fill="#64748b" font-size="9">Recognition Quality</text>
-            <text x="300" y="126" fill="#64748b" font-size="9">Repeated Experience</text>
+          <div class="source src-visual" data-color="#a78bfa">
+            <h4><i class="fas fa-eye"></i>Visual Input</h4>
+            <p>Sees faces, lip movement, toys, and object motion from multiple angles.</p>
+          </div>
+
+          <div class="source src-teaching" data-color="#2dd4bf">
+            <h4><i class="fas fa-chalkboard-teacher"></i>Teaching Input</h4>
+            <p>Caregiver points, labels objects, and corrects attempts through interaction.</p>
+          </div>
+
+          <div class="source src-experience" data-color="#f59e0b">
+            <h4><i class="fas fa-hands"></i>Experience Input</h4>
+            <p>Touches, drops, and grabs objects; actions update understanding via feedback.</p>
+          </div>
+
+          <svg class="caregiver" viewBox="0 0 90 145" aria-label="Caregiver silhouette">
+            <ellipse cx="45" cy="136" rx="27" ry="7" fill="rgba(2,6,23,.55)"/>
+            <circle cx="44" cy="20" r="11" fill="#64748b"/>
+            <path d="M30 34 C26 51, 30 67, 36 80 H56 C61 68, 63 51, 58 34 Z" fill="#475569"/>
+            <path d="M38 80 L32 123 C36 127, 41 128, 45 123 L48 83 Z" fill="#334155"/>
+            <path d="M52 80 L56 124 C61 128, 66 127, 68 121 L60 82 Z" fill="#334155"/>
+            <path d="M58 48 L79 59 C82 56, 82 51, 79 48 L60 43 Z" fill="#475569"/>
+            <path d="M34 49 L20 67 C22 71, 27 71, 30 67 L40 53 Z" fill="#475569"/>
           </svg>
 
-          <div class="learning-tags">
-            <div class="lt"><i class="fas fa-eye"></i>Visual Cues</div>
-            <div class="lt"><i class="fas fa-volume-up"></i>Audio Patterns</div>
-            <div class="lt"><i class="fas fa-link"></i>Context Building</div>
+          <div class="baby-zone">
+            <div class="brain-ring"></div>
+            <svg class="baby-svg" viewBox="0 0 120 150" aria-label="Baby illustration">
+              <ellipse cx="60" cy="142" rx="32" ry="8" fill="rgba(2,6,23,.55)"/>
+              <circle cx="59" cy="34" r="16" fill="#f8c9a6"/>
+              <ellipse cx="54" cy="33" rx="2.1" ry="2.1" fill="#1e293b"/>
+              <ellipse cx="65" cy="33" rx="2.1" ry="2.1" fill="#1e293b"/>
+              <path d="M54 41 Q59 45 65 41" fill="none" stroke="#7f1d1d" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M42 51 C38 69, 43 95, 50 109 H72 C78 96, 82 68, 78 51 Z" fill="#60a5fa"/>
+              <path d="M49 109 L42 136 C46 140, 52 140, 56 134 L59 112 Z" fill="#334155"/>
+              <path d="M71 109 L74 136 C79 139, 85 138, 87 131 L80 111 Z" fill="#334155"/>
+              <path d="M43 64 L28 83 C30 87, 34 88, 38 84 L50 70 Z" fill="#60a5fa"/>
+              <path d="M77 64 L95 73 C98 71, 99 66, 95 63 L80 58 Z" fill="#60a5fa"/>
+              <circle cx="60" cy="18" r="10" fill="rgba(15,23,42,.22)"/>
+            </svg>
+            <div id="learningState" class="learning-state">Listening to repeated words and matching sounds to faces</div>
           </div>
+
+          <div class="feedback-note"><i class="fas fa-sync-alt"></i> Action → Feedback → Adjustment (continuous loop)</div>
+        </div>
+
+        <div class="outcomes">
+          <div class="outcome"><i class="fas fa-language"></i>Word Mapping</div>
+          <div class="outcome"><i class="fas fa-shapes"></i>Object Recognition</div>
+          <div class="outcome"><i class="fas fa-hand-holding-heart"></i>Social Response</div>
+          <div class="outcome"><i class="fas fa-bullseye"></i>Better Prediction</div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const canvas = document.getElementById('nnCanvas');
+    const canvas = document.getElementById('flowCanvas');
+    const scene = document.querySelector('.learning-scene');
+    const babyZone = document.querySelector('.baby-zone');
+    const sources = Array.from(document.querySelectorAll('.source'));
+    const stateLabel = document.getElementById('learningState');
     const ctx = canvas.getContext('2d');
 
-    const layers = [
-      { x: 70,  count: 6, color: '#60a5fa' },
-      { x: 210, count: 7, color: '#a855f7' },
-      { x: 350, count: 6, color: '#a855f7' },
-      { x: 490, count: 4, color: '#2dd4bf' }
+    const states = [
+      'Listening to repeated words and matching sounds to faces',
+      'Seeing object motion and linking it with parent labels',
+      'Trying actions, receiving correction, and adapting quickly',
+      'Combining multi-sensory clues into stable concepts'
     ];
 
-    function nodeY(index, count) {
-      const top = 36;
-      const bottom = 294;
-      return top + (index * (bottom - top)) / (count - 1);
+    let particles = [];
+    let lastSpawn = 0;
+    let stateIndex = 0;
+
+    function resizeCanvas() {
+      canvas.width = scene.clientWidth;
+      canvas.height = scene.clientHeight;
     }
 
-    function drawNetwork(t) {
+    function getCenterPoint() {
+      const sceneBox = scene.getBoundingClientRect();
+      const babyBox = babyZone.getBoundingClientRect();
+      return {
+        x: (babyBox.left - sceneBox.left) + babyBox.width / 2,
+        y: (babyBox.top - sceneBox.top) + babyBox.height / 2 - 18
+      };
+    }
+
+    function spawnParticle() {
+      const center = getCenterPoint();
+      sources.forEach((source) => {
+        const sourceBox = source.getBoundingClientRect();
+        const sceneBox = scene.getBoundingClientRect();
+        const sx = (sourceBox.left - sceneBox.left) + sourceBox.width / 2;
+        const sy = (sourceBox.top - sceneBox.top) + sourceBox.height / 2;
+        particles.push({
+          x: sx,
+          y: sy,
+          tx: center.x,
+          ty: center.y,
+          vx: (center.x - sx) * 0.014,
+          vy: (center.y - sy) * 0.014,
+          color: source.dataset.color,
+          life: 1
+        });
+      });
+      if (particles.length > 240) particles = particles.slice(-200);
+    }
+
+    function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const now = performance.now();
 
-      for (let l = 0; l < layers.length - 1; l++) {
-        const from = layers[l];
-        const to = layers[l + 1];
-        for (let i = 0; i < from.count; i++) {
-          for (let j = 0; j < to.count; j++) {
-            const y1 = nodeY(i, from.count);
-            const y2 = nodeY(j, to.count);
-            const pulse = Math.sin((t * 0.002) + i * 0.7 + j * 0.4 + l) * 0.5 + 0.5;
-            ctx.strokeStyle = `rgba(148,163,184,${0.08 + pulse * 0.18})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(from.x, y1);
-            ctx.lineTo(to.x, y2);
-            ctx.stroke();
-          }
-        }
+      if (now - lastSpawn > 260) {
+        spawnParticle();
+        lastSpawn = now;
       }
 
-      for (const layer of layers) {
-        for (let i = 0; i < layer.count; i++) {
-          const y = nodeY(i, layer.count);
-          const glow = Math.sin((t * 0.003) + i * 0.8 + layer.x * 0.01) * 0.5 + 0.5;
-          ctx.fillStyle = layer.color;
-          ctx.globalAlpha = 0.55 + glow * 0.35;
-          ctx.beginPath();
-          ctx.arc(layer.x, y, 5.5 + glow * 1.2, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
-      }
-      requestAnimationFrame(drawNetwork);
+      particles.forEach((particle) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life -= 0.009;
+      });
+
+      particles = particles.filter((particle) => particle.life > 0.08);
+
+      particles.forEach((particle) => {
+        const alpha = Math.max(0, particle.life);
+        ctx.beginPath();
+        ctx.fillStyle = particle.color;
+        ctx.globalAlpha = alpha;
+        ctx.arc(particle.x, particle.y, 3.1, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = particle.color;
+        ctx.globalAlpha = alpha * 0.32;
+        ctx.lineWidth = 1.1;
+        ctx.moveTo(particle.x, particle.y);
+        ctx.lineTo(particle.x - particle.vx * 2.4, particle.y - particle.vy * 2.4);
+        ctx.stroke();
+      });
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
     }
 
-    requestAnimationFrame(drawNetwork);
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(draw);
+
+    setInterval(() => {
+      stateIndex = (stateIndex + 1) % states.length;
+      stateLabel.textContent = states[stateIndex];
+    }, 2500);
   </script>
 </body>
 </html>
