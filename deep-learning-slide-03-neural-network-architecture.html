@@ -259,8 +259,8 @@
 <div class="layer-title">Hidden Layers</div>
 <div class="layer-desc">Extract features &amp; patterns</div>
 </div>
-<!-- Visualizing 2 columns of hidden nodes to show depth -->
-<div style="display: flex; gap: 60px;">
+<!-- Visualizing multiple hidden columns to show depth -->
+<div style="display: flex; gap: 34px;">
 <div class="nodes-wrapper" id="hidden-nodes-1">
 <div class="node"></div>
 <div class="node"></div>
@@ -269,6 +269,20 @@
 <div class="node"></div>
 </div>
 <div class="nodes-wrapper" id="hidden-nodes-2">
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+</div>
+<div class="nodes-wrapper" id="hidden-nodes-3">
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+<div class="node"></div>
+</div>
+<div class="nodes-wrapper" id="hidden-nodes-4">
 <div class="node"></div>
 <div class="node"></div>
 <div class="node"></div>
@@ -329,9 +343,11 @@
             const inputNodes = Array.from(document.querySelectorAll('#input-nodes .node'));
             const hidden1Nodes = Array.from(document.querySelectorAll('#hidden-nodes-1 .node'));
             const hidden2Nodes = Array.from(document.querySelectorAll('#hidden-nodes-2 .node'));
+            const hidden3Nodes = Array.from(document.querySelectorAll('#hidden-nodes-3 .node'));
+            const hidden4Nodes = Array.from(document.querySelectorAll('#hidden-nodes-4 .node'));
             const outputNodes = Array.from(document.querySelectorAll('#output-nodes .node'));
 
-            const layers = [inputNodes, hidden1Nodes, hidden2Nodes, outputNodes];
+            const layers = [inputNodes, hidden1Nodes, hidden2Nodes, hidden3Nodes, hidden4Nodes, outputNodes];
             const connections = [];
 
             // Build connections list (Layer i connected to Layer i+1)
@@ -379,9 +395,9 @@
                     ctx.moveTo(start.x, start.y);
                     ctx.lineTo(end.x, end.y);
                     
-                    if (conn.layerIndex === 0) ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)'; 
-                    else if (conn.layerIndex === 1) ctx.strokeStyle = 'rgba(168, 85, 247, 0.15)';
-                    else ctx.strokeStyle = 'rgba(20, 184, 166, 0.15)';
+                    if (conn.layerIndex === 0) ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
+                    else if (conn.layerIndex === layers.length - 2) ctx.strokeStyle = 'rgba(20, 184, 166, 0.15)';
+                    else ctx.strokeStyle = 'rgba(168, 85, 247, 0.15)';
                     
                     ctx.lineWidth = 1;
                     ctx.stroke();
