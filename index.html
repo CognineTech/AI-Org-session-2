@@ -56,6 +56,9 @@
       height: 720px;
       transform-origin: center center;
       will-change: transform;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.25s ease, border 0.25s ease;
     }
 
     #slideFrame {
@@ -67,7 +70,41 @@
     }
 
     body[data-theme="light"] #slideFrame {
-      filter: invert(1) hue-rotate(180deg) saturate(0.92) brightness(1.04) contrast(0.96);
+      filter: brightness(1.16) contrast(0.9) saturate(1.06);
+    }
+
+    body[data-theme="light"] {
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(59, 130, 246, 0.16), transparent 55%),
+        radial-gradient(1100px 700px at 90% 85%, rgba(45, 212, 191, 0.14), transparent 58%),
+        linear-gradient(135deg, #eff6ff 0%, #e2e8f0 55%, #dbeafe 100%);
+    }
+
+    body[data-theme="light"] #stageScaler {
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 28px 70px rgba(15, 23, 42, 0.22),
+        0 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    body[data-theme="light"] #controls {
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+    }
+
+    body[data-theme="light"] .btn {
+      background: rgba(241, 245, 249, 0.96);
+      color: #0f172a;
+      border-color: rgba(100, 116, 139, 0.35);
+    }
+
+    body[data-theme="light"] .btn:hover {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.14);
+    }
+
+    body[data-theme="light"] #counter {
+      color: #334155;
     }
 
     body.present-mode #stage {
